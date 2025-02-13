@@ -1,0 +1,52 @@
+{
+  "com.badlogic.gdx.graphics.g2d.BitmapFont": {
+    "font": {
+      "file": "28upheaval.fnt"
+    }
+  },
+  "com.badlogic.gdx.graphics.Color": {
+    "black": {
+      "r": 0,
+      "g": 0,
+      "b": 0,
+      "a": 1
+    },
+    "white": {
+      "r": 1,
+      "g": 1,
+      "b": 1,
+      "a": 1
+    },
+    "color": {
+      "r": 0.21176471,
+      "g": 0.5254902,
+      "b": 1,
+      "a": 1
+    },
+    "color-pressed": {
+      "r": 0.03529412,
+      "g": 0.28235295,
+      "b": 0.92156863,
+      "a": 1
+    }
+  },
+  "com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable": {
+    "button-c": {
+      "name": "button",
+      "color": "color"
+    },
+    "button-c-p": {
+      "name": "button",
+      "color": "color-pressed"
+    }
+  },
+  "com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle": {
+    "default": {
+      "font": "font",
+      "fontColor": "black",
+      "up": "button-c",
+      "down": "button-c-p",
+      "disabled": "button-disabled"
+    }
+  }
+}
