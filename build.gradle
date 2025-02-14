@@ -58,7 +58,7 @@ configure(subprojects) {
 
 subprojects {
   version = '$projectVersion'
-  ext.appName = 'P1_05_ProjectPart1_Code'
+  ext.appName = 'Forgroup'
   repositories {
     mavenCentral()
     maven { url 'https://s01.oss.sonatype.org' }
@@ -70,4 +70,4 @@ subprojects {
   }
 }
 
-eclipse.project.name = 'P1_05_ProjectPart1_Code' + '-parent'
+eclipse.project.name = 'Forgroup' + '-parent'
