@@ -1,7 +1,8 @@
-package io.github.some_example_name.lwjgl3;
+package com.mygdx.game.lwjgl3;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+
 
 // game entry point code, lol can change file name but rmb to edit the LWJGL and other file using this class name
 

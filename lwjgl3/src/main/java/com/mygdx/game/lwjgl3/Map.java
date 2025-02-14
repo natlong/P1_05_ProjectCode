@@ -1,4 +1,4 @@
-package io.github.some_example_name.lwjgl3;
+package com.mygdx.game.lwjgl3;
 
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
