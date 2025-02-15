@@ -25,7 +25,6 @@ public class GameScreen implements Screen {
     private SpriteBatch batch;
     private Stage stage;
     private boolean isPaused;
-    private boolean isMuted;
     private Map map;
     private ImageButton pauseButton;
     private ImageButton settingsButton;
@@ -33,7 +32,7 @@ public class GameScreen implements Screen {
     private Texture volumeOnTexture;
     private Texture volumeOffTexture;
     private Minion minion;
-    private Music bgMusic;
+    private SoundManager soundManager; 
 
 	    public GameScreen(GameCore game) {
 	    	//i crreated this to have a clearer view of the tiled map collision
@@ -49,19 +48,11 @@ public class GameScreen implements Screen {
 	        batch = new SpriteBatch();
 	        stage = new Stage(viewport, batch);
 	        Gdx.input.setInputProcessor(stage);
+	        soundManager = new SoundManager();
 	      
-	        initiateMusic();
-	       
 	    }
 	    
-	    private void initiateMusic() {
-		     // bgMusic = Gdx.audio.newMusic(Gdx.files.internal("BgMusic/guinea_gavin.mp3"));
-		     // bgMusic = Gdx.audio.newMusic(Gdx.files.internal("BgMusic/garage_climber.mp3"));
-		        bgMusic = Gdx.audio.newMusic(Gdx.files.internal("BgMusic/mathematics.mp3"));
-	         //	bgMusic = Gdx.audio.newMusic(Gdx.files.internal("BgMusic/burn.mp3"));	      
-		        bgMusic.setLooping(true);
-		        bgMusic.play();
-	    }
+
       
    
 	    
@@ -127,30 +118,32 @@ public class GameScreen implements Screen {
         }
     });
 }
+    private void openSettings() {
+        Gdx.app.log("GameScreen", "Settings button clicked");
+    }
+      
     private void volumeButtonListener() {
     	volumeButton.addListener(new com.badlogic.gdx.scenes.scene2d.InputListener() {
             @Override
             public boolean touchDown(com.badlogic.gdx.scenes.scene2d.InputEvent event, float x, float y, int pointer, int button) {
-                toggleVolume();
+                toggleSound();
                 return true;
             }
         });
     }  
-
-    private void openSettings() {
-        Gdx.app.log("GameScreen", "Settings button clicked");
-    }
     
-    private void toggleVolume() {
-        isMuted = !isMuted;
-        if (isMuted) {
-            bgMusic.setVolume(0f);
+    
+    private void toggleSound() {
+    	soundManager.toggleSound();
+        if (soundManager.isMuted()) {
             volumeButton.getStyle().imageUp = new TextureRegionDrawable(volumeOffTexture);
         } else {
-            bgMusic.setVolume(1f);
             volumeButton.getStyle().imageUp = new TextureRegionDrawable(volumeOnTexture);
         }
     }
+    
+    
+    
     
     @Override
     public void show() {
@@ -175,7 +168,7 @@ public class GameScreen implements Screen {
         debugRenderer.renderDebug(camera, map, minion);
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
-        minion.draw(batch); // Draw the minion
+        minion.draw(batch);
         batch.end();      
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 60f));
         stage.draw();
@@ -191,18 +184,14 @@ public class GameScreen implements Screen {
     @Override
     public void resume() {
         Gdx.app.log("GameScreen", "resume() called");
-        if (bgMusic != null && !isMuted) {
-            bgMusic.play();
-        }
+        soundManager.resume();
         isPaused = false;
         }
 
     @Override
     public void pause() {
         Gdx.app.log("GameScreen", "pause() called");
-        if (bgMusic != null) {
-            bgMusic.pause();
-        }
+        soundManager.pause();
         isPaused = true;
     }
     
@@ -216,7 +205,7 @@ public class GameScreen implements Screen {
         minion.dispose(); 
         batch.dispose();
         stage.dispose();
-        bgMusic.dispose();
+        soundManager.dispose();
         map.dispose();
         debugRenderer.dispose ();
         volumeOnTexture.dispose();
