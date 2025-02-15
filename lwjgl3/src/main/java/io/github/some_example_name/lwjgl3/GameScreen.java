@@ -18,6 +18,7 @@ public class GameScreen implements Screen {
 	private static final int BUTTON_SIZE = 60;
     private static final int BUTTON_MARGIN = 60;
     private static final int BUTTON_SPACING = 1;
+    private float maxHP = 100;
     
 	private DebugRenderer debugRenderer;
     private OrthographicCamera camera;
@@ -155,7 +156,7 @@ public class GameScreen implements Screen {
         Rectangle spawnArea = map.getSpawnPoint();
         float spawnX = spawnArea.x + (float)(Math.random() * spawnArea.width);
         float spawnY = spawnArea.y + (float)(Math.random() * spawnArea.height);
-        minion = new Minion("monster.png", 0.1f, spawnX, spawnY, map);
+        minion = new Minion("monster.png", 0.1f, spawnX, spawnY, map, maxHP);
     }
 
     @Override

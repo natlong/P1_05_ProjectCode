@@ -2,10 +2,13 @@ package io.github.some_example_name.lwjgl3;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
@@ -26,14 +29,20 @@ public class Minion {
     private Vector2 position;
     private Texture spriteSheet;
     private Rectangle bounds; //collison boundary
+    private ShapeRenderer shapeRenderer;
+    private float maxHP;
+    private HPBar hpBar;
 
 
-	    public Minion(String spriteSheetPath, float frameDuration, float startX, float startY, Map map) {
+	    public Minion(String spriteSheetPath, float frameDuration, float startX, float startY, Map map, float maxHP) {
 	        this.map = map;
 	        this.position = new Vector2(startX, startY);
 	        this.bounds = new Rectangle(startX, startY, DEFAULT_WIDTH, DEFAULT_HEIGHT);
 	        this.spriteSheet = new Texture(spriteSheetPath);
 	        this.runningAnimation = createAnimation(frameDuration);
+	        this.shapeRenderer = new ShapeRenderer();
+	        this.maxHP = maxHP;
+	        this.hpBar = new HPBar(startX, startY + DEFAULT_HEIGHT + 5, DEFAULT_WIDTH, 8, maxHP); // Position HP bar above minion
 	        
 	    }
 	    //this is to animate the character movement
@@ -56,6 +65,7 @@ public class Minion {
 	    
  
     public void update(float delta) {
+    	hpBar.setPosition(position.x, position.y + DEFAULT_HEIGHT + 5);
         stateTime += delta;
         float speed = DEFAULT_SPEED * delta;
         Vector2 originalPosition = new Vector2(position);
@@ -93,11 +103,32 @@ public class Minion {
     }
     
 
+    //public void draw(SpriteBatch batch) {
+    //    TextureRegion currentFrame = runningAnimation.getKeyFrame(stateTime, true);
+    //    batch.draw(currentFrame, position.x, position.y, DEFAULT_WIDTH, DEFAULT_HEIGHT);
+    //}
+    
     public void draw(SpriteBatch batch) {
-        TextureRegion currentFrame = runningAnimation.getKeyFrame(stateTime, true);
-        batch.draw(currentFrame, position.x, position.y, DEFAULT_WIDTH, DEFAULT_HEIGHT);
-    }
+    	shapeRenderer.setProjectionMatrix(batch.getProjectionMatrix());
+        shapeRenderer.begin(ShapeType.Filled); // Or ShapeType.Line for an outline
+        hpBar.draw(batch);
 
+        // Calculate triangle vertices (example: equilateral triangle)
+        float halfWidth = DEFAULT_WIDTH / 2f;
+        //float halfHeight = DEFAULT_HEIGHT / 2f;
+        float x1 = position.x + halfWidth;
+        float y1 = position.y + DEFAULT_HEIGHT; // Top vertex
+        float x2 = position.x;
+        float y2 = position.y;             // Bottom-left vertex
+        float x3 = position.x + DEFAULT_WIDTH;
+        float y3 = position.y;             // Bottom-right vertex
+
+        shapeRenderer.setColor(Color.BLUE); // Set triangle color
+        shapeRenderer.triangle(x1, y1, x2, y2, x3, y3);
+
+        shapeRenderer.end();
+    }
+    	
     public void dispose() {
         spriteSheet.dispose();
     }
@@ -112,5 +143,13 @@ public class Minion {
 
     public float getHeight() {
         return DEFAULT_HEIGHT;
+    }
+    
+    public void takeDamage(float damage) {
+    	hpBar.takeDamage(damage);
+    }
+    
+    public boolean isDead() {
+    	return hpBar.isDead();
     }
 }
