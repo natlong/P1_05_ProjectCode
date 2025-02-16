@@ -13,12 +13,20 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import java.util.ArrayList;
+import java.util.Collections;
+import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.InputAdapter;
+import java.util.List;
+import java.util.Iterator;
+
 
 public class GameScreen implements Screen {
 	private static final int BUTTON_SIZE = 60;
     private static final int BUTTON_MARGIN = 60;
     private static final int BUTTON_SPACING = 1;
-    private float maxHP = 100;
     
 	private DebugRenderer debugRenderer;
     private OrthographicCamera camera;
@@ -26,6 +34,7 @@ public class GameScreen implements Screen {
     private SpriteBatch batch;
     private Stage stage;
     private boolean isPaused;
+    private boolean isMuted;
     private Map map;
     private ImageButton pauseButton;
     private ImageButton settingsButton;
@@ -33,27 +42,41 @@ public class GameScreen implements Screen {
     private Texture volumeOnTexture;
     private Texture volumeOffTexture;
     private Minion minion;
-    private SoundManager soundManager; 
+    private Music bgMusic;
+    
+    private ShapeRenderer shapeRenderer;
+    private EntityManager entityManager;
 
-	    public GameScreen(GameCore game) {
-	    	//i crreated this to have a clearer view of the tiled map collision
-	    	debugRenderer = new DebugRenderer();
-	    	//put to false to close it
-	    	debugRenderer.setEnabled(false);
-	    	
-	        camera = new OrthographicCamera();
-	        viewport = new FitViewport(GameCore.VIEWPORT_WIDTH, GameCore.VIEWPORT_HEIGHT, camera);
-	        camera.position.set(viewport.getWorldWidth() / 2, viewport.getWorldHeight() / 2, 0);
-	        camera.update();
-	
-	        batch = new SpriteBatch();
-	        stage = new Stage(viewport, batch);
-	        Gdx.input.setInputProcessor(stage);
-	        soundManager = new SoundManager();
-	      
-	    }
+
+    public GameScreen(GameCore game) {
+    	//i created this to have a clearer view of the tiled map collision
+    	debugRenderer = new DebugRenderer();
+    	//put to false to close it
+    	debugRenderer.setEnabled(false);
+    	
+        camera = new OrthographicCamera();
+        viewport = new FitViewport(GameCore.VIEWPORT_WIDTH, GameCore.VIEWPORT_HEIGHT, camera);
+        camera.position.set(viewport.getWorldWidth() / 2, viewport.getWorldHeight() / 2, 0);
+        camera.update();
+
+        batch = new SpriteBatch();
+        stage = new Stage(viewport, batch);
+        Gdx.input.setInputProcessor(stage);
+        
+        entityManager = new EntityManager();
+        
+        handleInput();
+        initiateMusic();
+    }
 	    
-
+    private void initiateMusic() {
+	      	bgMusic = Gdx.audio.newMusic(Gdx.files.internal("BgMusic/guinea_gavin.mp3"));
+	      	bgMusic = Gdx.audio.newMusic(Gdx.files.internal("BgMusic/garage_climber.mp3"));
+	        bgMusic = Gdx.audio.newMusic(Gdx.files.internal("BgMusic/mathematics.mp3"));
+	        bgMusic = Gdx.audio.newMusic(Gdx.files.internal("BgMusic/burn.mp3"));	      
+	        bgMusic.setLooping(true);
+	        bgMusic.play();
+    }
       
    
 	    
@@ -119,63 +142,75 @@ public class GameScreen implements Screen {
         }
     });
 }
-    private void openSettings() {
-        Gdx.app.log("GameScreen", "Settings button clicked");
-    }
-      
     private void volumeButtonListener() {
     	volumeButton.addListener(new com.badlogic.gdx.scenes.scene2d.InputListener() {
             @Override
             public boolean touchDown(com.badlogic.gdx.scenes.scene2d.InputEvent event, float x, float y, int pointer, int button) {
-                toggleSound();
+                toggleVolume();
                 return true;
             }
         });
     }  
+
+    private void openSettings() {
+        Gdx.app.log("GameScreen", "Settings button clicked");
+    }
     
-    
-    private void toggleSound() {
-    	soundManager.toggleSound();
-        if (soundManager.isMuted()) {
+    private void toggleVolume() {
+        isMuted = !isMuted;
+        if (isMuted) {
+            bgMusic.setVolume(0f);
             volumeButton.getStyle().imageUp = new TextureRegionDrawable(volumeOffTexture);
         } else {
+            bgMusic.setVolume(1f);
             volumeButton.getStyle().imageUp = new TextureRegionDrawable(volumeOnTexture);
         }
     }
-    
-    
-    
-    
+
+    // Handles player input for placing towers
+    private void handleInput() {
+        Gdx.input.setInputProcessor(new com.badlogic.gdx.InputAdapter() {
+            @Override
+            public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+                float x = camera.unproject(new com.badlogic.gdx.math.Vector3(screenX, screenY, 0)).x;
+                float y = camera.unproject(new com.badlogic.gdx.math.Vector3(screenX, screenY, 0)).y;
+
+                if (!map.isGreenArea(x, y)) {
+                    entityManager.addTower(x, y);
+                }
+                return true;
+            }
+        });
+    }
+
     @Override
     public void show() {
         Gdx.app.log("GameScreen", "show() called");
         map = new Map("level.tmx");
         createButtons();
         
+        if (entityManager == null) {
+            entityManager = new EntityManager();
+        }
+        
         //minion spawn point
         Rectangle spawnArea = map.getSpawnPoint();
         float spawnX = spawnArea.x + (float)(Math.random() * spawnArea.width);
         float spawnY = spawnArea.y + (float)(Math.random() * spawnArea.height);
-        minion = new Minion("monster.png", 0.1f, spawnX, spawnY, map, maxHP);
+        entityManager.spawnMinion("monster.png", spawnX, spawnY, map, 100f);
     }
 
     @Override
     public void render(float delta) {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
         if (!isPaused) {
-            minion.update(delta); }
-            
-        map.render(camera);
-        debugRenderer.renderDebug(camera, map, minion);
-        batch.setProjectionMatrix(camera.combined);
-        batch.begin();
-        minion.draw(batch);
-        batch.end();      
-        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 60f));
-        stage.draw();
+            entityManager.update(delta);
         }
-    
-    
+
+        map.render(camera);
+        entityManager.render(batch, shapeRenderer);
+    }
 
     @Override
     public void resize(int width, int height) {
@@ -185,14 +220,18 @@ public class GameScreen implements Screen {
     @Override
     public void resume() {
         Gdx.app.log("GameScreen", "resume() called");
-        soundManager.resume();
+        if (bgMusic != null && !isMuted) {
+            bgMusic.play();
+        }
         isPaused = false;
         }
 
     @Override
     public void pause() {
         Gdx.app.log("GameScreen", "pause() called");
-        soundManager.pause();
+        if (bgMusic != null) {
+            bgMusic.pause();
+        }
         isPaused = true;
     }
     
@@ -206,11 +245,12 @@ public class GameScreen implements Screen {
         minion.dispose(); 
         batch.dispose();
         stage.dispose();
-        soundManager.dispose();
+        bgMusic.dispose();
         map.dispose();
         debugRenderer.dispose ();
         volumeOnTexture.dispose();
         volumeOffTexture.dispose();
-	        }
-	    }
+        shapeRenderer.dispose();
+        }
+    }
 	

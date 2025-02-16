@@ -39,8 +39,8 @@ public class DebugRenderer {
         Rectangle minionBounds = new Rectangle(
             minion.getPosition().x, 
             minion.getPosition().y, 
-            minion.getWidth(), 
-            minion.getHeight()
+            minion.getX(), 
+            minion.getY()
         );
         renderCollisionAreas(camera, map.getBlockedAreas(), minionBounds);
     }

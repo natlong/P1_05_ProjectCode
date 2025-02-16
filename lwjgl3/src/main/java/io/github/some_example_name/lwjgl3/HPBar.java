@@ -6,13 +6,13 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 
 public class HPBar {
-	private Rectangle bounds;
-	private float currentHP;
-	private float maxHP;
-	private ShapeRenderer shapeRenderer;
-	
-	public HPBar(float x, float y, float width, float height, float maxHP) {
-		this.bounds = new Rectangle(x, y, width, height);
+    private Rectangle bounds;
+    private float currentHP;
+    private float maxHP;
+    private ShapeRenderer shapeRenderer;
+
+    public HPBar(float x, float y, float width, float height, float maxHP) {
+        this.bounds = new Rectangle(x, y, width, height);
         this.currentHP = maxHP;
         this.maxHP = maxHP;
         this.shapeRenderer = new ShapeRenderer();
@@ -53,7 +53,4 @@ public class HPBar {
     public void dispose() {
         shapeRenderer.dispose();
     }
-
-	
-
 }
