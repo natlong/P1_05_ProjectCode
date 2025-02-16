@@ -63,7 +63,9 @@ public class GameScreen implements Screen {
         stage = new Stage(viewport, batch);
         Gdx.input.setInputProcessor(stage);
         
-        entityManager = new EntityManager();
+        map = new Map("level.tmx");
+        
+        entityManager = new EntityManager(map, camera);
         shapeRenderer = new ShapeRenderer();
         handleInput();
         initiateMusic();
@@ -186,18 +188,18 @@ public class GameScreen implements Screen {
     @Override
     public void show() {
         Gdx.app.log("GameScreen", "show() called");
-        map = new Map("level.tmx");
+        //map = new Map("level.tmx");
         createButtons();
         
         if (entityManager == null) {
-            entityManager = new EntityManager();
+            entityManager = new EntityManager(map, camera);
         }
         
         //minion spawn point
         Rectangle spawnArea = map.getSpawnPoint();
         float spawnX = spawnArea.x + (float)(Math.random() * spawnArea.width);
         float spawnY = spawnArea.y + (float)(Math.random() * spawnArea.height);
-        entityManager.spawnMinion("monster.png", spawnX, spawnY, map, 100f);
+        entityManager.spawnMinion("monster.png", 0.1f, spawnX, spawnY, map, 100f, camera);
     }
 
     @Override
@@ -210,6 +212,7 @@ public class GameScreen implements Screen {
 
         map.render(camera);
         entityManager.render(batch, shapeRenderer);
+        
     }
 
     @Override

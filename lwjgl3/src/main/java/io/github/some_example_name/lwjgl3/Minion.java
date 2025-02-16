@@ -3,6 +3,7 @@ package io.github.some_example_name.lwjgl3;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -32,6 +33,7 @@ public class Minion {
     private ShapeRenderer shapeRenderer;
     private float maxHP;
     private HPBar hpBar;
+    private OrthographicCamera camera;
     
     private int MPhase1 = generateRandomNumber(200, 270);
     private int MPhase2 = generateRandomNumber(520, 570);
@@ -53,7 +55,7 @@ public class Minion {
     private boolean moveP5 = false;
     private boolean moveP6 = false;
 
-      public Minion(String spriteSheetPath, float frameDuration, float startX, float startY, Map map, float maxHP) {
+      public Minion(String spriteSheetPath, float frameDuration, float startX, float startY, Map map, float maxHP, OrthographicCamera  camera) {
           this.map = map;
           this.position = new Vector2(startX, startY);
           this.bounds = new Rectangle(startX, startY, DEFAULT_WIDTH, DEFAULT_HEIGHT);
@@ -61,8 +63,8 @@ public class Minion {
           this.runningAnimation = createAnimation(frameDuration);
           this.shapeRenderer = new ShapeRenderer(); // Initialize
           this.maxHP = maxHP;
-          this.hpBar = new HPBar(startX, startY + DEFAULT_HEIGHT + 5, DEFAULT_WIDTH, 8, maxHP); // Position HP bar above minion
-          
+          this.hpBar = new HPBar(startX, startY + DEFAULT_HEIGHT + 5, DEFAULT_WIDTH, 8, maxHP, camera); // Position HP bar above minion
+          this.camera = camera;
       }
       //this is to animate the character movement
       private Animation<TextureRegion> createAnimation(float frameDuration) {
@@ -115,10 +117,10 @@ public class Minion {
 		//  batch.draw(currentFrame, position.x, position.y, DEFAULT_WIDTH, DEFAULT_HEIGHT);
 		//}
 	
-		public void draw(SpriteBatch batch) {
-		  shapeRenderer.setProjectionMatrix(batch.getProjectionMatrix());
-		  shapeRenderer.begin(ShapeType.Filled); // Or ShapeType.Line for an outline
-		  hpBar.draw(batch);
+		public void draw(ShapeRenderer shapeRenderer) {
+		  shapeRenderer.setProjectionMatrix(camera.combined);
+		  //shapeRenderer.begin(ShapeType.Filled); // Or ShapeType.Line for an outline
+		  
 		
 		  // Calculate triangle vertices (example: equilateral triangle)
 		  float halfWidth = DEFAULT_WIDTH / 2f;
@@ -133,12 +135,14 @@ public class Minion {
 		  shapeRenderer.setColor(Color.BLUE); // Set triangle color
 		  shapeRenderer.triangle(x1, y1, x2, y2, x3, y3);
 		
-		  shapeRenderer.end();
+		  //shapeRenderer.end();
+		  hpBar.draw(shapeRenderer);
 		}
 		
 		public void dispose() {
 		  spriteSheet.dispose();
 		  hpBar.dispose();
+		  shapeRenderer.dispose();
 		}
 		
 		public Vector2 getPosition() {

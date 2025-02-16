@@ -1,7 +1,10 @@
 package io.github.some_example_name.lwjgl3;
 
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Rectangle;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -17,19 +20,23 @@ public class EntityManager {
     private List<Tower> towers;
     private List<Minion> minions;
     private List<Projectile> projectiles;
+    private OrthographicCamera camera;
+    private Map map;
 
-    public EntityManager() {
+    public EntityManager(Map map, OrthographicCamera camera) {
         this.towers = new ArrayList<>();
         this.minions = new ArrayList<>();
         this.projectiles = new ArrayList<>();
+        this.camera = camera;
+        this.map = map;
     }
 
     public void addTower(float x, float y) {
         towers.add(new Tower(x, y));
     }
 
-    public void spawnMinion(String spritePath, float startX, float startY, Map map, float maxHP) {
-        minions.add(new Minion(spritePath, 0.1f, startX, startY, map, maxHP));
+    public void spawnMinion(String spritePath, float frameDuration, float startX, float startY, Map map, float maxHP, OrthographicCamera camera) {
+        minions.add(new Minion(spritePath, frameDuration, startX, startY, map, maxHP, camera));
     }
 
     // Updates all game entities (minions, towers, and projectiles)
@@ -54,13 +61,15 @@ public class EntityManager {
     
     // Renders all game entities on the screen
     public void render(SpriteBatch batch, ShapeRenderer shapeRenderer) {
-        batch.begin();
-        for (Minion minion : minions) {
-            minion.draw(batch);
+        //batch.begin();
+    	
+    	shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+    	for (Minion minion : minions) {
+            minion.draw(shapeRenderer);
         }
-        batch.end();
+    	
+        //batch.end();
 
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         for (Tower tower : towers) {
             tower.draw(shapeRenderer);
         }
