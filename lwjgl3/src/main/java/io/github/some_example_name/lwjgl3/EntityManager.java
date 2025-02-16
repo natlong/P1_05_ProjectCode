@@ -20,6 +20,8 @@ public class EntityManager {
     private List<Tower> towers;
     private List<Minion> minions;
     private List<Projectile> projectiles;
+    private float spawnTimer = 0f;
+    private float spawnInterval = 3f; 
     private OrthographicCamera camera;
     private Map map;
 
@@ -41,6 +43,23 @@ public class EntityManager {
 
     // Updates all game entities (minions, towers, and projectiles)
     public void update(float delta) {
+    	spawnTimer += delta;
+    	
+    	if(spawnTimer>=spawnInterval) {
+    		spawnTimer = 0f;
+    		
+    		if(map!=null) {
+    			Rectangle spawnArea = map.getSpawnPoint();
+        		float spawnX = spawnArea.x + (float)(Math.random() * spawnArea.width);
+        		float spawnY = spawnArea.y + (float)(Math.random() * spawnArea.height);
+        		
+        		minions.add(new Minion("monster.png", 0.1f, spawnX, spawnY, map, 100f, camera));
+    		}else {
+                System.out.println("⚠️ Map is null! Cannot spawn minions.");
+            }
+    		
+    		
+    	}
         for (Minion minion : minions) {
             minion.update(delta);
         }
