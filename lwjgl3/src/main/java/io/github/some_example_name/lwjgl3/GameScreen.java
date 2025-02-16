@@ -64,7 +64,7 @@ public class GameScreen implements Screen {
         Gdx.input.setInputProcessor(stage);
         
         entityManager = new EntityManager();
-        
+        shapeRenderer = new ShapeRenderer();
         handleInput();
         initiateMusic();
     }
