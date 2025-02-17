@@ -15,12 +15,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import java.util.ArrayList;
-import java.util.Collections;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.InputAdapter;
-import java.util.List;
-import java.util.Iterator;
 
 
 public class GameScreen implements Screen {
@@ -196,10 +191,11 @@ public class GameScreen implements Screen {
         }
         
         //minion spawn point
-        Rectangle spawnArea = map.getSpawnPoint();
-        float spawnX = spawnArea.x + (float)(Math.random() * spawnArea.width);
-        float spawnY = spawnArea.y + (float)(Math.random() * spawnArea.height);
-        entityManager.spawnMinion("monster.png", 0.1f, spawnX, spawnY, map, 100f, camera);
+        //Rectangle spawnArea = map.getSpawnPoint();
+        //float spawnX = spawnArea.x + (float)(Math.random() * spawnArea.width);
+        //float spawnY = spawnArea.y + (float)(Math.random() * spawnArea.height);
+        //Vector2 position = new Vector2(spawnX, spawnY);
+        //entityManager.spawnMinion("monster.png", 0.1f, position, map, 100f, camera);
     }
 
     @Override
