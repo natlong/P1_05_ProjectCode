@@ -2,7 +2,7 @@ package io.github.some_example_name.lwjgl3;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+//import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 
@@ -24,16 +24,10 @@ public class HPBar {
     public void setPosition(float x, float y) {
         bounds.setPosition(x, y);
     }
-
-    public void takeDamage(float damage) {
-        currentHP -= damage;
-        if (currentHP < 0) {
-            currentHP = 0; // Don't let HP go negative
-        }
-    }
-
-    public boolean isDead() {
-        return currentHP <= 0;
+    
+    public void updateHealth(float hp, float maxHP) {
+        this.currentHP = hp;
+        this.maxHP = maxHP;
     }
 
     public void draw(ShapeRenderer shapeRenderer) {

@@ -36,12 +36,8 @@ public class DebugRenderer {
         if (!isEnabled) return;
 
         // Create minion bounds inside the method
-        Rectangle minionBounds = new Rectangle(
-            minion.getPosition().x, 
-            minion.getPosition().y, 
-            minion.getX(), 
-            minion.getY()
-        );
+        Rectangle minionBounds = minion.getBounds();
+        
         renderCollisionAreas(camera, map.getBlockedAreas(), minionBounds);
     }
     

@@ -186,13 +186,26 @@ public class Minion extends AbstractMovableObject{
 		}
 		
 		public void takeDamage(float damage) {
-		  hpBar.takeDamage(damage);
+		  float newHp = this.getHp() - damage;
+		  if (newHp < 0) {
+			  newHp = 0;
+		  }
+		  
+		  this.setHp(newHp);
+		  hpBar.updateHealth(this.getHp(), this.getMaxHp());
+		  
 		  if (isDead()) {
 		        System.out.println("Minion is dead!"); }
 		}
 		
+		public Rectangle getBounds() {
+			return this.bounds;
+		}
+		
 		public boolean isDead() {
-		  return hpBar.isDead();
+		  return this.getHp() <= 0;
+		}
+
 		@Override
 		public void movement() {
 			// TODO Auto-generated method stub
