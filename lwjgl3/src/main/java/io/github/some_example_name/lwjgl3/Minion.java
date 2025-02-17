@@ -9,9 +9,10 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class Minion extends AbstractMovableObject{
@@ -20,6 +21,7 @@ public class Minion extends AbstractMovableObject{
     private static int FRAME_ROWS = 1;
     private static int DEFAULT_WIDTH = 32;  //the minion width
     private static int DEFAULT_HEIGHT = 32; //the minion height
+    private float DEFAULT_SPEED = 200;
     private static int MAP_WIDTH = 40; //the tiled map i set 40x30
     private static int MAP_HEIGHT = 30;
     
@@ -32,25 +34,10 @@ public class Minion extends AbstractMovableObject{
     private HPBar hpBar;
     private OrthographicCamera camera;
     
-    private int MPhase1 = 240;	//Minimum 200 to 270,
-    private int MPhase2 = 560;	//Minimum 520 to 570,
-    private int MPhase3 = 400;	//Minimum 390 to 460,
-    private int MPhase4 = 300;	//Minimum 300 to 390,
-    private int MPhase5 = 220;	//Minimum 160 to 250,
-    private int MPhase6 = 250;	//Minimum 240,
-    
-    private int stepsMoveP1 = 0;	//Track how many steps Minion move Right,
-    private int stepsMoveP2 = 0;	//Track how many steps Minion move Down,
-    private int stepsMoveP3 = 0;	//Track how many steps Minion move Right,
-    private int stepsMoveP4 = 0;	//Track how many steps Minion move Up,
-    private int stepsMoveP5 = 0;	//Track how many steps Minion move Right,
-    private int stepsMoveP6 = 0;	//Track how many steps Minion move Up,
-    
-    private boolean moveP2 = false;
-    private boolean moveP3 = false;
-    private boolean moveP4 = false;
-    private boolean moveP5 = false;
-    private boolean moveP6 = false;
+    //Waypoint Configurations,
+    private List<Vector2> waypoints;
+    private int currentWaypointIndex = 0;
+    private Vector2 goal;
 
       public Minion(String spriteSheetPath, float frameDuration, Vector2 position, Map map, float maxHp, OrthographicCamera  camera, float speed) {
           super(position, "Minion", maxHp, maxHp, speed);
@@ -61,6 +48,17 @@ public class Minion extends AbstractMovableObject{
           this.shapeRenderer = new ShapeRenderer(); // Initialize
           this.hpBar = new HPBar(position.x, position.y + DEFAULT_HEIGHT + 5, DEFAULT_WIDTH, 8, maxHp, camera); // Position HP bar above minion
           this.camera = camera;
+          
+          // Define Waypoints,
+          this.waypoints = new ArrayList<>();
+          waypoints.add(new Vector2(308, 790));
+          waypoints.add(new Vector2(306, 140));
+          waypoints.add(new Vector2(788, 140));
+          waypoints.add(new Vector2(788, 500));
+          waypoints.add(new Vector2(1077, 500));
+          waypoints.add(new Vector2(1073, 853));
+          
+          this.goal = waypoints.get(waypoints.size() - 1);
           
       }
       
@@ -85,52 +83,20 @@ public class Minion extends AbstractMovableObject{
       public void update(float delta) {
 	      	hpBar.setPosition(this.getPosition().x, position.y + DEFAULT_HEIGHT + 5);
 	        stateTime += delta;
-	        float speed = this.getSpeed() * delta;
-	        //Vector2 originalPosition = new Vector2(position);
 	        
-	        //float permittedX = position.x;
-	        //float permittedY = position.y;
+	        if (waypoints.isEmpty()) return;
 	        
-	        //Phase 1: Moving Right,
-	        if (!moveP2 && stepsMoveP1 < MPhase1) {
-	            position.x += speed;
-	            stepsMoveP1++;
+	        if (currentWaypointIndex < waypoints.size()) {
+	        	Vector2 targetWaypoint = waypoints.get(currentWaypointIndex);
+	        	Vector2 direction = targetWaypoint.cpy().sub(position).nor();
+	        	position.add(direction.scl(DEFAULT_SPEED * delta));
+	        	
+	        	if (position.dst(targetWaypoint) < 5f) {
+	        		currentWaypointIndex++;
+	        	}
 	        }
 	        
-	        //Phase 2: Moving Down,
-	        if (stepsMoveP1 >= MPhase1 && stepsMoveP2 < MPhase2) {
-	        	moveP2 = true;
-	            position.y -= speed;
-	            stepsMoveP2++;
-	        }
-	        
-	        //Phase 3: Moving Right,
-	        if (stepsMoveP2 >= MPhase2 && stepsMoveP3 < MPhase3) {
-	        	moveP3 = true;
-	            position.x += speed;
-	            stepsMoveP3++;
-	        }
-	        
-	        //Phase 4: Moving Up,
-	        if (stepsMoveP3 >= MPhase3 && stepsMoveP4 < MPhase4) {
-	        	moveP4 = true;
-	            position.y += speed;
-	            stepsMoveP4++;
-	        }
-	        
-	        //Phase 5: Moving Right,
-	        if (stepsMoveP4 >= MPhase4 && stepsMoveP5 < MPhase5) {
-	        	moveP5 = true;
-	            position.x += speed;
-	            stepsMoveP5++;
-	        }
-	        
-	        //Phase 6: Moving Up,
-	        if (stepsMoveP5 >= MPhase5 && stepsMoveP6 < MPhase6) {
-	        	moveP6 = true;
-	            position.y += speed;
-	            stepsMoveP6++;
-	        }
+	        System.out.println("Minion Position: " + position);
 	           
 	        //collision checking
 	        //bounds.setPosition(position.x, position.y);
@@ -140,7 +106,7 @@ public class Minion extends AbstractMovableObject{
 	        //    position.y = permittedY;
 	        //}
 	        
-	        //ScreenBounds(); //character wont walk out of frame
+	        ScreenBounds(); //character wont walk out of frame
 	       
 	    }
 	      
