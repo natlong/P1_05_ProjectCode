@@ -171,14 +171,14 @@ public class GameScreen implements Screen {
 
     // Handles player input for placing towers
     private void handleInput() {
-        Gdx.input.setInputProcessor(new com.badlogic.gdx.InputAdapter() {
+        Gdx.input.setInputProcessor(new InputAdapter() {
             @Override
             public boolean touchDown(int screenX, int screenY, int pointer, int button) {
                 float x = camera.unproject(new com.badlogic.gdx.math.Vector3(screenX, screenY, 0)).x;
                 float y = camera.unproject(new com.badlogic.gdx.math.Vector3(screenX, screenY, 0)).y;
 
                 if (!map.isGreenArea(x, y)) {
-                    entityManager.addTower(x, y);
+                    entityManager.addTower(new Vector2(x, y));
                 }
                 return true;
             }

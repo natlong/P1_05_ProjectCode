@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -33,12 +34,12 @@ public class EntityManager {
         this.map = map;
     }
 
-    public void addTower(float x, float y) {
-        towers.add(new Tower(x, y));
+    public void addTower(Vector2 position) {
+        towers.add(new Tower(new Vector2(position)));
     }
 
-    public void spawnMinion(String spritePath, float frameDuration, float startX, float startY, Map map, float maxHP, OrthographicCamera camera) {
-        minions.add(new Minion(spritePath, frameDuration, startX, startY, map, maxHP, camera));
+    public void spawnMinion(String spritePath, float frameDuration, Vector2 position, Map map, float maxHP, OrthographicCamera camera) {
+        minions.add(new Minion(spritePath, frameDuration, position, map, maxHP, camera, 200f));
     }
 
     // Updates all game entities (minions, towers, and projectiles)
@@ -52,8 +53,9 @@ public class EntityManager {
     			Rectangle spawnArea = map.getSpawnPoint();
         		float spawnX = spawnArea.x + (float)(Math.random() * spawnArea.width);
         		float spawnY = spawnArea.y + (float)(Math.random() * spawnArea.height);
+        		Vector2 position = new Vector2(spawnX, spawnY);
         		
-        		minions.add(new Minion("monster.png", 0.1f, spawnX, spawnY, map, 100f, camera));
+        		minions.add(new Minion("monster.png", 0.1f, position, map, 100f, camera, 200f));
     		}else {
                 System.out.println("⚠️ Map is null! Cannot spawn minions.");
             }

@@ -4,13 +4,15 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 
 public class Projectile {
-    private Vector2 position;
     private Minion target;
     private float speed = 200f; // Projectile speed (higher = faster)
     private int damage;
+    private float damage;
+	private Vector2 position;
+	private Vector2 direction;
 
-    public Projectile(float x, float y, Minion target, int damage) {
-        this.position = new Vector2(x, y);
+    public Projectile(Vector2 position, Minion target, float damage) {
+        this.position = new Vector2(position);
         this.target = target;
         this.damage = damage;
     }

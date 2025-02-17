@@ -14,24 +14,21 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 
-public class Minion {
+public class Minion extends AbstractMovableObject{
 
     private static int FRAME_COLS = 6;
     private static int FRAME_ROWS = 1;
     private static int DEFAULT_WIDTH = 32;  //the minion width
     private static int DEFAULT_HEIGHT = 32; //the minion height
-    private float DEFAULT_SPEED = 200;
     private static int MAP_WIDTH = 40; //the tiled map i set 40x30
     private static int MAP_HEIGHT = 30;
     
     private Map map;
     private Animation<TextureRegion> runningAnimation;
     private float stateTime;
-    private Vector2 position;
     private Texture spriteSheet;
     private Rectangle bounds; //collision boundary
     private ShapeRenderer shapeRenderer;
-    private float maxHP;
     private HPBar hpBar;
     private OrthographicCamera camera;
     
@@ -55,16 +52,16 @@ public class Minion {
     private boolean moveP5 = false;
     private boolean moveP6 = false;
 
-      public Minion(String spriteSheetPath, float frameDuration, float startX, float startY, Map map, float maxHP, OrthographicCamera  camera) {
-          this.map = map;
-          this.position = new Vector2(startX, startY);
-          this.bounds = new Rectangle(startX, startY, DEFAULT_WIDTH, DEFAULT_HEIGHT);
+      public Minion(String spriteSheetPath, float frameDuration, Vector2 position, Map map, float maxHp, OrthographicCamera  camera, float speed) {
+          super(position, "Minion", maxHp, maxHp, speed);
+    	  this.map = map;
+          this.bounds = new Rectangle(position.x, position.y, DEFAULT_WIDTH, DEFAULT_HEIGHT);
           this.spriteSheet = new Texture(spriteSheetPath);
           this.runningAnimation = createAnimation(frameDuration);
           this.shapeRenderer = new ShapeRenderer(); // Initialize
-          this.maxHP = maxHP;
-          this.hpBar = new HPBar(startX, startY + DEFAULT_HEIGHT + 5, DEFAULT_WIDTH, 8, maxHP, camera); // Position HP bar above minion
+          this.hpBar = new HPBar(position.x, position.y + DEFAULT_HEIGHT + 5, DEFAULT_WIDTH, 8, maxHp, camera); // Position HP bar above minion
           this.camera = camera;
+          
       }
       
       //this is to animate the character movement
@@ -86,13 +83,13 @@ public class Minion {
       }
       
       public void update(float delta) {
-	      	hpBar.setPosition(position.x, position.y + DEFAULT_HEIGHT + 5);
+	      	hpBar.setPosition(this.getPosition().x, position.y + DEFAULT_HEIGHT + 5);
 	        stateTime += delta;
-	        float speed = DEFAULT_SPEED * delta;
+	        float speed = this.getSpeed() * delta;
 	        //Vector2 originalPosition = new Vector2(position);
 	        
-	        float permittedX = position.x;
-	        float permittedY = position.y;
+	        //float permittedX = position.x;
+	        //float permittedY = position.y;
 	        
 	        //Phase 1: Moving Right,
 	        if (!moveP2 && stepsMoveP1 < MPhase1) {
@@ -186,18 +183,6 @@ public class Minion {
 		  spriteSheet.dispose();
 		  hpBar.dispose();
 		  shapeRenderer.dispose();
-		}
-		
-		public Vector2 getPosition() {
-		  return position;
-		}
-		
-		public float getX() {
-		    return position.x;
-		}
-
-		public float getY() {
-		    return position.y;
 		}
 		
 		public void takeDamage(float damage) {
