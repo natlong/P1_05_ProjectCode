@@ -6,7 +6,6 @@ import com.badlogic.gdx.math.Vector2;
 public class Projectile {
     private Minion target;
     private float speed = 200f; // Projectile speed (higher = faster)
-    private int damage;
     private float damage;
 	private Vector2 position;
 	private Vector2 direction;
@@ -15,15 +14,14 @@ public class Projectile {
         this.position = new Vector2(position);
         this.target = target;
         this.damage = damage;
+        this.direction = new Vector2(target.getPosition().x - position.x, target.getPosition().y - position.y);
     }
 
     public boolean move(float delta) {
         if (target == null) return true;
 
-        Vector2 direction = new Vector2(target.getX() - position.x, target.getY() - position.y);
-
-        if (direction.len() < 5) {
-            target.takeDamage(10);  //
+        if (position.dst(target.getPosition()) < speed * delta) {
+            target.takeDamage(this.damage);  //
             return true;  //
         }
 
