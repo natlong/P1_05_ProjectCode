@@ -193,5 +193,9 @@ public class Minion extends AbstractMovableObject{
 		
 		public boolean isDead() {
 		  return hpBar.isDead();
+		@Override
+		public void movement() {
+			// TODO Auto-generated method stub
+			
 		}
 	}
