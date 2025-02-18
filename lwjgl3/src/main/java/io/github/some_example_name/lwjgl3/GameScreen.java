@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Container;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
@@ -18,6 +19,15 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.InputAdapter;
+
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.Pixmap;
+
+
 
 
 public class GameScreen implements Screen {
@@ -42,6 +52,17 @@ public class GameScreen implements Screen {
     
     private ShapeRenderer shapeRenderer;
     private EntityManager entityManager;
+    
+    //Text Label,
+    private Label levelLabel;
+    private Label lifeLabel;
+    private Label towerLabel;
+    private Table infoTable;
+    
+    private int currentLevel = 1;
+    private int playerLife = 5;
+    private int maxTowers = 5;
+
 
 
     public GameScreen(GameCore game) {
@@ -98,7 +119,81 @@ public class GameScreen implements Screen {
         
         stage.addActor(pauseButton);
         stage.addActor(settingsButton);
-        }
+        
+        //Display Level Label,
+        Skin skin = new Skin(Gdx.files.internal("skin/lgdxs-ui.json"));
+        levelLabel = new Label("Level " + currentLevel, skin);
+        levelLabel.setColor(Color.WHITE);
+        levelLabel.setFontScale(1.5f);
+        
+        //Position at Top Centre,
+        Table table = new Table();
+        table.top();
+        table.setFillParent(true);
+        table.add(levelLabel).padTop(10).center();
+        
+        stage.addActor(table);
+    }
+    
+    private void createInfoTable() {
+    	Skin skin = new Skin(Gdx.files.internal("skin/lgdxs-ui.json"));
+    	
+    	lifeLabel = new Label("Life: " + playerLife, skin);
+    	towerLabel = new Label("Towers: " + maxTowers, skin);
+    	
+    	//Creating Table to Store Player Life and Tower Limit,
+    	infoTable = new Table();
+    	infoTable.bottom().right();
+    	
+    	//Add Labels to Table,
+    	infoTable.add(lifeLabel).pad(10).right();
+    	infoTable.row();
+    	infoTable.add(towerLabel).pad(10).right();
+    	
+    	//Container for Storing Variable,
+    	Container<Table> container = new Container<>(infoTable);
+        container.setSize(200, 100);
+        container.setPosition(Gdx.graphics.getWidth() - container.getWidth() - 10, 10);
+
+        //Setting Color and Transparency for Table,
+        Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888); //Creating a 1 by 1 Pixmap,
+        pixmap.setColor(new Color(0.5f, 0.5f, 0.5f, 0.5f)); //Grey + Semi-Transparent,
+        pixmap.fill();
+ 
+        //Creating Texture from Pixmap,
+        Texture greyTexture = new Texture(pixmap);
+        pixmap.dispose();
+        TextureRegionDrawable greyDrawable = new TextureRegionDrawable(new TextureRegion(greyTexture));
+        
+        container.background(greyDrawable);
+    	stage.addActor(container);
+    }
+    
+    //Dynamically Set Levels {Future Use},
+    public void setLevel() {
+    	currentLevel++;
+    	levelLabel.setText("Level " + currentLevel);
+    }
+    
+    //Dynamically Update Player Life and Tower Limit Label,
+    private void updateInfoLabels() {
+        lifeLabel.setText("Life: " + playerLife);
+        towerLabel.setText("Towers: " + maxTowers);
+
+        infoTable.layout();
+    }
+    
+    //Dynamically Update Player Life Label {Future Use},
+    private void updatePlayerLife(int x) {
+        playerLife = x;
+        updateInfoLabels();
+    }
+
+    //Dynamically Update Tower Limit Label {Future Use},
+    private void updateMaxTowers(int x) {
+        maxTowers = x;
+        updateInfoLabels();
+    }
 
         
     private void pauseButtonListener() {
@@ -173,6 +268,7 @@ public class GameScreen implements Screen {
         Gdx.app.log("GameScreen", "show() called");
         //map = new Map("level.tmx");
         createButtons();
+        createInfoTable();
         
         if (entityManager == null) {
             entityManager = new EntityManager(map, camera);
@@ -209,8 +305,13 @@ public class GameScreen implements Screen {
 //        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 60f));
 //        stage.draw();
 
+        
         map.render(camera);
         entityManager.render(batch, shapeRenderer);
+
+        //Update and Rendering Stage,
+        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1/60f));
+        stage.draw();
         
     }
 
