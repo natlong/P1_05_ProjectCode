@@ -2,6 +2,7 @@ package io.github.some_example_name.lwjgl3;
 
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -141,17 +142,27 @@ public class GameScreen implements Screen {
         stage.addActor(gameoverScreen);}
     }
 
-    // Handles player input for placing towers
+    //Player Input for Tower,
     private void handleInput() {
         Gdx.input.setInputProcessor(new InputAdapter() {
+        	
             @Override
             public boolean touchDown(int screenX, int screenY, int pointer, int button) {
                 float x = camera.unproject(new com.badlogic.gdx.math.Vector3(screenX, screenY, 0)).x;
                 float y = camera.unproject(new com.badlogic.gdx.math.Vector3(screenX, screenY, 0)).y;
 
-                if (!map.isGreenArea(x, y)) {
-                    entityManager.addTower(new Vector2(x, y));
+                //Left-Click to Place Tower,
+                if (button == Input.Buttons.LEFT) {
+                    if (!map.isGreenArea(x, y)) {
+                        entityManager.addTower(new Vector2(x, y));
+                    }
                 }
+                
+                //Right-Click to Remove Tower,
+                if (button == Input.Buttons.RIGHT) {
+                    entityManager.removeTower(new Vector2(x, y));
+                }
+
                 return true;
             }
         });

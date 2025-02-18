@@ -98,6 +98,22 @@ public class EntityManager {
         }
     }
     
+    //Remove Existing Tower,
+    public void removeTower(Vector2 position) {
+        Iterator<Tower> iterator = towers.iterator();
+        
+        while (iterator.hasNext()) {
+            Tower tower = iterator.next();
+            
+            //Check if there is a Tower near User Mouse,
+            if (tower.getPosition().dst(position) < 15) {  //Radius of Mouse,
+                iterator.remove(); 
+                return; //Break after Deleting,
+            }
+        }
+    }
+
+    
     public void render(SpriteBatch batch, ShapeRenderer shapeRenderer) {
         //Enable Blending for Transparent Tower Range,
         Gdx.gl.glEnable(GL20.GL_BLEND);
