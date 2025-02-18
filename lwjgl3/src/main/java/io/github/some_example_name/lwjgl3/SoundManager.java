@@ -5,7 +5,9 @@ import com.badlogic.gdx.audio.Music;
 
 
 public class SoundManager {
-	private Music bgMusic;
+	private Music gameMusic;
+	private Music menuMusic;
+	private Music currentMusic;
     private boolean isMuted;
     
     public SoundManager() {
@@ -13,13 +15,56 @@ public class SoundManager {
     }
 
 private void initiateMusic() {
-    // bgMusic = Gdx.audio.newMusic(Gdx.files.internal("BgMusic/guinea_gavin.mp3"));
-    // bgMusic = Gdx.audio.newMusic(Gdx.files.internal("BgMusic/garage_climber.mp3"));
-       bgMusic = Gdx.audio.newMusic(Gdx.files.internal("BgMusic/mathematics.mp3"));
-    //	bgMusic = Gdx.audio.newMusic(Gdx.files.internal("BgMusic/burn.mp3"));	      
-       bgMusic.setLooping(true);
-       bgMusic.play();
+	
+	menuMusic = Gdx.audio.newMusic(Gdx.files.internal("gameMusic/mathematics.mp3"));
+	menuMusic.setLooping(true);
+	 gameMusic = Gdx.audio.newMusic(Gdx.files.internal("gameMusic/guinea_gavin.mp3"));
+	 gameMusic.setLooping(true);
+	  
+    // gameMusic = Gdx.audio.newMusic(Gdx.files.internal("gameMusic/guinea_gavin.mp3"));
+	// gameMusic = Gdx.audio.newMusic(Gdx.files.internal("gameMusic/garage_climber.mp3"));
+    //gameMusic = Gdx.audio.newMusic(Gdx.files.internal("gameMusic/burn.mp3"));	      
 }
+
+public void playMenuMusic(){
+    stopCurrentMusic();
+    currentMusic = menuMusic;
+    startCurrentMusic();
+}
+
+
+public void playGameMusic() {
+	stopCurrentMusic();
+    currentMusic = gameMusic;
+    startCurrentMusic();
+}
+
+
+
+private void startCurrentMusic() {
+    if (currentMusic != null && !isMuted) {
+        currentMusic.play();
+        currentMusic.setVolume(1f);
+    }
+}
+
+private void stopCurrentMusic() {
+    if (currentMusic != null) {
+        currentMusic.stop();
+    }
+}
+
+public void restartCurrentMusic() {
+    if (currentMusic != null) {
+        currentMusic.stop();
+        if (!isMuted) {
+            currentMusic.play();
+            currentMusic.setVolume(1f);
+        }
+    }
+}
+
+
 
 public boolean isMuted() {
     return isMuted;
@@ -27,28 +72,35 @@ public boolean isMuted() {
 
 public void toggleSound() {
     isMuted = !isMuted;
-    if (isMuted) {
-        bgMusic.setVolume(0f);
-    } else {
-        bgMusic.setVolume(1f);
+    if (currentMusic != null) {
+        if (isMuted) {
+            currentMusic.setVolume(0f);
+            currentMusic.pause();
+        } else {
+            currentMusic.setVolume(1f);
+            currentMusic.play();
+        }
     }
-   }
+}
 
 public void resume() {
-	if (bgMusic != null && !isMuted) {
-        bgMusic.play();
+	if (currentMusic != null && !isMuted) {
+		currentMusic.play();
     }
    }
 
 public void pause() {
-    if (bgMusic != null) {
-        bgMusic.pause();
+    if (currentMusic!= null) {
+    	currentMusic.pause();
     }
    }
 
 public void dispose() {
-    if (bgMusic != null) {
-        bgMusic.dispose();
+    if (gameMusic != null) {
+        gameMusic.dispose();
+    }
+    if (menuMusic != null) {
+        menuMusic.dispose();
     }
 }
 

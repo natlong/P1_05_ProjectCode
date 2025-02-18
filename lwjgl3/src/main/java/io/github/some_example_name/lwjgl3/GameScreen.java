@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -33,11 +34,10 @@ public class GameScreen implements Screen {
     private Map map;
     private ImageButton pauseButton;
     private ImageButton settingsButton;
-    private ImageButton volumeButton;
-    private Texture volumeOnTexture;
-    private Texture volumeOffTexture;
     private Minion minion;
-    private Music bgMusic;
+    private SoundManager soundManager; 
+    private OptionsScreen optionsScreen;
+    private GameoverScreen gameoverScreen;
     
     private ShapeRenderer shapeRenderer;
     private EntityManager entityManager;
@@ -63,56 +63,40 @@ public class GameScreen implements Screen {
         entityManager = new EntityManager(map, camera);
         shapeRenderer = new ShapeRenderer();
         handleInput();
-        initiateMusic();
+        soundManager = new SoundManager();
+        soundManager.playGameMusic();
     }
-	    
-    private void initiateMusic() {
-	      	bgMusic = Gdx.audio.newMusic(Gdx.files.internal("BgMusic/guinea_gavin.mp3"));
-	      	bgMusic = Gdx.audio.newMusic(Gdx.files.internal("BgMusic/garage_climber.mp3"));
-	        bgMusic = Gdx.audio.newMusic(Gdx.files.internal("BgMusic/mathematics.mp3"));
-	        bgMusic = Gdx.audio.newMusic(Gdx.files.internal("BgMusic/burn.mp3"));	      
-	        bgMusic.setLooping(true);
-	        bgMusic.play();
-    }
-      
    
 	    
     private void createButtons() {
         // Load the pause button texture
         Texture pauseTexture = new Texture(Gdx.files.internal("pause.png"));
         Texture settingsTexture = new Texture(Gdx.files.internal("settings.png"));
-        volumeOnTexture = new Texture(Gdx.files.internal("soundon.png"));
-        volumeOffTexture = new Texture(Gdx.files.internal("soundoff.png"));
+
         
         TextureRegionDrawable pauseDrawable = new TextureRegionDrawable(pauseTexture);
         TextureRegionDrawable settingsDrawable = new TextureRegionDrawable(settingsTexture);
-        TextureRegionDrawable volumeOnDrawable = new TextureRegionDrawable(volumeOnTexture);
         
 
         //create buttons
         pauseButton = new ImageButton(pauseDrawable);
         settingsButton = new ImageButton(settingsDrawable);
-        volumeButton = new ImageButton(volumeOnDrawable);
         
         //button size
         pauseButton.setSize(BUTTON_SIZE, BUTTON_SIZE);
         settingsButton.setSize(BUTTON_SIZE, BUTTON_SIZE);
-        volumeButton.setSize(BUTTON_SIZE, BUTTON_SIZE);
         
         //button position, top down arrangement
-        float topY = viewport.getWorldHeight() - BUTTON_MARGIN;
-        float rightX = viewport.getWorldWidth() - BUTTON_MARGIN;
+        float topY = viewport.getWorldHeight()-60;
+        float rightX = viewport.getWorldWidth() - 5;
         pauseButton.setPosition(rightX - BUTTON_SIZE, topY);
-        volumeButton.setPosition(rightX - BUTTON_SIZE, topY - BUTTON_SIZE - BUTTON_SPACING);
-        settingsButton.setPosition(rightX - BUTTON_SIZE, topY - (2 * BUTTON_SIZE) - (2 * BUTTON_SPACING));
+        settingsButton.setPosition(rightX - BUTTON_SIZE, topY - BUTTON_SIZE);
         
         pauseButtonListener();
         settingsButtonListener();
-        volumeButtonListener();
         
         stage.addActor(pauseButton);
         stage.addActor(settingsButton);
-        stage.addActor(volumeButton);
         }
 
         
@@ -139,29 +123,22 @@ public class GameScreen implements Screen {
         }
     });
 }
-    private void volumeButtonListener() {
-    	volumeButton.addListener(new com.badlogic.gdx.scenes.scene2d.InputListener() {
-            @Override
-            public boolean touchDown(com.badlogic.gdx.scenes.scene2d.InputEvent event, float x, float y, int pointer, int button) {
-                toggleVolume();
-                return true;
-            }
-        });
-    }  
 
     private void openSettings() {
         Gdx.app.log("GameScreen", "Settings button clicked");
+        if (optionsScreen != null) {
+            optionsScreen.dispose();
+        }
+        Skin skin = new Skin(Gdx.files.internal("skin/lgdxs-ui.json"));
+        optionsScreen = new OptionsScreen(skin, stage, soundManager);
+        stage.addActor(optionsScreen);
     }
     
-    private void toggleVolume() {
-        isMuted = !isMuted;
-        if (isMuted) {
-            bgMusic.setVolume(0f);
-            volumeButton.getStyle().imageUp = new TextureRegionDrawable(volumeOffTexture);
-        } else {
-            bgMusic.setVolume(1f);
-            volumeButton.getStyle().imageUp = new TextureRegionDrawable(volumeOnTexture);
-        }
+    private void showGameOver() {
+    	if (gameoverScreen == null){
+    	Skin skin = new Skin(Gdx.files.internal("skin/lgdxs-ui.json"));
+        gameoverScreen = new GameoverScreen(skin, stage, this);
+        stage.addActor(gameoverScreen);}
     }
 
     // Handles player input for placing towers
@@ -205,6 +182,21 @@ public class GameScreen implements Screen {
         if (!isPaused) {
             entityManager.update(delta);
         }
+        // need to integrate chloe code
+//        if (!isPaused) {
+//            minion.update(delta); 
+//            if (minion.hitGameoverArea()) {
+//                showGameOver();
+//                pause();} }
+        
+//        map.render(camera);
+//        debugRenderer.renderDebug(camera, map, minion);
+//        batch.setProjectionMatrix(camera.combined);
+//        batch.begin();
+//        minion.draw(batch);
+//        batch.end();      
+//        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 60f));
+//        stage.draw();
 
         map.render(camera);
         entityManager.render(batch, shapeRenderer);
@@ -219,18 +211,14 @@ public class GameScreen implements Screen {
     @Override
     public void resume() {
         Gdx.app.log("GameScreen", "resume() called");
-        if (bgMusic != null && !isMuted) {
-            bgMusic.play();
-        }
+        soundManager.resume();
         isPaused = false;
         }
 
     @Override
     public void pause() {
         Gdx.app.log("GameScreen", "pause() called");
-        if (bgMusic != null) {
-            bgMusic.pause();
-        }
+        soundManager.pause();
         isPaused = true;
     }
     
@@ -238,17 +226,37 @@ public class GameScreen implements Screen {
     public void hide() {
         Gdx.app.log("GameScreen", "hide() called");
     }
+    
+//    public void resetGame() {
+//	    //reset map
+//	    if (map != null) {
+//	        map.dispose();
+//	        map = new Map("level.tmx");
+//	    }
+//	    
+//	    //reset minion position
+//	    if (minion != null) {
+//	        Rectangle spawnArea = map.getSpawnPoint();
+//	        float spawnX = spawnArea.x + (float)(Math.random() * spawnArea.width);
+//	        float spawnY = spawnArea.y + (float)(Math.random() * spawnArea.height);
+//	        minion.resetPosition(spawnX, spawnY);
+//	        }
+//	    
+//	    if (soundManager != null) {
+//	        soundManager.restartCurrentMusic();
+//	    }
+//	    
+//	    gameoverScreen = null;
+//	    }
 
     @Override
     public void dispose() {
         minion.dispose(); 
         batch.dispose();
         stage.dispose();
-        bgMusic.dispose();
         map.dispose();
         debugRenderer.dispose ();
-        volumeOnTexture.dispose();
-        volumeOffTexture.dispose();
+        soundManager.dispose();
         shapeRenderer.dispose();
         }
     }

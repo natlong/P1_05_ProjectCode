@@ -6,8 +6,8 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -20,22 +20,29 @@ public class MainMenuScreen implements Screen {
 	private static int BUTTON_WIDTH = 200;
 	private static int BUTTON_HEIGHT = 50;
 	private static int BUTTON_PAD = 10;
+	
     private Stage stage;
     private Texture backgroundTexture;
     private Skin skin;
     private GameCore game;
+    private SoundManager soundManager;
+    private TextButton playButton;
+    private TextButton optionsButton;
+    private TextButton exitButton;
+    private OptionsScreen optionsScreen;
 
     
     public MainMenuScreen(GameCore game) {
     	this.game = game;
         stage = new Stage(new FitViewport(GameCore.VIEWPORT_WIDTH, GameCore.VIEWPORT_HEIGHT));
         Gdx.input.setInputProcessor(stage);
-
         //for Menu background
         backgroundTexture = new Texture(Gdx.files.internal("skin/background.jpg"));
         // for UI Skin
         skin = new Skin(Gdx.files.internal("skin/lgdxs-ui.json"));
-        
+        soundManager = new SoundManager();
+        soundManager.playMenuMusic();
+
         initiateGameUI();
     }
     
@@ -45,9 +52,9 @@ public class MainMenuScreen implements Screen {
         stage.addActor(background);
         
         //menu Buttons + UI skins
-        TextButton playButton = new TextButton("Play", skin);
-        TextButton optionsButton = new TextButton("Options", skin);
-        TextButton exitButton = new TextButton("Exit", skin);
+         playButton = new TextButton("Play", skin);
+         optionsButton = new TextButton("Options", skin);
+         exitButton = new TextButton("Exit", skin);
         
         //create table for auto layout of the buttons
         Table table = new Table();
@@ -60,31 +67,46 @@ public class MainMenuScreen implements Screen {
         table.add(exitButton).width(BUTTON_WIDTH).height(BUTTON_HEIGHT).pad(BUTTON_PAD);
         stage.addActor(table);
         
-        //button listeners
-        playButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-            	Gdx.app.log("MainMenu", "Start Button Clicked");
-                game.setScreen(new GameScreen(game));
-	            }
-	        });
+        playButtonListener();
+        optionsButtonListener();
+        exitButtonListener();
 
-        optionsButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.log("MainMenu", "Options Button Clicked");
-
+    }
+    
+    //button listeners
+    private void playButtonListener() {
+    playButton.addListener(new ClickListener() {
+        @Override
+        public void clicked(InputEvent event, float x, float y) {
+        	Gdx.app.log("MainMenu", "Start Button Clicked");
+        	soundManager.pause();
+            game.setScreen(new GameScreen(game));
             }
         });
+    }
 
-        exitButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-            	Gdx.app.log("MainMenu", "Exit Button Clicked");
-                Gdx.app.exit();
+    private void optionsButtonListener() {
+    optionsButton.addListener(new ClickListener() {
+        @Override
+        public void clicked(InputEvent event, float x, float y) {
+            Gdx.app.log("MainMenu", "Options Button Clicked");
+            if (optionsScreen != null) {
+                optionsScreen.dispose();
             }
-        });
-    	
+            optionsScreen = new OptionsScreen(skin, stage, soundManager);
+            stage.addActor(optionsScreen);
+        }
+    });
+    }
+    
+    private void exitButtonListener() {
+    exitButton.addListener(new ClickListener() {
+        @Override
+        public void clicked(InputEvent event, float x, float y) {
+        	Gdx.app.log("MainMenu", "Exit Button Clicked");
+            Gdx.app.exit();
+        }
+    });
     }
 
     @Override
@@ -104,11 +126,16 @@ public class MainMenuScreen implements Screen {
         stage.dispose();
         backgroundTexture.dispose();
         skin.dispose();
-        
+        soundManager.dispose();
+
     }
 
-    @Override public void show() {}
-    @Override public void hide() {}
-    @Override public void pause() {}
-    @Override public void resume() {}
+    @Override public void show(){}
+    @Override public void hide(){}
+    @Override public void pause(){}
+    
+    @Override 
+    public void resume() {
+    	soundManager.resume();
+    	}
 }

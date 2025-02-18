@@ -71,11 +71,27 @@ public class EntityManager {
             tower.shoot(projectiles, minions, delta);
         }
 
-        // Move projectiles and remove any that reach the minion
+     // Move projectiles and remove any that reach the minion or go off-screen.
         Iterator<Projectile> iterator = projectiles.iterator();
         while (iterator.hasNext()) {
-            if (iterator.next().move(delta)) {
+            Projectile projectile = iterator.next();
+            projectile.movement();
+            Vector2 pos = projectile.getPosition();
+            if (pos.x < 0 || pos.x > GameCore.VIEWPORT_WIDTH || pos.y < 0 || pos.y > GameCore.VIEWPORT_HEIGHT) {
                 iterator.remove();
+            }
+        }
+        
+        // Handle projectile-minion collisions.
+        CollisionManager.projectileMinionCollision(projectiles, minions);
+        
+        // Remove dead minions.
+        Iterator<Minion> minionIterator = minions.iterator();
+        while (minionIterator.hasNext()) {
+            Minion minion = minionIterator.next();
+            if (minion.isDead()) {
+                minion.dispose();
+                minionIterator.remove();
             }
         }
     }

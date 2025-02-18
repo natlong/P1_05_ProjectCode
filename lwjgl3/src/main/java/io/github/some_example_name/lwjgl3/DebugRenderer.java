@@ -15,7 +15,9 @@ public class DebugRenderer {
         shapeRenderer = new ShapeRenderer();
     }
     
-    public void renderCollisionAreas(OrthographicCamera camera, List<Rectangle> blockedAreas, Rectangle entityBounds) {
+    public void renderCollisionAreas(OrthographicCamera camera, List<Rectangle> blockedAreas, 
+            Rectangle minionBounds, Rectangle spawnArea, 
+            List<Rectangle> walkingPath, Rectangle gameoverArea)  {
         shapeRenderer.setProjectionMatrix(camera.combined);
         shapeRenderer.begin(ShapeType.Line);
         
@@ -25,20 +27,49 @@ public class DebugRenderer {
             shapeRenderer.rect(blockedArea.x, blockedArea.y, blockedArea.width, blockedArea.height);
         }
         
-        // Draw entity bounds in green
+        // Draw minion bounds in green
         shapeRenderer.setColor(Color.GREEN);
-        shapeRenderer.rect(entityBounds.x, entityBounds.y, entityBounds.width, entityBounds.height);
+        shapeRenderer.rect(minionBounds.x, minionBounds.y, minionBounds.width, minionBounds.height);
+        
+        // Draw spawn area in blue
+        shapeRenderer.setColor(Color.BLACK);
+        if (spawnArea != null) {
+            shapeRenderer.rect(spawnArea.x, spawnArea.y, spawnArea.width, spawnArea.height);
+        }
+        
+        // Draw walking path in yellow
+        shapeRenderer.setColor(Color.YELLOW);
+        for (Rectangle pathArea : walkingPath) {
+            shapeRenderer.rect(pathArea.x, pathArea.y, pathArea.width, pathArea.height);
+        }
+        
+        // Draw game over area in purple
+        shapeRenderer.setColor(Color.PURPLE);
+        if (gameoverArea != null) {
+            shapeRenderer.rect(gameoverArea.x, gameoverArea.y, gameoverArea.width, gameoverArea.height);
+        }
         
         shapeRenderer.end();
+
     }
     
     public void renderDebug(OrthographicCamera camera, Map map, Minion minion) {
         if (!isEnabled) return;
 
         // Create minion bounds inside the method
-        Rectangle minionBounds = minion.getBounds();
-        
-        renderCollisionAreas(camera, map.getBlockedAreas(), minionBounds);
+        Rectangle minionBounds = new Rectangle(
+            minion.getPosition().x, 
+            minion.getPosition().y, 
+            minion.getWidth(), 
+            minion.getHeight()
+        );
+        renderCollisionAreas(camera, 
+                map.getBlockedAreas(), 
+                minionBounds,
+                map.getSpawnPoint(),
+                map.getWalkingPath(),
+                map.getGameoverPoint()
+            );
     }
     
         public void setEnabled(boolean enabled) {
