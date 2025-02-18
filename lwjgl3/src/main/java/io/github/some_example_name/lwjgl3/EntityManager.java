@@ -9,6 +9,8 @@ import com.badlogic.gdx.math.Vector2;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.Gdx;
 
 /**
  * EntityManager is responsible for managing and updating all game entities as per our UML diagram:
@@ -96,24 +98,32 @@ public class EntityManager {
         }
     }
     
-    // Renders all game entities on the screen
     public void render(SpriteBatch batch, ShapeRenderer shapeRenderer) {
-        //batch.begin();
-    	
-    	shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-    	for (Minion minion : minions) {
+        //Enable Blending for Transparent Tower Range,
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        
+        //Render Minion Entity,
+        for (Minion minion : minions) {
             minion.draw(shapeRenderer);
         }
-    	
-        //batch.end();
 
-        for (Tower tower : towers) {
-            tower.draw(shapeRenderer);
-        }
+        //Render Tower Projectile Entity,
         for (Projectile projectile : projectiles) {
             projectile.draw(shapeRenderer);
         }
+        
         shapeRenderer.end();
+
+        //Render Tower Entity (Must be Outside of ShapeRenderer for Blending),
+        for (Tower tower : towers) {
+            tower.draw(shapeRenderer);
+        }
+
+        //Disable Blending to Prevent Issue,
+        Gdx.gl.glDisable(GL20.GL_BLEND);
     }
 
     public void dispose() {

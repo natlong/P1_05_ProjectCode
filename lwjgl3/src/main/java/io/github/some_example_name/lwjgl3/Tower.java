@@ -42,7 +42,19 @@ public class Tower extends AbstractStaticObject{
     }
 
     public void draw(ShapeRenderer shapeRenderer) {
-        shapeRenderer.setColor(0, 0, 1, 1); // Blue color for tower
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+
+        //Draw Tower,
+        shapeRenderer.setColor(0, 0, 1, 1); //Blue color for tower
         shapeRenderer.rect(this.position.x - 15, this.position.y - 15, 30, 30);
+
+        //Draw Range for Tower,
+        shapeRenderer.setColor(1, 1, 1, 0.2f); //White color with low transparency
+        shapeRenderer.circle(this.position.x, this.position.y, this.getRange());
+
+        shapeRenderer.end();
     }
+
+
+
 }
