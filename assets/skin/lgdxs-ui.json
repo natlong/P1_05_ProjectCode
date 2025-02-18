@@ -18,15 +18,21 @@
       "a": 1
     },
     "color": {
-      "r": 0.21176471,
-      "g": 0.5254902,
-      "b": 1,
+      "r": 0,
+      "g": 0.47,
+      "b": 1.67,
       "a": 1
     },
     "color-pressed": {
       "r": 0.03529412,
       "g": 0.28235295,
       "b": 0.92156863,
+      "a": 1
+    },
+    "window-color": {
+      "r": 0.6335294,
+      "g": 0.627451,
+      "b": 1,
       "a": 1
     }
   },
@@ -38,7 +44,12 @@
     "button-c-p": {
       "name": "button",
       "color": "color-pressed"
-    }
+    },
+    "window-bg": {
+    "name": "button",
+    "color": "window-color"
+  }
+
   },
   "com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle": {
     "default": {
@@ -47,6 +58,19 @@
       "up": "button-c",
       "down": "button-c-p",
       "disabled": "button-disabled"
+    }
+  },
+  "com.badlogic.gdx.scenes.scene2d.ui.Window$WindowStyle": {
+    "default": {
+      "titleFont": "font",
+      "background": "window-bg",
+      "titleFontColor": "white"
+    }
+  },
+  "com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle": {
+    "default": {
+      "font": "font",
+      "fontColor": "white"
     }
   }
 }
