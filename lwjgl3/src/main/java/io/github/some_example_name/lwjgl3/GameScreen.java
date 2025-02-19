@@ -10,11 +10,9 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Container;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.gdx.audio.Music;
@@ -58,15 +56,13 @@ public class GameScreen implements Screen {
     //Text Label,
     private Label levelLabel;
     private Label lifeLabel;
-    private Label coinLabel;
+    private Label towerLabel;
     private Table infoTable;
     
     private int currentLevel = 1;
     private int playerLife = 5;
-    private int playerCoin = 300;
-    
-    private Array<Image> heartImage;
-    private Texture heartTexture;
+    private int maxTowers = 5;
+
 
 
     public GameScreen(GameCore game) {
@@ -91,8 +87,6 @@ public class GameScreen implements Screen {
         handleInput();
         soundManager = new SoundManager();
         soundManager.playGameMusic();
-        
-
     }
    
 	    
@@ -143,47 +137,22 @@ public class GameScreen implements Screen {
     
     private void createInfoTable() {
     	Skin skin = new Skin(Gdx.files.internal("skin/lgdxs-ui.json"));
-    	heartTexture = new Texture(Gdx.files.internal("heart.png"));
     	
-    	heartImage = new Array<>();
+    	lifeLabel = new Label("Life: " + playerLife, skin);
+    	towerLabel = new Label("Towers: " + maxTowers, skin);
     	
-    	//Creating Table for Player Life,
-    	Table heartTable = new Table();
-    	heartTable.pad(10);
-    	
-    	//Add Spacing between Heart Image,
-    	float heartContainer = 200;
-    	float heartSpacing = (heartContainer - (playerLife * 50)) / (playerLife - 1);
-    	
-    	//Displaying Heart Image,
-    	for (int i = 0; i < playerLife; i++) {
-            Image heart = new Image(new TextureRegionDrawable(new TextureRegion(heartTexture)));
-            heart.setSize(50, 50);
-            heartImage.add(heart);
-            
-            if (i > 0) { 
-                heartTable.add().width(heartSpacing);
-            }
-
-            heartTable.add(heart).width(50).height(50);
-        }
-    	
-    	//Add Labels to Table,
-    	coinLabel = new Label("Coins: " + playerCoin, skin);
-    	
-    	//Creating Table for Coin Label,
-    	Table coinTable = new Table();
-    	coinTable.add(coinLabel).pad(10).padLeft(30).left();
-    	
-    	//Adding Heart Image and Coin Container together,
+    	//Creating Table to Store Player Life and Tower Limit,
     	infoTable = new Table();
     	infoTable.bottom().right();
-    	infoTable.add(heartTable).row();
-    	infoTable.add(coinTable).expandX().left();
+    	
+    	//Add Labels to Table,
+    	infoTable.add(lifeLabel).pad(10).right();
+    	infoTable.row();
+    	infoTable.add(towerLabel).pad(10).right();
     	
     	//Container for Storing Variable,
     	Container<Table> container = new Container<>(infoTable);
-        container.setSize(250, 100);
+        container.setSize(200, 100);
         container.setPosition(Gdx.graphics.getWidth() - container.getWidth() - 10, 10);
 
         //Setting Color and Transparency for Table,
@@ -194,8 +163,9 @@ public class GameScreen implements Screen {
         //Creating Texture from Pixmap,
         Texture greyTexture = new Texture(pixmap);
         pixmap.dispose();
-        container.background(new TextureRegionDrawable(new TextureRegion(greyTexture)));
-
+        TextureRegionDrawable greyDrawable = new TextureRegionDrawable(new TextureRegion(greyTexture));
+        
+        container.background(greyDrawable);
     	stage.addActor(container);
     }
     
@@ -207,44 +177,21 @@ public class GameScreen implements Screen {
     
     //Dynamically Update Player Life and Tower Limit Label,
     private void updateInfoLabels() {
-    	for (Image heart : heartImage) {
-            heart.remove();
-        }
-    	
-        heartImage.clear();
-        
-        Table heartTable = new Table();
-        float heartContainerWidth = 200;
-        float heartSpacing = (heartContainerWidth - (playerLife * 50)) / (playerLife - 1);
-
-        for (int i = 0; i < playerLife; i++) {
-            Image heart = new Image(new TextureRegionDrawable(new TextureRegion(heartTexture)));
-            heart.setSize(50, 50);
-            heartImage.add(heart);
-            
-            if (i > 0) {
-                heartTable.add().width(heartSpacing);
-            }
-
-            heartTable.add(heart).width(50).height(50);
-        }
-
-        infoTable.clearChildren();
-        infoTable.add(heartTable).row();
-        infoTable.add(coinLabel).pad(10).right();
+        lifeLabel.setText("Life: " + playerLife);
+        towerLabel.setText("Towers: " + maxTowers);
 
         infoTable.layout();
     }
     
     //Dynamically Update Player Life Label {Future Use},
     private void updatePlayerLife(int x) {
-    	playerLife = Math.max(0, x);
+        playerLife = x;
         updateInfoLabels();
     }
 
     //Dynamically Update Tower Limit Label {Future Use},
-    private void updatePlayerCoin(int x) {
-    	playerCoin = x;
+    private void updateMaxTowers(int x) {
+        maxTowers = x;
         updateInfoLabels();
     }
 
