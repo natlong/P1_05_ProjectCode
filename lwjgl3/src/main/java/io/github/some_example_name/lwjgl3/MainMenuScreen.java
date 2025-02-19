@@ -9,19 +9,21 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 
 
-public class MainMenuScreen implements Screen {
+
+public class MainMenuScreen extends AbstractScene {
 	private static int BUTTON_WIDTH = 200;
 	private static int BUTTON_HEIGHT = 50;
 	private static int BUTTON_PAD = 10;
 	
-    private Stage stage;
     private Texture backgroundTexture;
     private Skin skin;
     private GameCore game;
@@ -33,35 +35,34 @@ public class MainMenuScreen implements Screen {
 
     
     public MainMenuScreen(GameCore game) {
+    	super();
     	this.game = game;
-        stage = new Stage(new FitViewport(GameCore.VIEWPORT_WIDTH, GameCore.VIEWPORT_HEIGHT));
-        Gdx.input.setInputProcessor(stage);
-        //for Menu background
-        backgroundTexture = new Texture(Gdx.files.internal("skin/background.jpg"));
-        // for UI Skin
+    }
+    
+    @Override
+    protected void init() {        
+    	// Load assets.
+    	backgroundTexture = new Texture(Gdx.files.internal("skin/background.jpg"));
+    	Gdx.app.log("MainMenu", "Background texture size: " + backgroundTexture.getWidth() + "x" + backgroundTexture.getHeight());
         skin = new Skin(Gdx.files.internal("skin/lgdxs-ui.json"));
         soundManager = new SoundManager();
         soundManager.playMenuMusic();
-
-        initiateGameUI();
-    }
-    
-    private void initiateGameUI() {
-    	Image background = new Image(new TextureRegionDrawable(new TextureRegion(backgroundTexture)));
+        
+        // Set up background.
+        Image background = new Image(new TextureRegionDrawable(new TextureRegion(backgroundTexture)));
         background.setFillParent(true);
         stage.addActor(background);
         
-        //menu Buttons + UI skins
-         playButton = new TextButton("Play", skin);
-         optionsButton = new TextButton("Options", skin);
-         exitButton = new TextButton("Exit", skin);
-        
-        //create table for auto layout of the buttons
+        // Create table.
         Table table = new Table();
         table.setFillParent(true);
-        table.center();  
-
-        //add buttons w standard sizing
+        table.setBackground((Drawable) null);  // Ensure table background is transparent.
+        table.center();
+        
+        playButton = new TextButton("Play", skin);
+        optionsButton = new TextButton("Options", skin);
+        exitButton = new TextButton("Exit", skin);
+        
         table.add(playButton).width(BUTTON_WIDTH).height(BUTTON_HEIGHT).pad(BUTTON_PAD).row();
         table.add(optionsButton).width(BUTTON_WIDTH).height(BUTTON_HEIGHT).pad(BUTTON_PAD).row();
         table.add(exitButton).width(BUTTON_WIDTH).height(BUTTON_HEIGHT).pad(BUTTON_PAD);
@@ -70,7 +71,6 @@ public class MainMenuScreen implements Screen {
         playButtonListener();
         optionsButtonListener();
         exitButtonListener();
-
     }
     
     //button listeners
@@ -80,7 +80,7 @@ public class MainMenuScreen implements Screen {
         public void clicked(InputEvent event, float x, float y) {
         	Gdx.app.log("MainMenu", "Start Button Clicked");
         	soundManager.pause();
-            game.setScreen(new GameScreen(game));
+            SceneManager.getInstance().setScene(new GameScreen(game));;
             }
         });
     }
@@ -111,6 +111,7 @@ public class MainMenuScreen implements Screen {
 
     @Override
     public void render(float delta) {
+        Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 60f));
         stage.draw();
@@ -138,4 +139,10 @@ public class MainMenuScreen implements Screen {
     public void resume() {
     	soundManager.resume();
     	}
+
+	@Override
+	public void update(float delta) {
+		// TODO Auto-generated method stub
+		
+	}
 }

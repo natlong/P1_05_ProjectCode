@@ -48,7 +48,6 @@ public class EntityManager {
     	
     	if(spawnTimer>=spawnInterval) {
     		spawnTimer = 0f;
-    		
     		if(map!=null) {
     			Rectangle spawnArea = map.getSpawnPoint();
         		float spawnX = spawnArea.x + (float)(Math.random() * spawnArea.width);
@@ -59,9 +58,8 @@ public class EntityManager {
     		}else {
                 System.out.println("⚠️ Map is null! Cannot spawn minions.");
             }
-    		
-    		
     	}
+    	
         for (Minion minion : minions) {
             minion.update(delta);
         }
@@ -84,8 +82,15 @@ public class EntityManager {
         
         // Handle projectile-minion collisions.
         CollisionManager.projectileMinionCollision(projectiles, minions);
-        
-        // Remove dead minions.
+        removeDeadMinion();
+    }
+    
+    public List<Minion> getMinions() {
+        return minions;
+    }
+    
+    // Remove dead minions.
+    public void removeDeadMinion() {
         Iterator<Minion> minionIterator = minions.iterator();
         while (minionIterator.hasNext()) {
             Minion minion = minionIterator.next();
@@ -99,10 +104,8 @@ public class EntityManager {
     //Remove Existing Tower,
     public void removeTower(Vector2 position) {
         Iterator<Tower> iterator = towers.iterator();
-        
         while (iterator.hasNext()) {
             Tower tower = iterator.next();
-            
             //Check if there is a Tower near User Mouse,
             if (tower.getPosition().dst(position) < 15) {  //Radius of Mouse,
                 iterator.remove(); 
@@ -111,21 +114,17 @@ public class EntityManager {
         }
     }
 
-    
     // Renders all game entities on the screen
     public void render(SpriteBatch batch, ShapeRenderer shapeRenderer) {
-        //batch.begin();
-    	
     	shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
     	for (Minion minion : minions) {
             minion.draw(shapeRenderer);
         }
-    	
-        //batch.end();
 
         for (Tower tower : towers) {
             tower.draw(shapeRenderer);
         }
+        
         for (Projectile projectile : projectiles) {
             projectile.draw(shapeRenderer);
         }

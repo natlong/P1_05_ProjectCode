@@ -15,17 +15,29 @@ public class GameCore extends Game {
     public void create() {
     	batch = new SpriteBatch();
     	//start with menu screen
-        setScreen(new MainMenuScreen(this));
+        SceneManager.getInstance().setScene(new MainMenuScreen(this));
     }
     
     public SpriteBatch getSpriteBatch() {
         return batch;
     }
     
+    @Override
+    public void render() {
+        float delta = com.badlogic.gdx.Gdx.graphics.getDeltaTime();
+        SceneManager.getInstance().render(delta);
+    }
+    
+    @Override
+    public void resize(int width, int height) {
+        SceneManager.getInstance().resize(width, height);
+    }
+    
 
     @Override
     public void dispose() {
-    	super.dispose(); 
+    	super.dispose();
+        SceneManager.getInstance().getScene().dispose();
         batch.dispose();
     }
 }

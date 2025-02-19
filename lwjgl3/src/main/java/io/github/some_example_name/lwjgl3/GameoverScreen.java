@@ -80,7 +80,7 @@ public class GameoverScreen extends Window {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
                     dispose();
-//                    gameScreen.resetGame();
+                    gameScreen.resetGame();
                     gameScreen.resume();
                 }
             });
@@ -92,7 +92,6 @@ public class GameoverScreen extends Window {
     	exitButton.clear();
     	clear();
     	remove();
-
     }
 }
 

@@ -1,71 +1,63 @@
 package io.github.some_example_name.lwjgl3;
 
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
-import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.math.Vector3;
 
 
-public class GameScreen implements Screen {
+public class GameScreen extends AbstractScene {
 	private static final int BUTTON_SIZE = 60;
-    private static final int BUTTON_MARGIN = 60;
-    private static final int BUTTON_SPACING = 1;
-    
 	private DebugRenderer debugRenderer;
-    private OrthographicCamera camera;
-    private Viewport viewport;
-    private SpriteBatch batch;
-    private Stage stage;
-    private boolean isPaused;
-    private boolean isMuted;
-    private Map map;
     private ImageButton pauseButton;
     private ImageButton settingsButton;
-    private Minion minion;
-    private SoundManager soundManager; 
-    private OptionsScreen optionsScreen;
-    private GameoverScreen gameoverScreen;
-    
+    private SpriteBatch batch;
     private ShapeRenderer shapeRenderer;
     private EntityManager entityManager;
+    private SoundManager soundManager;
+    private Map map;
+    private OptionsScreen optionsScreen;
+    private GameoverScreen gameoverScreen;
+    private static final int GAME_OVER_THRESHOLD = 5;
+//    private GameCore game;
+    private boolean isPaused;
 
 
     public GameScreen(GameCore game) {
-    	//i created this to have a clearer view of the tiled map collision
+    	super();
+//    	this.game = game;
+    	
+//    	//i created this to have a clearer view of the tiled map collision
     	debugRenderer = new DebugRenderer();
     	//put to false to close it
     	debugRenderer.setEnabled(false);
-    	
-        camera = new OrthographicCamera();
-        viewport = new FitViewport(GameCore.VIEWPORT_WIDTH, GameCore.VIEWPORT_HEIGHT, camera);
-        camera.position.set(viewport.getWorldWidth() / 2, viewport.getWorldHeight() / 2, 0);
-        camera.update();
-
-        batch = new SpriteBatch();
-        stage = new Stage(viewport, batch);
-        Gdx.input.setInputProcessor(stage);
-        
-        map = new Map("level.tmx");
-        
-        entityManager = new EntityManager(map, camera);
-        shapeRenderer = new ShapeRenderer();
-        handleInput();
-        soundManager = new SoundManager();
-        soundManager.playGameMusic();
+    }
+    
+    protected void init() {
+         camera.position.set(GameCore.VIEWPORT_WIDTH / 2, GameCore.VIEWPORT_HEIGHT / 2, 0);
+         camera.update();
+         
+         batch = new SpriteBatch();
+         shapeRenderer = new ShapeRenderer();
+         
+         // load tilemap
+         map = new Map("level.tmx");
+         entityManager = new EntityManager(map, camera);
+         soundManager = new SoundManager();
+         soundManager.playGameMusic();
+         
+         createButtons();
+         handleInput();
     }
    
 	    
@@ -88,8 +80,8 @@ public class GameScreen implements Screen {
         settingsButton.setSize(BUTTON_SIZE, BUTTON_SIZE);
         
         //button position, top down arrangement
-        float topY = viewport.getWorldHeight()-60;
-        float rightX = viewport.getWorldWidth() - 5;
+        float topY = GameCore.VIEWPORT_HEIGHT-60;
+        float rightX = GameCore.VIEWPORT_WIDTH - 5;
         pauseButton.setPosition(rightX - BUTTON_SIZE, topY);
         settingsButton.setPosition(rightX - BUTTON_SIZE, topY - BUTTON_SIZE);
         
@@ -121,9 +113,10 @@ public class GameScreen implements Screen {
         public boolean touchDown(com.badlogic.gdx.scenes.scene2d.InputEvent event, float x, float y, int pointer, int button) {
             openSettings();
             return true;
-        }
-    });
-}
+	        }
+	    });
+	}
+    
 
     private void openSettings() {
         Gdx.app.log("GameScreen", "Settings button clicked");
@@ -135,88 +128,116 @@ public class GameScreen implements Screen {
         stage.addActor(optionsScreen);
     }
     
+    @Override
+	public void update(float delta) {
+    	if (!isPaused) {
+            entityManager.update(delta);
+            
+         // Count minions that have reached the gameover area.
+            int count = 0;
+            Rectangle gameoverArea = map.getGameoverPoint();
+            if (gameoverArea != null) {
+                for (Minion m : entityManager.getMinions()) {
+                    if (m.getBounds().overlaps(gameoverArea)) {
+                        count++;
+                    }
+                }
+            }
+            
+            if (count >= GAME_OVER_THRESHOLD) {
+                showGameOver();
+            }
+        }
+	}
+    
     private void showGameOver() {
     	if (gameoverScreen == null){
-    	Skin skin = new Skin(Gdx.files.internal("skin/lgdxs-ui.json"));
-        gameoverScreen = new GameoverScreen(skin, stage, this);
-        stage.addActor(gameoverScreen);}
+    		isPaused = true;
+	    	Skin skin = new Skin(Gdx.files.internal("skin/lgdxs-ui.json"));
+	        gameoverScreen = new GameoverScreen(skin, stage, this);
+	        stage.addActor(gameoverScreen);
+    	}
+    }
+    
+    public void resetGame() {
+	    //reset map
+	    if (map != null) {
+	        map.dispose();
+	        
+	    }
+	    map = new Map("level.tmx");
+	    //restart entity for game
+	    if (entityManager != null) {
+            entityManager.dispose();
+        }
+        entityManager = new EntityManager(map, camera);
+        
+        // Reset game-over overlay.
+        if (gameoverScreen != null) {
+            gameoverScreen.dispose();
+            gameoverScreen = null;
+        }
+	    
+	    if (soundManager != null) {
+	        soundManager.restartCurrentMusic();
+	    }
+	    isPaused = false;
     }
 
     //Player Input for Tower,
     private void handleInput() {
-        Gdx.input.setInputProcessor(new InputAdapter() {
-        	
+        InputMultiplexer multiplexer = new InputMultiplexer();
+        multiplexer.addProcessor(stage);
+        multiplexer.addProcessor(new InputAdapter() {
             @Override
             public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-                float x = camera.unproject(new com.badlogic.gdx.math.Vector3(screenX, screenY, 0)).x;
-                float y = camera.unproject(new com.badlogic.gdx.math.Vector3(screenX, screenY, 0)).y;
+                Vector3 worldCoordinates = camera.unproject(new Vector3(screenX, screenY, 0));
+                float x = worldCoordinates.x;
+                float y = worldCoordinates.y;
 
-                //Left-Click to Place Tower,
+                // Left-Click to place a tower.
                 if (button == Input.Buttons.LEFT) {
                     if (!map.isGreenArea(x, y)) {
                         entityManager.addTower(new Vector2(x, y));
                     }
                 }
-                
-                //Right-Click to Remove Tower,
+                // Right-Click to remove a tower.
                 if (button == Input.Buttons.RIGHT) {
                     entityManager.removeTower(new Vector2(x, y));
                 }
-
                 return true;
             }
         });
+        
+        // Set the multiplexer as the input processor so that both the stage and custom adapter receive events.
+        Gdx.input.setInputProcessor(multiplexer);
     }
+
 
     @Override
     public void show() {
         Gdx.app.log("GameScreen", "show() called");
-        //map = new Map("level.tmx");
         createButtons();
         
         if (entityManager == null) {
             entityManager = new EntityManager(map, camera);
         }
-        
-        //minion spawn point
-        //Rectangle spawnArea = map.getSpawnPoint();
-        //float spawnX = spawnArea.x + (float)(Math.random() * spawnArea.width);
-        //float spawnY = spawnArea.y + (float)(Math.random() * spawnArea.height);
-        //Vector2 position = new Vector2(spawnX, spawnY);
-        //entityManager.spawnMinion("monster.png", 0.1f, position, map, 100f, camera);
     }
 
     @Override
     public void render(float delta) {
+    	// Call update logic
+        update(delta);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        if (!isPaused) {
-            entityManager.update(delta);
-        }
-        // need to integrate chloe code
-//        if (!isPaused) {
-//            minion.update(delta); 
-//            if (minion.hitGameoverArea()) {
-//                showGameOver();
-//                pause();} }
-        
-//        map.render(camera);
-//        debugRenderer.renderDebug(camera, map, minion);
-//        batch.setProjectionMatrix(camera.combined);
-//        batch.begin();
-//        minion.draw(batch);
-//        batch.end();      
-//        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 60f));
-//        stage.draw();
-
         map.render(camera);
         entityManager.render(batch, shapeRenderer);
-        
+        stage.act(delta);
+        stage.draw();
     }
 
     @Override
     public void resize(int width, int height) {
-        viewport.update(width, height);
+    	stage.getViewport().update(width, height);
     }
     
     @Override
@@ -237,38 +258,14 @@ public class GameScreen implements Screen {
     public void hide() {
         Gdx.app.log("GameScreen", "hide() called");
     }
-    
-//    public void resetGame() {
-//	    //reset map
-//	    if (map != null) {
-//	        map.dispose();
-//	        map = new Map("level.tmx");
-//	    }
-//	    
-//	    //reset minion position
-//	    if (minion != null) {
-//	        Rectangle spawnArea = map.getSpawnPoint();
-//	        float spawnX = spawnArea.x + (float)(Math.random() * spawnArea.width);
-//	        float spawnY = spawnArea.y + (float)(Math.random() * spawnArea.height);
-//	        minion.resetPosition(spawnX, spawnY);
-//	        }
-//	    
-//	    if (soundManager != null) {
-//	        soundManager.restartCurrentMusic();
-//	    }
-//	    
-//	    gameoverScreen = null;
-//	    }
 
     @Override
     public void dispose() {
-        minion.dispose(); 
+    	super.dispose();
         batch.dispose();
-        stage.dispose();
         map.dispose();
         debugRenderer.dispose ();
         soundManager.dispose();
         shapeRenderer.dispose();
-        }
-    }
-	
+	}
+}
