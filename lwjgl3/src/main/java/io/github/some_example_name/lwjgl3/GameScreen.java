@@ -173,7 +173,7 @@ public class GameScreen implements Screen {
     	
     	//Creating Table for Coin Label,
     	Table coinTable = new Table();
-    	coinTable.add(coinLabel).pad(10).padLeft(50).left();
+    	coinTable.add(coinLabel).pad(10).padLeft(30).left();
     	
     	//Adding Heart Image and Coin Container together,
     	infoTable = new Table();
@@ -213,12 +213,10 @@ public class GameScreen implements Screen {
     	
         heartImage.clear();
         
-        //Add Spacing between Heart Image,
         Table heartTable = new Table();
         float heartContainerWidth = 200;
         float heartSpacing = (heartContainerWidth - (playerLife * 50)) / (playerLife - 1);
 
-        //Displaying Heart Image,
         for (int i = 0; i < playerLife; i++) {
             Image heart = new Image(new TextureRegionDrawable(new TextureRegion(heartTexture)));
             heart.setSize(50, 50);
@@ -231,16 +229,9 @@ public class GameScreen implements Screen {
             heartTable.add(heart).width(50).height(50);
         }
 
-        //Updating Coin Label,
-        coinLabel.setText("Coins: " + playerCoin);
-        
-    	//Creating Table for Coin Label,
-    	Table coinTable = new Table();
-    	coinTable.add(coinLabel).pad(10).padLeft(50).left();
-        
         infoTable.clearChildren();
         infoTable.add(heartTable).row();
-    	infoTable.add(coinTable).expandX().left();
+        infoTable.add(coinLabel).pad(10).right();
 
         infoTable.layout();
     }
@@ -254,7 +245,7 @@ public class GameScreen implements Screen {
     //Dynamically Update Tower Limit Label {Future Use},
     private void updatePlayerCoin(int x) {
     	playerCoin = x;
-    	coinLabel.setText("Coins: " + playerCoin);
+        updateInfoLabels();
     }
 
         
@@ -311,26 +302,12 @@ public class GameScreen implements Screen {
                 //Left-Click to Place Tower,
                 if (button == Input.Buttons.LEFT) {
                     if (!map.isGreenArea(x, y)) {
-                    	int towerCost = 50; //Tower Price {For Testing},
-                    	
-                    	if (playerCoin >= towerCost) {
-                    		playerCoin -= towerCost;
-                    		updatePlayerCoin(playerCoin);
-                    		entityManager.addTower(new Vector2(x, y));
-                    	} else {
-                    		Gdx.app.log("GameScreen", "Not enough coins to place a Tower!");
-                    	}
-                    	
-                        
+                        entityManager.addTower(new Vector2(x, y));
                     }
                 }
                 
                 //Right-Click to Remove Tower,
                 if (button == Input.Buttons.RIGHT) {
-                	int towerRefund = 50; //Tower Refund for Removal {For Testing},
-                	
-                	playerCoin += towerRefund;
-                	updatePlayerCoin(playerCoin);
                     entityManager.removeTower(new Vector2(x, y));
                 }
 
