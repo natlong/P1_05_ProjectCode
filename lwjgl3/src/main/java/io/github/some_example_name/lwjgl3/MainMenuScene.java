@@ -1,25 +1,23 @@
 package io.github.some_example_name.lwjgl3;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
+//import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.scenes.scene2d.Stage;
+//import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.Actor;
+//import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.utils.viewport.FitViewport;
+//import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 
-
-
-public class MainMenuScreen extends AbstractScene {
+public class MainMenuScene extends AbstractScene {
 	private static int BUTTON_WIDTH = 200;
 	private static int BUTTON_HEIGHT = 50;
 	private static int BUTTON_PAD = 10;
@@ -31,10 +29,10 @@ public class MainMenuScreen extends AbstractScene {
     private TextButton playButton;
     private TextButton optionsButton;
     private TextButton exitButton;
-    private OptionsScreen optionsScreen;
+    private OptionsScene optionsScene;
 
     
-    public MainMenuScreen(GameCore game) {
+    public MainMenuScene(GameCore game) {
     	super();
     	this.game = game;
     }
@@ -80,7 +78,7 @@ public class MainMenuScreen extends AbstractScene {
         public void clicked(InputEvent event, float x, float y) {
         	Gdx.app.log("MainMenu", "Start Button Clicked");
         	soundManager.pause();
-            SceneManager.getInstance().setScene(new GameScreen(game));;
+            SceneManager.getInstance().setScene(new GameScene(game));;
             }
         });
     }
@@ -90,11 +88,11 @@ public class MainMenuScreen extends AbstractScene {
         @Override
         public void clicked(InputEvent event, float x, float y) {
             Gdx.app.log("MainMenu", "Options Button Clicked");
-            if (optionsScreen != null) {
-                optionsScreen.dispose();
+            if (optionsScene != null) {
+                optionsScene.dispose();
             }
-            optionsScreen = new OptionsScreen(skin, stage, soundManager);
-            stage.addActor(optionsScreen);
+            optionsScene = new OptionsScene(skin, stage, soundManager);
+            stage.addActor(optionsScene);
         }
     });
     }

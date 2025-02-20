@@ -25,9 +25,7 @@ public class Minion extends AbstractMovableObject{
     private static int MAP_HEIGHT = 30;
     
     private Map map;
-    private Animation<TextureRegion> runningAnimation;
     private float stateTime;
-    private Texture spriteSheet;
     private Rectangle bounds; //collision boundary
     private ShapeRenderer shapeRenderer;
     private HPBar hpBar;
@@ -41,33 +39,12 @@ public class Minion extends AbstractMovableObject{
           super(position, "Minion", maxHp, maxHp, speed);
     	  this.map = map;
           this.bounds = new Rectangle(position.x, position.y, DEFAULT_WIDTH, DEFAULT_HEIGHT);
-          this.spriteSheet = new Texture(spriteSheetPath);
-          this.runningAnimation = createAnimation(frameDuration);
           this.shapeRenderer = new ShapeRenderer(); // Initialize
           this.hpBar = new HPBar(position.x, position.y + DEFAULT_HEIGHT + 5, DEFAULT_WIDTH, 8, maxHp, camera); // Position HP bar above minion
           this.camera = camera;
           this.waypoints = map.getPathWaypoints();
           
-      }
-      
-      //this is to animate the character movement
-      private Animation<TextureRegion> createAnimation(float frameDuration) {
-          TextureRegion[][] frames = TextureRegion.split(
-              spriteSheet, 
-              spriteSheet.getWidth() / FRAME_COLS, 
-              spriteSheet.getHeight() / FRAME_ROWS
-          );
-      
-          TextureRegion[] runningFrames = new TextureRegion[FRAME_COLS * FRAME_ROWS];
-          int index = 0;
-          for (int i = 0; i < FRAME_ROWS; i++) {
-              for (int j = 0; j < FRAME_COLS; j++) {
-                  runningFrames[index++] = frames[i][j];
-              }
-          }
-          return new Animation<>(frameDuration, runningFrames);
-      }
-      
+      }      
       
       public void update(float delta) {
 	      	hpBar.setPosition(this.getPosition().x, position.y + DEFAULT_HEIGHT + 5);
@@ -83,10 +60,6 @@ public class Minion extends AbstractMovableObject{
 	        if (position.y > MAP_HEIGHT * DEFAULT_HEIGHT - DEFAULT_HEIGHT)
 	            position.y = MAP_HEIGHT * DEFAULT_HEIGHT - DEFAULT_HEIGHT;
 	    }
-		//  public void draw(SpriteBatch batch) {
-		//  TextureRegion currentFrame = runningAnimation.getKeyFrame(stateTime, true);
-		//  batch.draw(currentFrame, position.x, position.y, DEFAULT_WIDTH, DEFAULT_HEIGHT);
-		//}
 	
 		public void render(ShapeRenderer shapeRenderer) {
 		  shapeRenderer.setProjectionMatrix(camera.combined);
@@ -107,7 +80,7 @@ public class Minion extends AbstractMovableObject{
 		  shapeRenderer.triangle(x1, y1, x2, y2, x3, y3);
 		
 		  //shapeRenderer.end();
-		  hpBar.draw(shapeRenderer);
+		  hpBar.render(shapeRenderer);
 		}
 		
 		public void takeDamage(float damage) {
@@ -169,7 +142,6 @@ public class Minion extends AbstractMovableObject{
 		    }
 		}
 		public void dispose() {
-			  spriteSheet.dispose();
 			  shapeRenderer.dispose();
 			}
 	}

@@ -12,18 +12,18 @@ import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 
-public class GameoverScreen extends Window {
+public class GameOverScene extends Window {
     private static int BUTTON_WIDTH = 200;
     private static int BUTTON_HEIGHT = 50;
     
     private TextButton retryButton;
     private TextButton exitButton;
-    private GameScreen gameScreen; 
+    private GameScene gameScene; 
 
-    public GameoverScreen(Skin skin, Stage stage, GameScreen gameScreen) {
+    public GameOverScene(Skin skin, Stage stage, GameScene gameScene) {
     	//call skin from parent "GameScreen" 
         super("", skin);
-        this.gameScreen = gameScreen;
+        this.gameScene = gameScene;
 
         //size/position/behavior of the popup
         float windowWidth = stage.getWidth() * 0.4f;
@@ -80,8 +80,8 @@ public class GameoverScreen extends Window {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
                     dispose();
-                    gameScreen.resetGame();
-                    gameScreen.resume();
+                    gameScene.resetGame();
+                    gameScene.resume();
                 }
             });
 		}

@@ -16,7 +16,7 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.math.Vector3;
 
 
-public class GameScreen extends AbstractScene {
+public class GameScene extends AbstractScene {
 	private static final int BUTTON_SIZE = 60;
 	private static final int GAME_OVER_THRESHOLD = 5;
 	private DebugRenderer debugRenderer;
@@ -27,13 +27,13 @@ public class GameScreen extends AbstractScene {
     private EntityManager entityManager;
     private SoundManager soundManager;
     private Map map;
-    private OptionsScreen optionsScreen;
-    private GameoverScreen gameoverScreen;
+    private OptionsScene optionsScreen;
+    private GameOverScene gameOverScene;
 //    private GameCore game;
     private boolean isPaused;
 
 
-    public GameScreen(GameCore game) {
+    public GameScene(GameCore game) {
     	super();
 //    	this.game = game;
     	
@@ -124,7 +124,7 @@ public class GameScreen extends AbstractScene {
             optionsScreen.dispose();
         }
         Skin skin = new Skin(Gdx.files.internal("skin/lgdxs-ui.json"));
-        optionsScreen = new OptionsScreen(skin, stage, soundManager);
+        optionsScreen = new OptionsScene(skin, stage, soundManager);
         stage.addActor(optionsScreen);
     }
     
@@ -151,11 +151,11 @@ public class GameScreen extends AbstractScene {
 	}
     
     private void showGameOver() {
-    	if (gameoverScreen == null){
+    	if (gameOverScene == null){
     		isPaused = true;
 	    	Skin skin = new Skin(Gdx.files.internal("skin/lgdxs-ui.json"));
-	        gameoverScreen = new GameoverScreen(skin, stage, this);
-	        stage.addActor(gameoverScreen);
+	        gameOverScene = new GameOverScene(skin, stage, this);
+	        stage.addActor(gameOverScene);
     	}
     }
     
@@ -172,9 +172,9 @@ public class GameScreen extends AbstractScene {
         }
         
         // Reset game-over overlay.
-        if (gameoverScreen != null) {
-            gameoverScreen.dispose();
-            gameoverScreen = null;
+        if (gameOverScene != null) {
+            gameOverScene.dispose();
+            gameOverScene = null;
         }
 	    
 	    if (soundManager != null) {

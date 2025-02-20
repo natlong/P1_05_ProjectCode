@@ -10,7 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 
-public class OptionsScreen extends Window {
+public class OptionsScene extends Window {
 	private static int BUTTON_SIZE = 60;
     private static int BUTTON_WIDTH = 200;
     private static int BUTTON_HEIGHT = 50;
@@ -21,7 +21,7 @@ public class OptionsScreen extends Window {
     private TextButton backButton;
     private SoundManager soundManager;
 
-    public OptionsScreen(Skin skin, Stage stage, SoundManager soundManager) {
+    public OptionsScene(Skin skin, Stage stage, SoundManager soundManager) {
     	//call skin from parent "Mainmenuscren" 
         super("", skin);
     	this.soundManager = soundManager;

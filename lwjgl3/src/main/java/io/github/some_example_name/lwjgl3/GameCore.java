@@ -3,7 +3,7 @@ package io.github.some_example_name.lwjgl3;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-// game entry point code, lol can change file name but rmb refact all
+// game entry point code
 
 public class GameCore extends Game {
 	private SpriteBatch batch;
@@ -15,7 +15,7 @@ public class GameCore extends Game {
     public void create() {
     	batch = new SpriteBatch();
     	//start with menu screen
-        SceneManager.getInstance().setScene(new MainMenuScreen(this));
+        SceneManager.getInstance().setScene(new MainMenuScene(this));
     }
     
     public SpriteBatch getSpriteBatch() {

@@ -30,7 +30,7 @@ public class HPBar {
         this.maxHP = maxHP;
     }
 
-    public void draw(ShapeRenderer shapeRenderer) {
+    public void render(ShapeRenderer shapeRenderer) {
         shapeRenderer.setProjectionMatrix(camera.combined);
         //shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
