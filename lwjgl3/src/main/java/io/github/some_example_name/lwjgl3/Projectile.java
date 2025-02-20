@@ -22,7 +22,12 @@ public class Projectile extends AbstractMovableObject {
             this.direction.set(target.getPosition()).sub(getPosition()).nor();
         }
     }
-
+    
+    @Override
+    public void update(float delta) {
+    	movement();
+    }
+    
     @Override
     public void movement() {
         // If the target exists and is still alive, update the direction.
@@ -42,7 +47,7 @@ public class Projectile extends AbstractMovableObject {
         return target;
     }
 
-    public void draw(ShapeRenderer shapeRenderer) {
+    public void render(ShapeRenderer shapeRenderer) {
         shapeRenderer.setColor(1, 0, 0, 1); // Red color for projectiles
         shapeRenderer.circle(position.x, position.y, 5);
     }

@@ -68,6 +68,7 @@ public class Minion extends AbstractMovableObject{
           return new Animation<>(frameDuration, runningFrames);
       }
       
+      
       public void update(float delta) {
 	      	hpBar.setPosition(this.getPosition().x, position.y + DEFAULT_HEIGHT + 5);
 	        stateTime += delta;
@@ -87,7 +88,7 @@ public class Minion extends AbstractMovableObject{
 		//  batch.draw(currentFrame, position.x, position.y, DEFAULT_WIDTH, DEFAULT_HEIGHT);
 		//}
 	
-		public void draw(ShapeRenderer shapeRenderer) {
+		public void render(ShapeRenderer shapeRenderer) {
 		  shapeRenderer.setProjectionMatrix(camera.combined);
 		  //shapeRenderer.begin(ShapeType.Filled); // Or ShapeType.Line for an outline
 		  
@@ -107,12 +108,6 @@ public class Minion extends AbstractMovableObject{
 		
 		  //shapeRenderer.end();
 		  hpBar.draw(shapeRenderer);
-		}
-		
-		public void dispose() {
-		  spriteSheet.dispose();
-		  hpBar.dispose();
-		  shapeRenderer.dispose();
 		}
 		
 		public void takeDamage(float damage) {
@@ -173,4 +168,9 @@ public class Minion extends AbstractMovableObject{
 		        getBounds().setPosition(currentPos.x, currentPos.y);
 		    }
 		}
+		public void dispose() {
+			  spriteSheet.dispose();
+			  hpBar.dispose();
+			  shapeRenderer.dispose();
+			}
 	}

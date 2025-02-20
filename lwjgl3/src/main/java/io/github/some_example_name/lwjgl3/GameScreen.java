@@ -18,6 +18,7 @@ import com.badlogic.gdx.math.Vector3;
 
 public class GameScreen extends AbstractScene {
 	private static final int BUTTON_SIZE = 60;
+	private static final int GAME_OVER_THRESHOLD = 5;
 	private DebugRenderer debugRenderer;
     private ImageButton pauseButton;
     private ImageButton settingsButton;
@@ -28,7 +29,6 @@ public class GameScreen extends AbstractScene {
     private Map map;
     private OptionsScreen optionsScreen;
     private GameoverScreen gameoverScreen;
-    private static final int GAME_OVER_THRESHOLD = 5;
 //    private GameCore game;
     private boolean isPaused;
 
@@ -52,7 +52,7 @@ public class GameScreen extends AbstractScene {
          
          // load tilemap
          map = new Map("level.tmx");
-         entityManager = new EntityManager(map, camera);
+         entityManager = new EntityManager(camera, map);
          soundManager = new SoundManager();
          soundManager.playGameMusic();
          
@@ -137,8 +137,8 @@ public class GameScreen extends AbstractScene {
             int count = 0;
             Rectangle gameoverArea = map.getGameoverPoint();
             if (gameoverArea != null) {
-                for (Minion m : entityManager.getMinions()) {
-                    if (m.getBounds().overlaps(gameoverArea)) {
+                for (AbstractEntity entity : entityManager.getEntities()) {
+                	if (entity instanceof Minion && ((Minion) entity).getBounds().overlaps(gameoverArea)) {
                         count++;
                     }
                 }
@@ -168,9 +168,8 @@ public class GameScreen extends AbstractScene {
 	    map = new Map("level.tmx");
 	    //restart entity for game
 	    if (entityManager != null) {
-            entityManager.dispose();
+            entityManager = new EntityManager(camera, map);
         }
-        entityManager = new EntityManager(map, camera);
         
         // Reset game-over overlay.
         if (gameoverScreen != null) {
@@ -198,12 +197,12 @@ public class GameScreen extends AbstractScene {
                 // Left-Click to place a tower.
                 if (button == Input.Buttons.LEFT) {
                     if (!map.isGreenArea(x, y)) {
-                        entityManager.addTower(new Vector2(x, y));
+                        entityManager.addEntity(new Tower(new Vector2(x, y)));
                     }
                 }
                 // Right-Click to remove a tower.
                 if (button == Input.Buttons.RIGHT) {
-                    entityManager.removeTower(new Vector2(x, y));
+                    entityManager.removeEntity(new Tower(new Vector2(x, y)));
                 }
                 return true;
             }
@@ -220,7 +219,7 @@ public class GameScreen extends AbstractScene {
         createButtons();
         
         if (entityManager == null) {
-            entityManager = new EntityManager(map, camera);
+            entityManager = new EntityManager(camera, map);
         }
     }
 
@@ -230,7 +229,7 @@ public class GameScreen extends AbstractScene {
         update(delta);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         map.render(camera);
-        entityManager.render(batch, shapeRenderer);
+        entityManager.render(shapeRenderer);
         stage.act(delta);
         stage.draw();
     }
