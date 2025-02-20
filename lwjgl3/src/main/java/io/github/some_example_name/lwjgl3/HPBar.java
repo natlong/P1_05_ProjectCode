@@ -48,6 +48,5 @@ public class HPBar {
     }
 
     public void dispose() {
-        shapeRenderer.dispose();
     }
 }

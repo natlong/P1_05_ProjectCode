@@ -170,7 +170,6 @@ public class Minion extends AbstractMovableObject{
 		}
 		public void dispose() {
 			  spriteSheet.dispose();
-			  hpBar.dispose();
 			  shapeRenderer.dispose();
 			}
 	}
