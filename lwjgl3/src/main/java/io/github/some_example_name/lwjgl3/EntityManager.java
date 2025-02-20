@@ -35,7 +35,20 @@ public class EntityManager{
 	}
 	
 	public void removeEntity(AbstractEntity entity) {
-		entities.remove(entity);
+		Iterator<AbstractEntity> iterator = entities.iterator();
+		while(iterator.hasNext()) {
+			AbstractEntity entityIterated = iterator.next();
+			if(entityIterated instanceof Tower) {
+				Tower tower = (Tower) entityIterated;
+				if (tower.getPosition().dst(entity.position) < 15) {
+					iterator.remove();
+					break;
+				}
+			}else if (entityIterated.getClass().equals(entity.getClass())) { 
+				iterator.remove();
+				break;
+			}
+		}
 	}
 	
 	public void update(float delta) {
