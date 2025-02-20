@@ -8,26 +8,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Tower extends AbstractStaticObject{
-    private float cooldown = 0;
-
-    //public Tower(Vector2 position, Texture tex, String name, float fireRate, float range, float damage) {
-    //	super (position, tex, name, fireRate, range, damage);
-    //}
+    
     public Tower(Vector2 position) {
-    	super(new Vector2(position), "tower", 1.0f, 250f, 10f);
+    	super(new Vector2(position), "tower", 1.0f, 250f, 10f, 0f);
     }
 
     public List<Projectile> shoot(List<AbstractEntity> entities, float delta) {
         List<Projectile> projectiles = new ArrayList<>();
 
-        if (cooldown <= 0) {
+        if (getCooldown() <= 0) {
             Minion target = findTarget(entities);  // Find the closest minion
             if (target != null) {
                 projectiles.add(new Projectile(position, target, this.getDamage())); // Fire projectile
-                cooldown = this.getFireRate();
+                setCooldown(this.getFireRate());
             }
         } else {
-            cooldown -= delta;
+            setCooldown(getCooldown() - delta);
         }
 
         return projectiles;  // Return the newly created projectiles

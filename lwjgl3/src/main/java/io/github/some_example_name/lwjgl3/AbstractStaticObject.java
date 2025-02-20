@@ -8,6 +8,7 @@ public abstract class AbstractStaticObject extends AbstractEntity{
 	private float range;
 	private float damage;
 	private float fireRate;
+	private float cooldown = 0;
 	
 	//public AbstractStaticObject(Vector2 position, Texture tex, String name, float fireRate, float range, float damage) {
 	//	super(position, tex, name);
@@ -15,11 +16,12 @@ public abstract class AbstractStaticObject extends AbstractEntity{
 	//	this.damage = damage;
 	//	this.fireRate = fireRate;
 	//}
-	public AbstractStaticObject(Vector2 position, String name, float fireRate, float range, float damage) {
+	public AbstractStaticObject(Vector2 position, String name, float fireRate, float range, float damage, float cooldown) {
 		super(new Vector2 (position), name);
 		this.range = range;
 		this.damage = damage;
 		this.fireRate = fireRate;
+		this.cooldown = cooldown;
 	}
 	
 	public float getDamage() {
@@ -44,5 +46,13 @@ public abstract class AbstractStaticObject extends AbstractEntity{
 	 
 	 public void setFireRate(float fireRate) {
 		 this.fireRate = fireRate;
+	 }
+	 
+	 public float getCooldown() {
+		 return this.cooldown;
+	 }
+	 
+	 public void setCooldown(float cooldown) {
+		 this.cooldown = cooldown;
 	 }
 }
