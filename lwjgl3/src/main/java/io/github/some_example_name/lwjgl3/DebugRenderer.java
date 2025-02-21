@@ -9,11 +9,68 @@ import java.util.List;
 
 public class DebugRenderer {
     private ShapeRenderer shapeRenderer;
-    private boolean isEnabled = true;
+    public boolean isEnabled = true;
     
     public DebugRenderer() {
         shapeRenderer = new ShapeRenderer();
     }
+    
+    //Render map only
+    public void renderMapDebug(OrthographicCamera camera, Map map) {
+        if (!isEnabled) return;
+        
+        shapeRenderer.setProjectionMatrix(camera.combined);
+        shapeRenderer.begin(ShapeType.Line);
+        
+        // Draw blocked areas in red
+        shapeRenderer.setColor(Color.RED);
+        for (Rectangle blockedArea : map.getBlockedAreas()) {
+            shapeRenderer.rect(blockedArea.x, blockedArea.y, blockedArea.width, blockedArea.height);
+        }
+        
+        // Draw spawn area in black
+        shapeRenderer.setColor(Color.BLACK);
+        Rectangle spawnArea = map.getSpawnPoint();
+        if (spawnArea != null) {
+            shapeRenderer.rect(spawnArea.x, spawnArea.y, spawnArea.width, spawnArea.height);
+        }
+        
+        // Draw walking path in yellow
+        shapeRenderer.setColor(Color.YELLOW);
+        for (Rectangle pathArea : map.getWalkingPath()) {
+            shapeRenderer.rect(pathArea.x, pathArea.y, pathArea.width, pathArea.height);
+        }
+        
+        // Draw game over area in purple
+        shapeRenderer.setColor(Color.PURPLE);
+        Rectangle gameoverArea = map.getGameoverPoint();
+        if (gameoverArea != null) {
+            shapeRenderer.rect(gameoverArea.x, gameoverArea.y, gameoverArea.width, gameoverArea.height);
+        }
+        
+        shapeRenderer.end();
+    }
+    
+    //Render Minion only
+    public void renderMinions(OrthographicCamera camera, List<AbstractEntity> entities) {
+        if (!isEnabled || entities.isEmpty()) return;
+        
+        shapeRenderer.setProjectionMatrix(camera.combined);
+        shapeRenderer.begin(ShapeType.Line);
+       
+        shapeRenderer.setColor(Color.GREEN);
+        for (AbstractEntity entity : entities) {
+            if (entity instanceof Minion) {
+                Minion minion = (Minion) entity;
+                Rectangle bounds = minion.getBounds();
+                shapeRenderer.rect(bounds.x, bounds.y, bounds.width, bounds.height);
+            }
+        }
+        
+        shapeRenderer.end();
+    }
+    
+    
     
     public void renderCollisionAreas(OrthographicCamera camera, List<Rectangle> blockedAreas, 
             Rectangle minionBounds, Rectangle spawnArea, 
@@ -31,7 +88,7 @@ public class DebugRenderer {
         shapeRenderer.setColor(Color.GREEN);
         shapeRenderer.rect(minionBounds.x, minionBounds.y, minionBounds.width, minionBounds.height);
         
-        // Draw spawn area in blue
+        // Draw spawn area in black
         shapeRenderer.setColor(Color.BLACK);
         if (spawnArea != null) {
             shapeRenderer.rect(spawnArea.x, spawnArea.y, spawnArea.width, spawnArea.height);

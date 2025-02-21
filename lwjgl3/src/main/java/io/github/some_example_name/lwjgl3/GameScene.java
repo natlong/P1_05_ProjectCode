@@ -229,6 +229,15 @@ public class GameScene extends AbstractScene {
         update(delta);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         map.render(camera);
+        
+        if (debugRenderer.isEnabled) {
+            debugRenderer.renderMapDebug(camera, map);
+            
+            if (!entityManager.getEntities().isEmpty()) {
+                debugRenderer.renderMinions(camera, entityManager.getEntities());
+            }
+        }
+
         entityManager.render(shapeRenderer);
         stage.act(delta);
         stage.draw();
