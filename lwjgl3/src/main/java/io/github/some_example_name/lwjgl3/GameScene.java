@@ -18,7 +18,7 @@ import com.badlogic.gdx.math.Vector3;
 
 public class GameScene extends AbstractScene {
 	private static final int BUTTON_SIZE = 60;
-	private static final int GAME_OVER_THRESHOLD = 5;
+	private static final int GAME_OVER_THRESHOLD = 1;
 	private DebugRenderer debugRenderer;
     private ImageButton pauseButton;
     private ImageButton settingsButton;
