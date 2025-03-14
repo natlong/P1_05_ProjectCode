@@ -5,11 +5,11 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 
 public class Projectile extends AbstractMovableObject {
-	private Minion target;
+	private Targetable target;
     private float damage;
     private Vector2 direction;
 
-    public Projectile(Vector2 position, Minion target, float damage) {
+    public Projectile(Vector2 position, Targetable target, float damage) {
         // For projectiles, HP values are not relevant so we use dummy values (1, 1)
         // Speed is set to 200f.
         super(position, "Projectile", 1, 1, 225f);
@@ -35,16 +35,27 @@ public class Projectile extends AbstractMovableObject {
             direction.set(target.getPosition()).sub(getPosition()).nor();
         }
         // Otherwise, keep the last computed direction.
+//        Vector2 velocity = new Vector2(direction).scl(getSpeed() * Gdx.graphics.getDeltaTime());
+//        getPosition().add(velocity);
         Vector2 velocity = new Vector2(direction).scl(getSpeed() * Gdx.graphics.getDeltaTime());
-        getPosition().add(velocity);
+        Vector2 newPos = new Vector2(getPosition()).add(velocity);
+        setPosition(newPos);
     }
     
     public float getDamage() {
         return damage;
     }
     
-    public Minion getTarget() {
-        return target;
+    public Vector2 getTargetPosition() {
+        return target != null ? target.getPosition() : null;
+    }
+    
+    /**
+     * Checks if the target is still valid (not null and not dead)
+     * @return true if the target is valid, false otherwise
+     */
+    public boolean hasValidTarget() {
+        return target != null && !target.isDead();
     }
 
     public void render(ShapeRenderer shapeRenderer) {

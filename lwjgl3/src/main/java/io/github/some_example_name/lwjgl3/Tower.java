@@ -13,39 +13,62 @@ public class Tower extends AbstractStaticObject{
     	super(new Vector2(position), "tower", 1.0f, 250f, 10f, 0f);
     }
 
+    /**
+     * Finds the closest targetable entity within range
+     * @param entities List of all entities
+     * @return The closest targetable entity, or null if none in range
+     */
+    private Targetable findTarget(List<AbstractEntity> entities) {
+        Targetable closest = null;
+        float closestDistance = this.getRange();
+
+        for (AbstractEntity entity : entities) {
+            if (entity instanceof Targetable) {
+                Targetable target = (Targetable) entity;
+                
+                // Skip dead targets
+                if (target.isDead()) continue;
+                
+                Vector2 targetPos = target.getPosition();
+                float distance = Vector2.dst(
+                    this.getPosition().x, 
+                    this.getPosition().y, 
+                    targetPos.x, 
+                    targetPos.y
+                );
+                
+                if (distance < closestDistance) {
+                    closest = target;
+                    closestDistance = distance;
+                }
+            }
+        }
+        
+        return closest;
+    }
+
+    /**
+     * Creates projectiles targeting nearby enemies
+     * @param entities List of all entities
+     * @param delta Time elapsed since last frame
+     * @return List of newly created projectiles
+     */
     public List<Projectile> shoot(List<AbstractEntity> entities, float delta) {
         List<Projectile> projectiles = new ArrayList<>();
 
-        if (getCooldown() <= 0) {
-            Minion target = findTarget(entities);  // Find the closest minion
+        updateCooldown(delta);
+        
+        if (canFire()) {
+            Targetable target = findTarget(entities);
             if (target != null) {
-                projectiles.add(new Projectile(position, target, this.getDamage())); // Fire projectile
-                setCooldown(this.getFireRate());
+                projectiles.add(new Projectile(getPosition(), target, this.getDamage()));
+                resetCooldown();
             }
-        } else {
-            setCooldown(getCooldown() - delta);
         }
 
-        return projectiles;  // Return the newly created projectiles
+        return projectiles;
     }
 
-    private Minion findTarget(List<AbstractEntity> entites) {
-        Minion closest = null;
-        float closestDistance = this.getRange();
-
-        for (AbstractEntity entity : entites) {
-        	if(entity instanceof Minion) {
-        		Minion minion = (Minion) entity;
-        		float distance = Vector2.dst(this.position.x, this.position.y, minion.getPosition().x, minion.getPosition().y);
-                if (distance < closestDistance) {
-                    closest = minion;
-                    closestDistance = distance;
-                }
-        	}
-            
-        }
-        return closest;
-    }
 
     public void render(ShapeRenderer shapeRenderer) {
         shapeRenderer.setColor(0, 0, 1, 1); // Blue color for tower

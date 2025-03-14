@@ -95,7 +95,9 @@ public class EntityManager{
         // Add new projectiles after iteration
         entities.addAll(newProjectiles);
 
-		CollisionManager.handleCollisions(entities);
+        // Use the fixed CollisionManager that returns entities to remove
+        List<AbstractEntity> collisionsToRemove = CollisionManager.handleCollisions(entities);
+        entities.removeAll(collisionsToRemove);
 	}
 	
 	public void render(ShapeRenderer shapeRenderer) {
@@ -105,7 +107,8 @@ public class EntityManager{
 		}
 		shapeRenderer.end();
 	}
-	public List<AbstractEntity> getEntities(){
-		return entities;
+	
+	public List<AbstractEntity> getEntities() {
+	    return new ArrayList<>(entities);
 	}
 }

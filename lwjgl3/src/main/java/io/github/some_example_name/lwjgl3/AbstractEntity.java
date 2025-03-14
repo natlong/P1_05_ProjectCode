@@ -35,7 +35,7 @@ public abstract class AbstractEntity{
 	 
 	 //public void setTex(Texture tex) {
 	//	 this.tex = tex;
-	 //}
+	 //}x`
 	 
 	 public String getName() {
 		 return this.name;

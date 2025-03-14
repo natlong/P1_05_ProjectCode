@@ -23,12 +23,12 @@ public class Map {
     
     private Rectangle DEFAULT_SPAWN = new Rectangle(1, 98, 25, 119);
     
-    public static String SPAWN_LAYER = "Spawnpoint_Layer";
-    public static String SPAWN_AREA = "spawn";
-    public static String BLOCKED_LAYER = "Blockarea_Layer";
-    public static String PATH_LAYER = "Path_Layer";
-    public static String GAMEOVER_LAYER = "Gameover_Layer";
-    public static String GAMEOVER_AREA = "gameover" ;
+    public static final String SPAWN_LAYER = "Spawnpoint_Layer";
+    public static final String SPAWN_AREA = "spawn";
+    public static final String BLOCKED_LAYER = "Blockarea_Layer";
+    public static final String PATH_LAYER = "Path_Layer";
+    public static final String GAMEOVER_LAYER = "Gameover_Layer";
+    public static final String GAMEOVER_AREA = "gameover" ;
 
 
     public Map(String mapFilePath) {
@@ -58,7 +58,7 @@ public class Map {
        }
     
     public ArrayList<Rectangle> getBlockedAreas() {
-        return blockedAreas;
+        return new ArrayList<>(blockedAreas);
     }
     
     private ArrayList<Rectangle> initiateWalkingPath(){
@@ -78,7 +78,7 @@ public class Map {
        }
 
     public ArrayList<Rectangle> getWalkingPath() {
-        return walkingPath;
+        return new ArrayList<>(walkingPath);
     }
 
 	
@@ -222,6 +222,12 @@ public class Map {
         if (!waypoints.isEmpty()) {
             waypoints.remove(waypoints.size() - 1);
         }
-        return waypoints;
+        // Create a defensive copy with new Vector2 instances
+        ArrayList<Vector2> result = new ArrayList<>(waypoints.size());
+        for (Vector2 waypoint : waypoints) {
+            result.add(new Vector2(waypoint));
+        }
+        
+        return result;
     }
 }

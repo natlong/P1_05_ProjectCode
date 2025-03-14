@@ -15,14 +15,14 @@ import com.badlogic.gdx.math.Vector2;
 import java.util.ArrayList;
 
 
-public class Minion extends AbstractMovableObject{
+public class Minion extends AbstractMovableObject implements Targetable{
 
-    private static int FRAME_COLS = 6;
-    private static int FRAME_ROWS = 1;
-    private static int DEFAULT_WIDTH = 32;  //the minion width
-    private static int DEFAULT_HEIGHT = 32; //the minion height
-    private static int MAP_WIDTH = 40; //the tiled map i set 40x30
-    private static int MAP_HEIGHT = 30;
+    private static final int FRAME_COLS = 6;
+    private static final int FRAME_ROWS = 1;
+    private static final int DEFAULT_WIDTH = 32;  //the minion width
+    private static final int DEFAULT_HEIGHT = 32; //the minion height
+    private static final int MAP_WIDTH = 40; //the tiled map i set 40x30
+    private static final int MAP_HEIGHT = 30;
     
     private Map map;
     private float stateTime;

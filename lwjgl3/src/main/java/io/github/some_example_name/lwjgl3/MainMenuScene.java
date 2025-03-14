@@ -18,9 +18,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 
 public class MainMenuScene extends AbstractScene {
-	private static int BUTTON_WIDTH = 200;
-	private static int BUTTON_HEIGHT = 50;
-	private static int BUTTON_PAD = 10;
+	private static final int BUTTON_WIDTH = 200;
+	private static final int BUTTON_HEIGHT = 50;
+	private static final int BUTTON_PAD = 10;
 	
     private Texture backgroundTexture;
     private Skin skin;

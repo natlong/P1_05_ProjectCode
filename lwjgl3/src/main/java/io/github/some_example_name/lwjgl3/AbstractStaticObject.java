@@ -55,4 +55,29 @@ public abstract class AbstractStaticObject extends AbstractEntity{
 	 public void setCooldown(float cooldown) {
 		 this.cooldown = cooldown;
 	 }
+	 
+	 /**
+	     * Updates the cooldown by subtracting the specified delta time
+	     * @param delta The time elapsed since the last update
+	     */
+	    protected void updateCooldown(float delta) {
+	        if (cooldown > 0) {
+	            cooldown = Math.max(0, cooldown - delta);
+	        }
+	    }
+	    
+	    /**
+	     * Checks if the object is ready to fire
+	     * @return true if cooldown is 0, false otherwise
+	     */
+	    protected boolean canFire() {
+	        return cooldown <= 0;
+	    }
+	    
+	    /**
+	     * Resets the cooldown to the fire rate after firing
+	     */
+	    protected void resetCooldown() {
+	        cooldown = fireRate;
+	    }
 }
