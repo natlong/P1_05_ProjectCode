@@ -45,6 +45,10 @@ public abstract class AbstractMovableObject extends AbstractEntity implements Mo
 	 public void setMaxHp(float maxHp) {
 		 this.maxHp = maxHp;
 	 }
-	 
-	 public abstract void update(float delta);
+
+	 public void update(float delta) {
+		 movement();
+	 }
+
+	 public abstract void movement();
 }
