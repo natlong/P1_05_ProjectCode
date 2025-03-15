@@ -9,7 +9,6 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import java.util.ArrayList;
 
-
 public class Minion extends AbstractMovableObject implements Targetable{
 
     private static final int DEFAULT_WIDTH = 32;  //the minion width
