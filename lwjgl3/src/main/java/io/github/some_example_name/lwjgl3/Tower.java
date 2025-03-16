@@ -1,6 +1,7 @@
 package io.github.some_example_name.lwjgl3;
 
-//import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 
@@ -8,9 +9,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Tower extends AbstractStaticObject{
+	
+	private Texture towerTexture;
     
     public Tower(Vector2 position) {
     	super(new Vector2(position), "tower", 1.0f, 250f, 10f, 0f);
+    	towerTexture = new Texture("tower.png");
     }
 
     /**
@@ -69,9 +73,20 @@ public class Tower extends AbstractStaticObject{
         return projectiles;
     }
 
-
-    public void render(ShapeRenderer shapeRenderer) {
-        shapeRenderer.setColor(0, 0, 1, 1); // Blue color for tower
-        shapeRenderer.rect(this.position.x - 15, this.position.y - 15, 30, 30);
+    //Renders the tower using ShapeRenderer.
+    //public void render(ShapeRenderer shapeRenderer) {
+    //   shapeRenderer.setColor(0, 0, 1, 1); // Blue color for tower
+    //   shapeRenderer.rect(this.position.x - 15, this.position.y - 15, 0, 0);
+    //    }
+	
+    //Renders the tower with its texture using SpriteBatch.
+    public void render(SpriteBatch batch) {
+        batch.draw(towerTexture, this.position.x - 15, this.position.y - 15, 50, 50); // Added from Tower 2.java
+    }
+    
+    public void dispose() {
+        if (towerTexture != null) {
+            towerTexture.dispose();
+        }
     }
 }

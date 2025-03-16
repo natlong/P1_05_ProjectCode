@@ -239,6 +239,7 @@ public class GameScene extends AbstractScene {
         }
 
         entityManager.render(shapeRenderer);
+        entityManager.render(batch);
         stage.act(delta);
         stage.draw();
     }

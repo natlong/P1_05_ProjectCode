@@ -2,6 +2,7 @@ package io.github.some_example_name.lwjgl3;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -110,6 +111,18 @@ public class EntityManager {
             entity.render(shapeRenderer);
         }
         shapeRenderer.end();
+    }
+    
+    public void render(SpriteBatch batch) {
+        batch.begin();
+        for (AbstractEntity entity : entities) {
+            if (entity instanceof Tower) {
+                ((Tower) entity).render(batch);
+            } else if (entity instanceof Minion || entity instanceof Projectile) {
+                entity.render(batch);
+            }
+        }
+        batch.end();
     }
 
     public List<AbstractEntity> getEntities() {
