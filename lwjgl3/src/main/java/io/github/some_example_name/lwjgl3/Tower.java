@@ -11,10 +11,12 @@ import java.util.List;
 public class Tower extends AbstractStaticObject{
 	
 	private Texture towerTexture;
+	private SoundManager soundManager;
     
-    public Tower(Vector2 position) {
+    public Tower(Vector2 position, SoundManager soundManager) {
     	super(new Vector2(position), "tower", 1.0f, 250f, 10f, 0f);
     	towerTexture = new Texture("tower.png");
+    	this.soundManager = soundManager;
     }
 
     /**
@@ -66,6 +68,10 @@ public class Tower extends AbstractStaticObject{
             Targetable target = findTarget(entities);
             if (target != null) {
                 projectiles.add(new Projectile(getPosition(), target, this.getDamage()));
+                
+                if (soundManager != null) {
+                    soundManager.playShootingSoundeffect();}
+                
                 resetCooldown();
             }
         }

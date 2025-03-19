@@ -18,7 +18,7 @@ import com.badlogic.gdx.math.Vector3;
 
 public class GameScene extends AbstractScene {
 	private static final int BUTTON_SIZE = 60;
-	private static final int GAME_OVER_THRESHOLD = 1;
+	private static final int GAME_OVER_THRESHOLD = 5;
 	private DebugRenderer debugRenderer;
     private ImageButton pauseButton;
     private ImageButton settingsButton;
@@ -29,11 +29,11 @@ public class GameScene extends AbstractScene {
     private Map map;
     private OptionsScene optionsScreen;
     private GameOverScene gameOverScene;
-    
     private Texture pauseTexture;
     private Texture isPauseTexture;
     private TextureRegionDrawable pauseDrawable;
     private TextureRegionDrawable isPauseDrawable;
+    private Creature creature;
     
 //    private GameCore game;
     private boolean isPaused;
@@ -50,17 +50,27 @@ public class GameScene extends AbstractScene {
     }
     
     protected void init() {
+    
+    	
          camera.position.set(GameCore.VIEWPORT_WIDTH / 2, GameCore.VIEWPORT_HEIGHT / 2, 0);
          camera.update();
          
          batch = new SpriteBatch();
          shapeRenderer = new ShapeRenderer();
+         soundManager = new SoundManager();
+         soundManager.playGameMusic();
          
          // load tilemap
          map = new Map("level.tmx");
-         entityManager = new EntityManager(camera, map);
-         soundManager = new SoundManager();
-         soundManager.playGameMusic();
+         entityManager = new EntityManager(camera, map, soundManager);
+
+     	Rectangle gameoverArea = map.getGameoverPoint();
+     	if (gameoverArea != null) { 
+     		float xOffset = 10f;
+     		float yOffset = -40f;
+     	    creature = new Creature(gameoverArea.x + xOffset, gameoverArea.y + yOffset);
+     	    creature.setSoundManager(soundManager);
+     	}
          
          createButtons();
          handleInput();
@@ -165,6 +175,10 @@ public class GameScene extends AbstractScene {
     	if (!isPaused) {
             entityManager.update(delta);
             
+            if (creature != null) {
+                creature.update(delta);
+            }
+            
          // Count minions that have reached the gameover area.
             int count = 0;
             Rectangle gameoverArea = map.getGameoverPoint();
@@ -172,6 +186,10 @@ public class GameScene extends AbstractScene {
                 for (AbstractEntity entity : entityManager.getEntities()) {
                 	if (entity instanceof Minion && ((Minion) entity).getBounds().overlaps(gameoverArea)) {
                         count++;
+                        
+                        if (creature != null) {
+                            creature.startEating();
+                        }
                     }
                 }
             }
@@ -200,7 +218,7 @@ public class GameScene extends AbstractScene {
 	    map = new Map("level.tmx");
 	    //restart entity for game
 	    if (entityManager != null) {
-            entityManager = new EntityManager(camera, map);
+            entityManager = new EntityManager(camera, map,soundManager);
         }
         
         // Reset game-over overlay.
@@ -229,12 +247,12 @@ public class GameScene extends AbstractScene {
                 // Left-Click to place a tower.
                 if (button == Input.Buttons.LEFT) {
                     if (!map.isGreenArea(x, y)) {
-                        entityManager.addEntity(new Tower(new Vector2(x, y)));
+                        entityManager.addEntity(new Tower(new Vector2(x, y),soundManager));
                     }
                 }
                 // Right-Click to remove a tower.
                 if (button == Input.Buttons.RIGHT) {
-                    entityManager.removeEntity(new Tower(new Vector2(x, y)));
+                    entityManager.removeEntity(new Tower(new Vector2(x, y),soundManager));
                 }
                 return true;
             }
@@ -251,7 +269,7 @@ public class GameScene extends AbstractScene {
         createButtons();
         
         if (entityManager == null) {
-            entityManager = new EntityManager(camera, map);
+            entityManager = new EntityManager(camera, map,soundManager);
         }
     }
 
@@ -272,6 +290,13 @@ public class GameScene extends AbstractScene {
 
         entityManager.render(shapeRenderer);
         entityManager.render(batch);
+        
+        if (creature != null) {
+            batch.begin();
+            batch.setProjectionMatrix(camera.combined);
+            creature.render(batch);
+            batch.end();
+        }
         
         
         //Pause Overlay if Game is Paused,
@@ -334,5 +359,9 @@ public class GameScene extends AbstractScene {
         //Dispose of Pause Buttons,
         if (pauseTexture != null) pauseTexture.dispose();
         if (isPauseTexture != null) isPauseTexture.dispose();
-	}
+        
+        if (creature != null) {
+            creature.dispose();
+        }
+}
 }

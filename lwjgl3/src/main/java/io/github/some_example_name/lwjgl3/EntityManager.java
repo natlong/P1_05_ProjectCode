@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Random;
 
 public class EntityManager {
+	private SoundManager soundManager; 
     private List<AbstractEntity> entities;
     private OrthographicCamera camera;
     private Map map;
@@ -19,10 +20,11 @@ public class EntityManager {
     private float maxSpawnInterval = 3f; // Maximum spawn interval (e.g., 3 seconds)
     private Random random = new Random();
 
-    public EntityManager(OrthographicCamera camera, Map map) {
+    public EntityManager(OrthographicCamera camera, Map map, SoundManager soundManager) {
         this.entities = new ArrayList<>();
         this.camera = camera;
         this.map = map;
+        this.soundManager = soundManager;
         setRandomSpawnInterval(); // Set the initial random spawn interval
     }
 
@@ -31,7 +33,12 @@ public class EntityManager {
     }
 
     public void addEntity(AbstractEntity entity) {
-        entities.add(entity);
+        if (entity instanceof Tower && soundManager != null) {
+            Tower tower = new Tower(entity.getPosition(), soundManager);
+            entities.add(tower);
+        } else {
+            entities.add(entity);
+        }
     }
 
     public void removeEntity(AbstractEntity entity) {
