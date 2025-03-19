@@ -106,10 +106,32 @@ public class EntityManager {
     }
 
     public void render(ShapeRenderer shapeRenderer) {
+    	//Enabling Blending for Tower Indicator,
+        com.badlogic.gdx.Gdx.gl.glEnable(com.badlogic.gdx.graphics.GL20.GL_BLEND);
+        com.badlogic.gdx.Gdx.gl.glBlendFunc(com.badlogic.gdx.graphics.GL20.GL_SRC_ALPHA, 
+        com.badlogic.gdx.graphics.GL20.GL_ONE_MINUS_SRC_ALPHA);
+
+        //Rendering Tower Indicator,
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        
+        for (AbstractEntity entity : entities) {
+        	if (entity instanceof Tower) {
+        		Tower tower = (Tower) entity;
+        		tower.renderRange(shapeRenderer);
+        	}
+        }
+        
+        //Disable Blending once Done,
+        shapeRenderer.end();
+        com.badlogic.gdx.Gdx.gl.glDisable(com.badlogic.gdx.graphics.GL20.GL_BLEND);
+        
+        //Rendering Tower Object,
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        
         for (AbstractEntity entity : entities) {
             entity.render(shapeRenderer);
         }
+        
         shapeRenderer.end();
     }
     

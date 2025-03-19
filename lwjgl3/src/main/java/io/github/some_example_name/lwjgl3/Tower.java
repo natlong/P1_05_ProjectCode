@@ -77,7 +77,14 @@ public class Tower extends AbstractStaticObject{
     public void render(ShapeRenderer shapeRenderer) {
        shapeRenderer.setColor(0, 0, 1, 1); // Blue color for tower
        shapeRenderer.rect(this.position.x - 15, this.position.y - 15, 0, 0);
-        }
+        
+    }
+    
+    //Rendering Tower Indicator using ShapeRenderer,
+    public void renderRange(ShapeRenderer shapeRenderer) {
+    	shapeRenderer.setColor(1, 1, 1, 0.25f);
+    	shapeRenderer.circle(this.position.x, this.position.y, this.getRange());
+    }
 	
     //Renders the tower with its texture using SpriteBatch.
     public void render(SpriteBatch batch) {
