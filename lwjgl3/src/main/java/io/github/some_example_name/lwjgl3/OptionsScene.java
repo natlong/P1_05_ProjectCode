@@ -20,6 +20,8 @@ public class OptionsScene extends Window {
     private ImageButton volumeButton;
     private TextButton backButton;
     private SoundManager soundManager;
+    
+	private OptionsClosedListener listener;
 
     public OptionsScene(Skin skin, Stage stage, SoundManager soundManager) {
     	//call skin from parent "Mainmenuscren" 
@@ -112,11 +114,26 @@ public class OptionsScene extends Window {
 	        });
 		}
 
+		//Interface for Options Listener,
+		public interface OptionsClosedListener {
+			void onOptionsClosed();
+		}
+		
+		//Method to Set Listener for GameCore,
+		public void setOptionsClosedListener(OptionsClosedListener x) {
+			this.listener = x;
+		}
+		
+		//Update Back Button for Options Menu,
         private void backButtonListener() {
             backButton.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
-                    remove();
+                    if (listener != null) {
+                    	listener.onOptionsClosed();
+                    }
+                	
+                	remove();
                 }
             });
 			

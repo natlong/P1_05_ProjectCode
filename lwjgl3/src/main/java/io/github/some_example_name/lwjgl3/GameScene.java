@@ -29,6 +29,12 @@ public class GameScene extends AbstractScene {
     private Map map;
     private OptionsScene optionsScreen;
     private GameOverScene gameOverScene;
+    
+    private Texture pauseTexture;
+    private Texture isPauseTexture;
+    private TextureRegionDrawable pauseDrawable;
+    private TextureRegionDrawable isPauseDrawable;
+    
 //    private GameCore game;
     private boolean isPaused;
 
@@ -62,22 +68,24 @@ public class GameScene extends AbstractScene {
    
 	    
     private void createButtons() {
-        // Load the pause button texture
-        Texture pauseTexture = new Texture(Gdx.files.internal("pause.png"));
+        //Loading Textures,
+        pauseTexture = new Texture(Gdx.files.internal("pause.png"));
+        isPauseTexture = new Texture(Gdx.files.internal("start.png"));
         Texture settingsTexture = new Texture(Gdx.files.internal("settings.png"));
 
-        
-        TextureRegionDrawable pauseDrawable = new TextureRegionDrawable(pauseTexture);
+        //Create Drawables,
+        pauseDrawable = new TextureRegionDrawable(pauseTexture);
+        isPauseDrawable = new TextureRegionDrawable(isPauseTexture);
         TextureRegionDrawable settingsDrawable = new TextureRegionDrawable(settingsTexture);
         
-
-        //create buttons
-        pauseButton = new ImageButton(pauseDrawable);
+        //Button Configuration,
+        ImageButton.ImageButtonStyle pauseButtonStyle = new ImageButton.ImageButtonStyle();
+        pauseButtonStyle.up = pauseDrawable; //Settings Default State,
+        
+        //Create Dynamic Buttons,
+        pauseButton = new ImageButton(pauseButtonStyle);
         settingsButton = new ImageButton(settingsDrawable);
         
-        //button size
-        pauseButton.setSize(BUTTON_SIZE, BUTTON_SIZE);
-        settingsButton.setSize(BUTTON_SIZE, BUTTON_SIZE);
         
         //button position, top down arrangement
         float topY = GameCore.VIEWPORT_HEIGHT-60;
@@ -92,15 +100,19 @@ public class GameScene extends AbstractScene {
         stage.addActor(settingsButton);
         }
 
-        
+    //Configure Dynamic Changes,
     private void pauseButtonListener() {
         pauseButton.addListener(new com.badlogic.gdx.scenes.scene2d.InputListener() {
             @Override
             public boolean touchDown(com.badlogic.gdx.scenes.scene2d.InputEvent event, float x, float y, int pointer, int button) {
                 if (isPaused) {
                     resume();
+                    ((ImageButton.ImageButtonStyle)pauseButton.getStyle()).up = pauseDrawable;
+                    
                 } else {
                     pause();
+                    ((ImageButton.ImageButtonStyle)pauseButton.getStyle()).up = isPauseDrawable;
+
                 }
                 return true;
             }
@@ -120,11 +132,31 @@ public class GameScene extends AbstractScene {
 
     private void openSettings() {
         Gdx.app.log("GameScreen", "Settings button clicked");
+        
+        //Pause the Game,
+        if (!isPaused) {
+        	pause();
+        }
+        
+        //Create the Options Popup,
         if (optionsScreen != null) {
             optionsScreen.dispose();
         }
+        
         Skin skin = new Skin(Gdx.files.internal("skin/lgdxs-ui.json"));
         optionsScreen = new OptionsScene(skin, stage, soundManager);
+        
+        //Resume Game when Options Menu is Closed,
+        optionsScreen.setOptionsClosedListener(new OptionsScene.OptionsClosedListener() {
+			@Override
+			//Allows Resuming, if Game is not Over,
+			public void onOptionsClosed() {
+				if (gameOverScene == null) {
+					resume();
+				}
+			}
+		});
+        
         stage.addActor(optionsScreen);
     }
     
@@ -240,6 +272,28 @@ public class GameScene extends AbstractScene {
 
         entityManager.render(shapeRenderer);
         entityManager.render(batch);
+        
+        
+        //Pause Overlay if Game is Paused,
+        if (isPaused) {
+        	//Allow Transparency,
+        	Gdx.gl.glEnable(GL20.GL_BLEND);
+        	Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        
+        	//Create Rectangle to be Semi-Transparent,
+        	shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        	shapeRenderer.setColor(0.3f, 0.3f, 0.3f, 0.3f);
+        	
+        	//Overlays the Entire Screen,
+        	shapeRenderer.setProjectionMatrix(camera.combined);
+        	shapeRenderer.rect(0, 0, GameCore.VIEWPORT_WIDTH, GameCore.VIEWPORT_HEIGHT);
+        	
+        	shapeRenderer.end();
+        	
+        	//Disable Blending,
+        	Gdx.gl.glDisable(GL20.GL_BLEND);
+        }
+        
         stage.act(delta);
         stage.draw();
     }
@@ -276,5 +330,9 @@ public class GameScene extends AbstractScene {
         debugRenderer.dispose ();
         soundManager.dispose();
         shapeRenderer.dispose();
+        
+        //Dispose of Pause Buttons,
+        if (pauseTexture != null) pauseTexture.dispose();
+        if (isPauseTexture != null) isPauseTexture.dispose();
 	}
 }
