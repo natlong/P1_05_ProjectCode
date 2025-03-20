@@ -2,12 +2,16 @@ package io.github.some_example_name.lwjgl3;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -35,8 +39,14 @@ public class GameScene extends AbstractScene {
     private TextureRegionDrawable isPauseDrawable;
     private Creature creature;
     
-//    private GameCore game;
+    //Game Pause Variable,
     private boolean isPaused;
+    
+    //UI Level Variable,
+    private static final float LEVEL_DISPLAY_DURATION = 2.0f;
+    private BitmapFont levelFont;
+    private float displayTimer;
+    private int currentLevel = 1;
 
 
     public GameScene(GameCore game) {
@@ -50,7 +60,12 @@ public class GameScene extends AbstractScene {
     }
     
     protected void init() {
-    
+    	//Level Display,
+    	levelFont = new BitmapFont();
+    	levelFont.getData().setScale(3);
+    	levelFont.setColor(Color.WHITE);
+    	resetLevelDisplay();
+    	
     	
          camera.position.set(GameCore.VIEWPORT_WIDTH / 2, GameCore.VIEWPORT_HEIGHT / 2, 0);
          camera.update();
@@ -110,6 +125,18 @@ public class GameScene extends AbstractScene {
         stage.addActor(settingsButton);
         }
 
+    //Reset Display Timer,
+    private void resetLevelDisplay() {
+    	displayTimer = LEVEL_DISPLAY_DURATION;
+    }
+    
+    //Next Level Display,
+    public void nextLevel() {
+    	currentLevel++;
+    	resetLevelDisplay();
+    }
+  
+    
     //Configure Dynamic Changes,
     private void pauseButtonListener() {
         pauseButton.addListener(new com.badlogic.gdx.scenes.scene2d.InputListener() {
@@ -173,6 +200,10 @@ public class GameScene extends AbstractScene {
     @Override
 	public void update(float delta) {
     	if (!isPaused) {
+    		if (displayTimer > 0) {
+    			displayTimer -= delta;
+    		}
+    		
             entityManager.update(delta);
             
             if (creature != null) {
@@ -210,6 +241,10 @@ public class GameScene extends AbstractScene {
     }
     
     public void resetGame() {
+    	//Reset Level,
+    	currentLevel = 1;
+    	resetLevelDisplay();
+    	
 	    //reset map
 	    if (map != null) {
 	        map.dispose();
@@ -298,6 +333,20 @@ public class GameScene extends AbstractScene {
             batch.end();
         }
         
+        //Display Level Number,
+        if (displayTimer > 0) {
+        	batch.begin();
+        	String levelText = "Level " + currentLevel;
+        	
+        	//Enable Smooth Fading Effect,
+        	float alpha = Math.min(1.0f, displayTimer/0.5f);
+        	levelFont.setColor(1, 1, 1, alpha);
+
+        	//Centering Level Display,
+        	Vector2 textPosition = new Vector2(camera.position.x - (getTextWidth(levelText)/2), camera.position.y);
+        	levelFont.draw(batch, levelText, textPosition.x, textPosition.y);
+        	batch.end();
+        }
         
         //Pause Overlay if Game is Paused,
         if (isPaused) {
@@ -322,7 +371,14 @@ public class GameScene extends AbstractScene {
         stage.act(delta);
         stage.draw();
     }
+    
+    //Get Display Level Width,
+    private float getTextWidth(String x) {
+    	GlyphLayout layout = new GlyphLayout(levelFont, x);
+    	return layout.width;
+    }
 
+    
     @Override
     public void resize(int width, int height) {
     	stage.getViewport().update(width, height);
@@ -362,6 +418,10 @@ public class GameScene extends AbstractScene {
         
         if (creature != null) {
             creature.dispose();
+        }
+        
+        if (levelFont != null) {
+        	levelFont.dispose();
         }
 }
 }
