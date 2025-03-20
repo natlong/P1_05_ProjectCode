@@ -11,8 +11,14 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+
+
+
+import com.badlogic.gdx.utils.Align;
 
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -47,9 +53,17 @@ public class GameScene extends AbstractScene {
     
     //UI Level Variable,
     private static final float LEVEL_Y_OFFSET = 20f;
-    private BitmapFont levelFont;
+    private static final float TOP_SPACING = 30f;
+    private Skin skin;
+    private Table HealthAndCoinTable;
+    
+    private Label levelLabel;
+    private Label healthLabel;
+    private Label coinsLabel;
+    
     private int currentLevel = 1;
-
+    private int playerHealth = 5;
+    private int playerCoins = 500;
 
     public GameScene(GameCore game) {
     	super();
@@ -62,11 +76,23 @@ public class GameScene extends AbstractScene {
     }
     
     protected void init() {
-    	//Level Display,
-    	levelFont = new BitmapFont();
-    	levelFont.getData().setScale(2);
-    	levelFont.setColor(Color.WHITE);
+    	skin = new Skin(Gdx.files.internal("skin/lgdxs-ui.json"));
     	
+    	//Display Health and Coins Display,
+    	createHealthAndCoinsDisplay();
+    	
+    	//Level Display,
+    	levelLabel = new Label("Label " + currentLevel, skin);
+    	levelLabel.setAlignment(Align.center);
+    	levelLabel.setFontScale(1.5f);
+    	levelLabel.setColor(Color.WHITE);
+    	
+    	//Position Label at Top Center,
+    	levelLabel.setPosition((GameCore.VIEWPORT_WIDTH - levelLabel.getPrefWidth()) / 2, GameCore.VIEWPORT_HEIGHT - LEVEL_Y_OFFSET - TOP_SPACING);
+    	
+    	//Adding to Stage,
+    	stage.addActor(levelLabel);
+    	setLevel(1);
     	
          camera.position.set(GameCore.VIEWPORT_WIDTH / 2, GameCore.VIEWPORT_HEIGHT / 2, 0);
          camera.update();
@@ -126,9 +152,51 @@ public class GameScene extends AbstractScene {
         stage.addActor(settingsButton);
         }
     
-    //Next Level Display,
-    public void setLevel(int level) {
-    	currentLevel = level;
+    //Create Health and Coins Display,
+    private void createHealthAndCoinsDisplay() {
+    	Skin skin = new Skin(Gdx.files.internal("skin/lgdxs-ui.json"));
+    	
+    	//Create Labels,
+    	healthLabel = new Label("Health: " + playerHealth, skin);
+    	coinsLabel = new Label("Coins: " + playerCoins, skin);
+    	
+    	//Create Layout Table,
+    	HealthAndCoinTable = new Table();
+    	HealthAndCoinTable.bottom().right();
+    	HealthAndCoinTable.setFillParent(true);
+    	HealthAndCoinTable.pad(10);
+    	
+    	//Adding Items to Table,
+    	HealthAndCoinTable.add(healthLabel).padBottom(5).row();
+    	HealthAndCoinTable.add(coinsLabel);
+    	
+    	stage.addActor(HealthAndCoinTable);
+    }
+    
+    //Update Health Display,
+    public void updateHealth(int x) {
+    	playerHealth = x;
+    	
+    	healthLabel.setText("Health: " + playerHealth);
+    }
+    
+    //Update Coins Display,
+    public void updateCoins(int x) {
+    	playerCoins = x;
+    	
+    	coinsLabel.setText("Coins: " + playerCoins);
+    }
+    
+    //Update Level Display,
+    public void setLevel(int x) {
+    	currentLevel = x;
+    	
+    	if (levelLabel != null) {
+    		levelLabel.setText("Level " + currentLevel);
+    	}
+    	
+    	//Centering after Update,
+    	levelLabel.setPosition((GameCore.VIEWPORT_WIDTH - levelLabel.getPrefWidth()) / 2, GameCore.VIEWPORT_HEIGHT - LEVEL_Y_OFFSET - TOP_SPACING);
     }
   
     
@@ -236,7 +304,7 @@ public class GameScene extends AbstractScene {
     
     public void resetGame() {
     	//Reset Level,
-    	currentLevel = 1;
+    	setLevel(1);
     	
 	    //reset map
 	    if (map != null) {
@@ -346,19 +414,8 @@ public class GameScene extends AbstractScene {
         	Gdx.gl.glDisable(GL20.GL_BLEND);
         }
         
-        if (!isPaused) {
-            //Display Level Number,
-            batch.begin();
-            String levelText = "Level " + currentLevel;
-            
-            //Calculate Position of Screen,
-            GlyphLayout layout = new GlyphLayout(levelFont, levelText);
-            float x = (GameCore.VIEWPORT_WIDTH - layout.width)/2;
-            float y = (GameCore.VIEWPORT_HEIGHT - LEVEL_Y_OFFSET);
-            
-            levelFont.draw(batch, levelText, x, y);
-            batch.end();
-        }
+        //Update Level Visibility,
+        //levelLabel.setVisible(!isPaused);
         
         stage.act(delta);
         stage.draw();
@@ -405,8 +462,13 @@ public class GameScene extends AbstractScene {
             creature.dispose();
         }
         
-        if (levelFont != null) {
-        	levelFont.dispose();
+        if (skin != null) {
+        	skin.dispose();
+        	skin = null;
+        }
+        
+        if (HealthAndCoinTable != null) {
+        	HealthAndCoinTable.remove();
         }
 }
 }
