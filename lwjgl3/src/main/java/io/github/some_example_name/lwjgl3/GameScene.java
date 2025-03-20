@@ -1,23 +1,26 @@
 package io.github.some_example_name.lwjgl3;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
+
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.math.Interpolation;
+
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector3;
+
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.math.Vector3;
 
 
 public class GameScene extends AbstractScene {
@@ -43,9 +46,8 @@ public class GameScene extends AbstractScene {
     private boolean isPaused;
     
     //UI Level Variable,
-    private static final float LEVEL_DISPLAY_DURATION = 2.0f;
+    private static final float LEVEL_Y_OFFSET = 20f;
     private BitmapFont levelFont;
-    private float displayTimer;
     private int currentLevel = 1;
 
 
@@ -62,9 +64,8 @@ public class GameScene extends AbstractScene {
     protected void init() {
     	//Level Display,
     	levelFont = new BitmapFont();
-    	levelFont.getData().setScale(3);
+    	levelFont.getData().setScale(2);
     	levelFont.setColor(Color.WHITE);
-    	resetLevelDisplay();
     	
     	
          camera.position.set(GameCore.VIEWPORT_WIDTH / 2, GameCore.VIEWPORT_HEIGHT / 2, 0);
@@ -124,16 +125,10 @@ public class GameScene extends AbstractScene {
         stage.addActor(pauseButton);
         stage.addActor(settingsButton);
         }
-
-    //Reset Display Timer,
-    private void resetLevelDisplay() {
-    	displayTimer = LEVEL_DISPLAY_DURATION;
-    }
     
     //Next Level Display,
-    public void nextLevel() {
-    	currentLevel++;
-    	resetLevelDisplay();
+    public void setLevel(int level) {
+    	currentLevel = level;
     }
   
     
@@ -199,16 +194,15 @@ public class GameScene extends AbstractScene {
     
     @Override
 	public void update(float delta) {
-    	if (!isPaused) {
-    		if (displayTimer > 0) {
-    			displayTimer -= delta;
+    	
+    		//Only Update Game if NOT Paused,
+    		if (!isPaused) {
+                entityManager.update(delta);
+                
+                if (creature != null) {
+                    creature.update(delta);
+                }
     		}
-    		
-            entityManager.update(delta);
-            
-            if (creature != null) {
-                creature.update(delta);
-            }
             
          // Count minions that have reached the gameover area.
             int count = 0;
@@ -228,7 +222,7 @@ public class GameScene extends AbstractScene {
             if (count >= GAME_OVER_THRESHOLD) {
                 showGameOver();
             }
-        }
+        
 	}
     
     private void showGameOver() {
@@ -243,7 +237,6 @@ public class GameScene extends AbstractScene {
     public void resetGame() {
     	//Reset Level,
     	currentLevel = 1;
-    	resetLevelDisplay();
     	
 	    //reset map
 	    if (map != null) {
@@ -332,22 +325,7 @@ public class GameScene extends AbstractScene {
             creature.render(batch);
             batch.end();
         }
-        
-        //Display Level Number,
-        if (displayTimer > 0) {
-        	batch.begin();
-        	String levelText = "Level " + currentLevel;
-        	
-        	//Enable Smooth Fading Effect,
-        	float alpha = Math.min(1.0f, displayTimer/0.5f);
-        	levelFont.setColor(1, 1, 1, alpha);
 
-        	//Centering Level Display,
-        	Vector2 textPosition = new Vector2(camera.position.x - (getTextWidth(levelText)/2), camera.position.y);
-        	levelFont.draw(batch, levelText, textPosition.x, textPosition.y);
-        	batch.end();
-        }
-        
         //Pause Overlay if Game is Paused,
         if (isPaused) {
         	//Allow Transparency,
@@ -368,16 +346,23 @@ public class GameScene extends AbstractScene {
         	Gdx.gl.glDisable(GL20.GL_BLEND);
         }
         
+        if (!isPaused) {
+            //Display Level Number,
+            batch.begin();
+            String levelText = "Level " + currentLevel;
+            
+            //Calculate Position of Screen,
+            GlyphLayout layout = new GlyphLayout(levelFont, levelText);
+            float x = (GameCore.VIEWPORT_WIDTH - layout.width)/2;
+            float y = (GameCore.VIEWPORT_HEIGHT - LEVEL_Y_OFFSET);
+            
+            levelFont.draw(batch, levelText, x, y);
+            batch.end();
+        }
+        
         stage.act(delta);
         stage.draw();
     }
-    
-    //Get Display Level Width,
-    private float getTextWidth(String x) {
-    	GlyphLayout layout = new GlyphLayout(levelFont, x);
-    	return layout.width;
-    }
-
     
     @Override
     public void resize(int width, int height) {

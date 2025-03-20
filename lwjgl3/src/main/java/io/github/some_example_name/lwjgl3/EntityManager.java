@@ -3,7 +3,9 @@ package io.github.some_example_name.lwjgl3;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+
 import com.badlogic.gdx.math.Vector2;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
