@@ -43,21 +43,26 @@ public class EntityManager {
         }
     }
 
-    public void removeEntity(AbstractEntity entity) {
+    public boolean removeEntity(AbstractEntity entity) {
         Iterator<AbstractEntity> iterator = entities.iterator();
+        
         while (iterator.hasNext()) {
             AbstractEntity entityIterated = iterator.next();
+            
             if (entityIterated instanceof Tower) {
                 Tower tower = (Tower) entityIterated;
+                
                 if (tower.getPosition().dst(entity.position) < 15) {
                     iterator.remove();
-                    break;
+                    return true;
                 }
             } else if (entityIterated.getClass().equals(entity.getClass())) {
                 iterator.remove();
-                break;
+                return true;
             }
         }
+        
+        return false;
     }
 
     public void update(float delta) {

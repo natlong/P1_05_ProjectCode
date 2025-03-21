@@ -19,8 +19,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
-
-
 import com.badlogic.gdx.utils.Align;
 
 import com.badlogic.gdx.math.Rectangle;
@@ -57,7 +55,8 @@ public class GameScene extends AbstractScene {
     //UI Level Variable,
     private static final float LEVEL_Y_OFFSET = 20f;
     private static final float TOP_SPACING = 30f;
-    private Skin skin;
+    private static final float TOWER_REMOVAL_RADIUS = 30f;
+	//Skin skin = new Skin(Gdx.files.internal("skin/lgdxs-ui.json"));
     private Table HealthAndCoinTable;
     
     private Label levelLabel;
@@ -66,7 +65,8 @@ public class GameScene extends AbstractScene {
     
     private int currentLevel = 1;
     private int playerHealth = 5;
-    private int playerCoins = 500;
+    private int playerCoins = 300;
+    
 
     public GameScene(GameCore game) {
     	super();
@@ -79,12 +79,12 @@ public class GameScene extends AbstractScene {
     }
     
     protected void init() {
-    	skin = new Skin(Gdx.files.internal("skin/lgdxs-ui.json"));
     	
     	//Display Health and Coins Display,
     	createHealthAndCoinsDisplay();
     	
     	//Level Display,
+    	Skin skin = new Skin(Gdx.files.internal("skin/lgdxs-ui.json"));
     	levelLabel = new Label("Label " + currentLevel, skin);
     	levelLabel.setAlignment(Align.center);
     	levelLabel.setFontScale(1.5f);
@@ -97,7 +97,7 @@ public class GameScene extends AbstractScene {
     	stage.addActor(levelLabel);
     	setLevel(1);
     	updateHealth(5);
-    	updateCoins(500);
+    	updateCoins(300);
     	
          camera.position.set(GameCore.VIEWPORT_WIDTH / 2, GameCore.VIEWPORT_HEIGHT / 2, 0);
          camera.update();
@@ -248,7 +248,7 @@ public class GameScene extends AbstractScene {
             optionsScreen.dispose();
         }
         
-        Skin skin = new Skin(Gdx.files.internal("skin/lgdxs-ui.json"));
+    	Skin skin = new Skin(Gdx.files.internal("skin/lgdxs-ui.json"));
         optionsScreen = new OptionsScene(skin, stage, soundManager);
         
         //Resume Game when Options Menu is Closed,
@@ -305,7 +305,7 @@ public class GameScene extends AbstractScene {
     private void showGameOver() {
     	if (gameOverScene == null){
     		isPaused = true;
-	    	Skin skin = new Skin(Gdx.files.internal("skin/lgdxs-ui.json"));
+    		Skin skin = new Skin(Gdx.files.internal("skin/lgdxs-ui.json"));
 	        gameOverScene = new GameOverScene(skin, stage, this);
 	        stage.addActor(gameOverScene);
     	}
@@ -315,7 +315,7 @@ public class GameScene extends AbstractScene {
     	//Reset Level,
     	setLevel(1);
     	updateHealth(5);
-    	updateCoins(500);
+    	updateCoins(300);
     	
 	    //reset map
 	    if (map != null) {
@@ -354,14 +354,49 @@ public class GameScene extends AbstractScene {
                 // Left-Click to place a tower.
                 if (button == Input.Buttons.LEFT) {
                     if (map.isBlockedArea(x, y)) {
-                        entityManager.addEntity(new Tower(new Vector2(x, y),soundManager));
+                    	if (playerCoins >= 100) {
+                    		entityManager.addEntity(new Tower(new Vector2(x, y),soundManager));
+                    		updateCoins(playerCoins-100);
+                    	} else {
+                    		Gdx.app.log("Game", "Not enough coins to place Tower!");
+                    	}
+                        
+                    	return true;
                     }
                 }
+                
                 // Right-Click to remove a tower.
                 if (button == Input.Buttons.RIGHT) {
-                    entityManager.removeEntity(new Tower(new Vector2(x, y),soundManager));
+                    Tower towerToRemove = null;
+                    
+                    for (AbstractEntity entity : entityManager.getEntities()) {
+                        if (entity instanceof Tower) {
+                            Tower tower = (Tower) entity;
+                            float distance = tower.getPosition().dst(x, y);
+
+                            if (distance <= TOWER_REMOVAL_RADIUS) {
+                                towerToRemove = tower;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (towerToRemove != null) {
+                        boolean removed = entityManager.removeEntity(towerToRemove);
+                        
+                        if (removed) {
+                            updateCoins(playerCoins + 100);
+                            
+                        } else {
+                            Gdx.app.log("Game", "Failed to remove tower within range.");
+                        }
+                        
+                    } else {
+                        Gdx.app.log("Game", "No tower found within range!");
+                    }
+                    return true;
                 }
-                return true;
+                return false;
             }
         });
         
