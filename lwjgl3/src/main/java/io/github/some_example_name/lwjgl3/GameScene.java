@@ -1,5 +1,7 @@
 package io.github.some_example_name.lwjgl3;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.Gdx;
 
 import com.badlogic.gdx.graphics.Color;
@@ -12,6 +14,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
@@ -93,6 +96,8 @@ public class GameScene extends AbstractScene {
     	//Adding to Stage,
     	stage.addActor(levelLabel);
     	setLevel(1);
+    	updateHealth(5);
+    	updateCoins(500);
     	
          camera.position.set(GameCore.VIEWPORT_WIDTH / 2, GameCore.VIEWPORT_HEIGHT / 2, 0);
          camera.update();
@@ -273,21 +278,25 @@ public class GameScene extends AbstractScene {
     		}
             
          // Count minions that have reached the gameover area.
-            int count = 0;
             Rectangle gameoverArea = map.getGameoverPoint();
             if (gameoverArea != null) {
                 for (AbstractEntity entity : entityManager.getEntities()) {
                 	if (entity instanceof Minion && ((Minion) entity).getBounds().overlaps(gameoverArea)) {
-                        count++;
+                        entityManager.removeEntity(entity);
+                        
+                        //Update Player Health,
+                        updateHealth(playerHealth-1);
                         
                         if (creature != null) {
                             creature.startEating();
                         }
+                        
+                        break;
                     }
                 }
             }
             
-            if (count >= GAME_OVER_THRESHOLD) {
+            if (playerHealth <= 0) {
                 showGameOver();
             }
         
@@ -305,6 +314,8 @@ public class GameScene extends AbstractScene {
     public void resetGame() {
     	//Reset Level,
     	setLevel(1);
+    	updateHealth(5);
+    	updateCoins(500);
     	
 	    //reset map
 	    if (map != null) {
