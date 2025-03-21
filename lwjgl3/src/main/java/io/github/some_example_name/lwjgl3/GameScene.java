@@ -342,7 +342,7 @@ public class GameScene extends AbstractScene {
 
                 // Left-Click to place a tower.
                 if (button == Input.Buttons.LEFT) {
-                    if (!map.isGreenArea(x, y)) {
+                    if (map.isBlockedArea(x, y)) {
                         entityManager.addEntity(new Tower(new Vector2(x, y),soundManager));
                     }
                 }

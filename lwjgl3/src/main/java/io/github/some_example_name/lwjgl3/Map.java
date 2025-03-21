@@ -115,6 +115,16 @@ public class Map {
         return false; // Clicked position is not on green
     }
 	
+    // Check if tower is placed in blocked areas (grass)
+    public boolean isBlockedArea(float x, float y) {
+        for (Rectangle area : blockedAreas) {
+            if (area.contains(x, y)) {
+                return true; // Clicked position is on a blocked area (valid for towers)
+            }
+        }
+        return false; // Clicked position is not in blocked areas
+    }
+    
   //get the spawn point
     public Rectangle getSpawnPoint() {
         MapLayer spawnLayer = map.getLayers().get(SPAWN_LAYER);
