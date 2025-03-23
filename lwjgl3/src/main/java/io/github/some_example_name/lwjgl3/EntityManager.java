@@ -22,11 +22,11 @@ public class EntityManager {
     private float maxSpawnInterval = 3f; // Maximum spawn interval (e.g., 3 seconds)
     private Random random = new Random();
 
-    public EntityManager(OrthographicCamera camera, Map map, SoundManager soundManager) {
+    public EntityManager(OrthographicCamera camera, Map map) {
         this.entities = new ArrayList<>();
         this.camera = camera;
         this.map = map;
-        this.soundManager = soundManager;
+        this.soundManager = soundManager.getInstance();
         setRandomSpawnInterval(); // Set the initial random spawn interval
     }
 
@@ -36,7 +36,7 @@ public class EntityManager {
 
     public void addEntity(AbstractEntity entity) {
         if (entity instanceof Tower && soundManager != null) {
-            Tower tower = new Tower(entity.getPosition(), soundManager);
+            Tower tower = new Tower(entity.getPosition());
             entities.add(tower);
         } else {
             entities.add(entity);

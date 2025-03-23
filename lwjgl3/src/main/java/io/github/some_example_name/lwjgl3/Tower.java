@@ -14,10 +14,10 @@ public class Tower extends AbstractStaticObject{
 	private Texture towerTexture;
 	private SoundManager soundManager;
     
-    public Tower(Vector2 position, SoundManager soundManager) {
+    public Tower(Vector2 position) {
     	super(new Vector2(position), "tower", 1.0f, 250f, 10f, 0f);
     	towerTexture = new Texture("tower.png");
-    	this.soundManager = soundManager;
+    	this.soundManager = SoundManager.getInstance();
     }
 
     /**
@@ -71,7 +71,7 @@ public class Tower extends AbstractStaticObject{
                 projectiles.add(new Projectile(getPosition(), target, this.getDamage()));
                 
                 if (soundManager != null) {
-                    soundManager.playShootingSoundeffect();}
+                    soundManager.playShootingSoundeffect(0.1f);}
                 
                 resetCooldown();
             }

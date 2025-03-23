@@ -2,7 +2,7 @@ package io.github.some_example_name.lwjgl3;
 
 import com.badlogic.gdx.Gdx;
 
-//import com.badlogic.gdx.Screen;
+
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 
@@ -14,10 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-//import com.badlogic.gdx.scenes.scene2d.Actor;
-//import com.badlogic.gdx.scenes.scene2d.Stage;
 
-//import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class MainMenuScene extends AbstractScene {
@@ -46,7 +43,7 @@ public class MainMenuScene extends AbstractScene {
     	backgroundTexture = new Texture(Gdx.files.internal("skin/background.jpg"));
     	Gdx.app.log("MainMenu", "Background texture size: " + backgroundTexture.getWidth() + "x" + backgroundTexture.getHeight());
         skin = new Skin(Gdx.files.internal("skin/lgdxs-ui.json"));
-        soundManager = new SoundManager();
+        soundManager = SoundManager.getInstance();
         soundManager.playMenuMusic();
         
         // Set up background.
@@ -80,7 +77,6 @@ public class MainMenuScene extends AbstractScene {
         @Override
         public void clicked(InputEvent event, float x, float y) {
         	Gdx.app.log("MainMenu", "Start Button Clicked");
-        	soundManager.pause();
             SceneManager.getInstance().setScene(new GameScene(game));;
             }
         });
@@ -128,7 +124,6 @@ public class MainMenuScene extends AbstractScene {
         stage.dispose();
         backgroundTexture.dispose();
         skin.dispose();
-        soundManager.dispose();
 
     }
 

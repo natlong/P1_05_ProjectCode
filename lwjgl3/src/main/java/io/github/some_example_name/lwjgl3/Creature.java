@@ -44,7 +44,7 @@ public class Creature {
     public Creature(float x, float y) {
         this.position = new Vector2(x, y);
         this.bounds = new Rectangle(x, y, FRAME_WIDTH, FRAME_HEIGHT);
-        
+        this.soundManager = SoundManager.getInstance();
         //load sprite sheet and split it into frames
         loadAnimations();
     }
@@ -132,10 +132,6 @@ public class Creature {
     public void setPosition(float x, float y) {
         this.position.set(x, y);
         this.bounds.setPosition(x, y);
-    }
-    
-    public void setSoundManager(SoundManager soundManager) {
-        this.soundManager = soundManager;
     }
     
 

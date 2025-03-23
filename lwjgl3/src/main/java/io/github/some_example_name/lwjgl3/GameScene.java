@@ -104,19 +104,18 @@ public class GameScene extends AbstractScene {
          
          batch = new SpriteBatch();
          shapeRenderer = new ShapeRenderer();
-         soundManager = new SoundManager();
+         soundManager = SoundManager.getInstance();
          soundManager.playGameMusic();
          
          // load tilemap
          map = new Map("level.tmx");
-         entityManager = new EntityManager(camera, map, soundManager);
+         entityManager = new EntityManager(camera, map);
 
      	Rectangle gameoverArea = map.getGameoverPoint();
      	if (gameoverArea != null) { 
      		float xOffset = 10f;
      		float yOffset = -40f;
      	    creature = new Creature(gameoverArea.x + xOffset, gameoverArea.y + yOffset);
-     	    creature.setSoundManager(soundManager);
      	}
          
          createButtons();
@@ -325,7 +324,7 @@ public class GameScene extends AbstractScene {
 	    map = new Map("level.tmx");
 	    //restart entity for game
 	    if (entityManager != null) {
-            entityManager = new EntityManager(camera, map,soundManager);
+            entityManager = new EntityManager(camera, map);
         }
         
         // Reset game-over overlay.
@@ -355,7 +354,7 @@ public class GameScene extends AbstractScene {
                 if (button == Input.Buttons.LEFT) {
                     if (map.isBlockedArea(x, y)) {
                     	if (playerCoins >= 100) {
-                    		entityManager.addEntity(new Tower(new Vector2(x, y),soundManager));
+                    		entityManager.addEntity(new Tower(new Vector2(x, y)));
                     		updateCoins(playerCoins-100);
                     	} else {
                     		Gdx.app.log("Game", "Not enough coins to place Tower!");
@@ -411,7 +410,7 @@ public class GameScene extends AbstractScene {
         createButtons();
         
         if (entityManager == null) {
-            entityManager = new EntityManager(camera, map,soundManager);
+            entityManager = new EntityManager(camera, map);
         }
     }
 
@@ -497,7 +496,6 @@ public class GameScene extends AbstractScene {
         batch.dispose();
         map.dispose();
         debugRenderer.dispose ();
-        soundManager.dispose();
         shapeRenderer.dispose();
         
         //Dispose of Pause Buttons,
@@ -508,10 +506,10 @@ public class GameScene extends AbstractScene {
             creature.dispose();
         }
         
-        if (skin != null) {
-        	skin.dispose();
-        	skin = null;
-        }
+//        if (skin != null) {
+//        	skin.dispose();
+//        	skin = null;
+//      }
         
         if (HealthAndCoinTable != null) {
         	HealthAndCoinTable.remove();
