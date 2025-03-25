@@ -170,16 +170,16 @@ public class Minion extends AbstractMovableObject implements Targetable{
     }
 
     public enum FoodType {
-        APPLE("apple.png", false),
-        STRAWBERRY("strawberry.png", false),
-        BANANAS("bananas.png", false),
-        CARROT("carrot.png", false),
-        BROCCOLI("broccoli.png", false),
-        DONUT("donut.png", true),
-        ICE_CREAM("ice-cream.png", true),
-        PIZZA("pizza.png", true),
-        FRIED_CHICKEN("fried-chicken.png", true),
-        HAMBURGER("hamburger.png", true);
+        APPLE("food_pics/apple.png", false),
+        STRAWBERRY("food_pics/strawberry.png", false),
+        BANANAS("food_pics/bananas.png", false),
+        CARROT("food_pics/carrot.png", false),
+        BROCCOLI("food_pics/broccoli.png", false),
+        DONUT("food_pics/donut.png", true),
+        ICE_CREAM("food_pics/ice-cream.png", true),
+        PIZZA("food_pics/pizza.png", true),
+        FRIED_CHICKEN("food_pics/fried-chicken.png", true),
+        HAMBURGER("food_pics/hamburger.png", true);
 
         private final String texturePath;
         private final boolean isBadFood;
