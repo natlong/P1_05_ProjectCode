@@ -483,16 +483,22 @@ public class GameScene extends AbstractScene {
 	        if (collidedMinion != null) {
 	        	collidedMinion.setHp(0);
 	        	entityManager.removeEntity(collidedMinion);
-	        	//decrease player health
-	        	updateHealth(playerHealth - 1);
+	        	
+	        	
+	        	//Decrease Health only if Minion = Bad Food,
+	        	if (collidedMinion.isBadFood()) {
+	        		updateHealth(playerHealth - 1);
+	        		
+	        		if (playerHealth <= 0) {
+	        			showGameOver();
+	        			return;
+	        		}
+	        	}
+	        	
 	            if (creature != null) {
 	                creature.startEating();
 	            }
 	        }
-	    }
-	    
-	    if (playerHealth <= 0) {
-	        showGameOver();
 	    }
 	}
     
