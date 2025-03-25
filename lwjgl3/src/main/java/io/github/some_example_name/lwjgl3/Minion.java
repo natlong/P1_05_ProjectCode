@@ -27,6 +27,8 @@ public class Minion extends AbstractMovableObject implements Targetable{
     private int currentWaypointIndex = 0;
     private Texture texture;
     private boolean isBadFood;
+    private boolean isUserTargeted = false;
+
 
     public Minion(String texturePath, Vector2 position, Map map, float maxHp, OrthographicCamera camera, float speed, boolean isBadFood) {
         super(position, "Minion", maxHp, maxHp, speed);
@@ -38,6 +40,14 @@ public class Minion extends AbstractMovableObject implements Targetable{
         this.waypoints = map.getPathWaypoints();
         this.texture = new Texture(Gdx.files.internal(texturePath));
         this.isBadFood = isBadFood;
+    }
+    
+    public boolean isUserTargeted() {
+        return isUserTargeted;
+    }
+
+    public void setUserTargeted(boolean targeted) {
+        isUserTargeted = targeted;
     }
 
     public void update(float delta) {
@@ -63,6 +73,15 @@ public class Minion extends AbstractMovableObject implements Targetable{
         batch.end();
         batch.dispose();
         hpBar.render(shapeRenderer);
+    }
+    
+    // Renders a red outline if the minion is flagged.
+    public void renderOutline(ShapeRenderer shapeRenderer) {
+        if (isUserTargeted) {
+            shapeRenderer.setColor(1, 0, 0, 1); // red color for outline
+            Rectangle bounds = getBounds();
+            shapeRenderer.rect(bounds.x, bounds.y, bounds.width, bounds.height);
+        }
     }
 
     public void takeDamage(float damage) {

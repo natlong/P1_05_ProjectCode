@@ -11,12 +11,14 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 import com.badlogic.gdx.utils.Align;
@@ -29,6 +31,11 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 
+//New enum to define game phases (could also be in its own file)
+enum GamePhase {
+	PLANNING,
+	SIMULATION
+}
 
 public class GameScene extends AbstractScene {
 	private static final int BUTTON_SIZE = 60;
@@ -67,6 +74,10 @@ public class GameScene extends AbstractScene {
     private int playerHealth = 5;
     private int playerCoins = 300;
     
+    // NEW: Field to track the current phase. Start in PLANNING.
+    private GamePhase currentPhase = GamePhase.PLANNING;
+    // NEW: Field to hold a manually selected target in SIMULATION phase.
+    private Targetable manualTarget;
 
     public GameScene(GameCore game) {
     	super();
@@ -79,6 +90,7 @@ public class GameScene extends AbstractScene {
     }
     
     protected void init() {
+    	Gdx.app.log("GameScene", "init() called");
     	
     	//Display Health and Coins Display,
     	createHealthAndCoinsDisplay();
@@ -99,13 +111,13 @@ public class GameScene extends AbstractScene {
     	updateHealth(5);
     	updateCoins(300);
     	
-         camera.position.set(GameCore.VIEWPORT_WIDTH / 2, GameCore.VIEWPORT_HEIGHT / 2, 0);
-         camera.update();
+        camera.position.set(GameCore.VIEWPORT_WIDTH / 2, GameCore.VIEWPORT_HEIGHT / 2, 0);
+        camera.update();
          
-         batch = new SpriteBatch();
-         shapeRenderer = new ShapeRenderer();
-         soundManager = SoundManager.getInstance();
-         soundManager.playGameMusic();
+        batch = new SpriteBatch();
+        shapeRenderer = new ShapeRenderer();
+        soundManager = SoundManager.getInstance();
+        soundManager.playGameMusic();
          
          // load tilemap
          map = new Map("level.tmx");
@@ -118,8 +130,10 @@ public class GameScene extends AbstractScene {
      	    creature = new Creature(gameoverArea.x + xOffset, gameoverArea.y + yOffset);
      	}
          
-         createButtons();
-         handleInput();
+        createButtons();
+        handleInput();
+        currentPhase = GamePhase.PLANNING;
+        createPlanningOverlay();
     }
    
 	    
@@ -264,41 +278,222 @@ public class GameScene extends AbstractScene {
         stage.addActor(optionsScreen);
     }
     
+ // NEW: Create the planning overlay. When closed, add the START button to the game scene.
+    private void createPlanningOverlay() {
+        if (currentPhase != GamePhase.PLANNING) return;
+        
+        Skin skin = new Skin(Gdx.files.internal("skin/lgdxs-ui.json"));
+        PlanningOverlay planningOverlay = new PlanningOverlay("", skin, stage);
+        planningOverlay.setPlanningOverlayListener(new PlanningOverlay.PlanningOverlayListener() {
+            @Override
+            public void onClose() {
+                Gdx.app.log("GameScene", "Planning overlay closed. Adding START button.");
+                createStartButton();
+            }
+        });
+        Gdx.app.log("GameScene", "Adding PlanningOverlay to stage");
+        stage.addActor(planningOverlay);
+    }
+
+    // NEW: Create a START button in the game scene (outside the overlay).
+    private void createStartButton() {
+        Skin skin = new Skin(Gdx.files.internal("skin/lgdxs-ui.json"));
+        final TextButton startButton = new TextButton("START", skin);
+        
+        // Position it at the bottom center.
+        startButton.setPosition((GameCore.VIEWPORT_WIDTH - startButton.getPrefWidth()) / 2, 20);
+        
+        startButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                currentPhase = GamePhase.SIMULATION;
+                Gdx.app.log("GameScene", "Switched to SIMULATION phase via START button.");
+                startButton.remove(); // Remove the start button after starting.
+            }
+        });
+        
+        stage.addActor(startButton);
+    }
+    
+//    //Player Input for Tower,
+//    private void handleInput() {
+//        InputMultiplexer multiplexer = new InputMultiplexer();
+//        multiplexer.addProcessor(stage);
+//        multiplexer.addProcessor(new InputAdapter() {
+//            @Override
+//            public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+//                Vector3 worldCoordinates = camera.unproject(new Vector3(screenX, screenY, 0));
+//                float x = worldCoordinates.x;
+//                float y = worldCoordinates.y;
+//
+//                // Left-Click to place a tower.
+//                if (button == Input.Buttons.LEFT) {
+//                    if (map.isBlockedArea(x, y)) {
+//                    	if (playerCoins >= 100) {
+//                    		entityManager.addEntity(new Tower(new Vector2(x, y)));
+//                    		updateCoins(playerCoins-100);
+//                    	} else {
+//                    		Gdx.app.log("Game", "Not enough coins to place Tower!");
+//                    	}
+//                        
+//                    	return true;
+//                    }
+//                }
+//                
+//                // Right-Click to remove a tower.
+//                if (button == Input.Buttons.RIGHT) {
+//                    Tower towerToRemove = null;
+//                    
+//                    for (AbstractEntity entity : entityManager.getEntities()) {
+//                        if (entity instanceof Tower) {
+//                            Tower tower = (Tower) entity;
+//                            float distance = tower.getPosition().dst(x, y);
+//
+//                            if (distance <= TOWER_REMOVAL_RADIUS) {
+//                                towerToRemove = tower;
+//                                break;
+//                            }
+//                        }
+//                    }
+//
+//                    if (towerToRemove != null) {
+//                        boolean removed = entityManager.removeEntity(towerToRemove);
+//                        
+//                        if (removed) {
+//                            updateCoins(playerCoins + 100);
+//                            
+//                        } else {
+//                            Gdx.app.log("Game", "Failed to remove tower within range.");
+//                        }
+//                        
+//                    } else {
+//                        Gdx.app.log("Game", "No tower found within range!");
+//                    }
+//                    return true;
+//                }
+//                return false;
+//            }
+//        });
+//        
+//        // Set the multiplexer as the input processor so that both the stage and custom adapter receive events.
+//        Gdx.input.setInputProcessor(multiplexer);
+//    }
+    // Adjusted input handling to support two phases.
+    private void handleInput() {
+        InputMultiplexer multiplexer = new InputMultiplexer();
+        multiplexer.addProcessor(stage);
+        multiplexer.addProcessor(new InputAdapter() {
+            @Override
+            public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+                Vector3 worldCoordinates = camera.unproject(new Vector3(screenX, screenY, 0));
+                float x = worldCoordinates.x;
+                float y = worldCoordinates.y;
+                
+                if (currentPhase == GamePhase.PLANNING) {
+                    // PLANNING phase: left-click places towers, right-click removes towers.
+                    if (button == Input.Buttons.LEFT) {
+                        if (map.isBlockedArea(x, y)) {
+                            if (playerCoins >= 100) {
+                                entityManager.addEntity(new Tower(new Vector2(x, y)));
+                                updateCoins(playerCoins - 100);
+                                Gdx.app.log("GameScene", "Tower placed. Coins left: " + playerCoins);
+                            } else {
+                                Gdx.app.log("GameScene", "Not enough coins to place Tower!");
+                            }
+                        }
+                        return true;
+                    }
+                    if (button == Input.Buttons.RIGHT) {
+                        Tower towerToRemove = null;
+                        for (AbstractEntity entity : entityManager.getEntities()) {
+                            if (entity instanceof Tower) {
+                                Tower tower = (Tower) entity;
+                                if (tower.getPosition().dst(x, y) <= TOWER_REMOVAL_RADIUS) {
+                                    towerToRemove = tower;
+                                    break;
+                                }
+                            }
+                        }
+                        if (towerToRemove != null && entityManager.removeEntity(towerToRemove)) {
+                            updateCoins(playerCoins + 100);
+                            Gdx.app.log("GameScene", "Tower removed. Coins: " + playerCoins);
+                        } else {
+                            Gdx.app.log("GameScene", "No tower found within range!");
+                        }
+                        return true;
+                    }
+                } else if (currentPhase == GamePhase.SIMULATION) {
+                    // SIMULATION phase: left-click toggles the target flag on a minion.
+                    if (button == Input.Buttons.LEFT) {
+                        for (AbstractEntity entity : entityManager.getEntities()) {
+                            if (entity instanceof Minion) {
+                                Minion minion = (Minion) entity;
+                                if (minion.getBounds().contains(x, y)) {
+                                    boolean newState = !minion.isUserTargeted();
+                                    minion.setUserTargeted(newState);
+                                    Gdx.app.log("GameScene", "Minion " + minion.getName() + " user-targeted: " + newState);
+                                    break; // Toggle only one per click.
+                                }
+                            }
+                        }
+                    }
+                    // Optionally, you could have right-click untarget the minion:
+                    else if (button == Input.Buttons.RIGHT) {
+                        for (AbstractEntity entity : entityManager.getEntities()) {
+                            if (entity instanceof Minion) {
+                                Minion minion = (Minion) entity;
+                                if (minion.getBounds().contains(x, y)) {
+                                    minion.setUserTargeted(false);
+                                    Gdx.app.log("GameScene", "Minion " + minion.getName() + " untargeted.");
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    return true;
+                }
+                return false;
+            }
+        });
+        Gdx.input.setInputProcessor(multiplexer);
+    }
+    
+    // Getter for manualTarget; towers can check this to override their default targeting.
+    public Targetable getManualTarget() {
+        return manualTarget;
+    }
+    
     @Override
 	public void update(float delta) {
-    	
-    		//Only Update Game if NOT Paused,
-    		if (!isPaused) {
+		//Only Update Game if NOT Paused,
+    	if (!isPaused) {
+            // In SIMULATION phase, update simulation game logic.
+            if (currentPhase == GamePhase.SIMULATION) {
                 entityManager.update(delta);
-                
                 if (creature != null) {
                     creature.update(delta);
                 }
-    		}
-            
-         // Count minions that have reached the gameover area.
-            Rectangle gameoverArea = map.getGameoverPoint();
-            if (gameoverArea != null) {
-                for (AbstractEntity entity : entityManager.getEntities()) {
-                	if (entity instanceof Minion && ((Minion) entity).getBounds().overlaps(gameoverArea)) {
-                        entityManager.removeEntity(entity);
-                        
-                        //Update Player Health,
-                        updateHealth(playerHealth-1);
-                        
-                        if (creature != null) {
-                            creature.startEating();
-                        }
-                        
-                        break;
-                    }
-                }
             }
-            
-            if (playerHealth <= 0) {
-                showGameOver();
-            }
-        
+        }
+	    
+	 // Count minions that have reached the gameover area.
+	    Rectangle gameoverArea = map.getGameoverPoint();
+	    if (gameoverArea != null) {
+	    	Minion collidedMinion = CollisionManager.handleMinionCreatureCollision(entityManager.getEntities(), gameoverArea);
+	        if (collidedMinion != null) {
+	        	collidedMinion.setHp(0);
+	        	entityManager.removeEntity(collidedMinion);
+	        	//decrease player health
+	        	updateHealth(playerHealth - 1);
+	            if (creature != null) {
+	                creature.startEating();
+	            }
+	        }
+	    }
+	    
+	    if (playerHealth <= 0) {
+	        showGameOver();
+	    }
 	}
     
     private void showGameOver() {
@@ -337,72 +532,13 @@ public class GameScene extends AbstractScene {
 	        soundManager.restartCurrentMusic();
 	    }
 	    isPaused = false;
+	    
+	    currentPhase = GamePhase.PLANNING;
+	    // Add the planning overlay so the player sees planning instructions again.
+	    createPlanningOverlay();
+	    
+	    Gdx.app.log("GameScene", "Game has been reset and is now in PLANNING phase.");
     }
-
-    //Player Input for Tower,
-    private void handleInput() {
-        InputMultiplexer multiplexer = new InputMultiplexer();
-        multiplexer.addProcessor(stage);
-        multiplexer.addProcessor(new InputAdapter() {
-            @Override
-            public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-                Vector3 worldCoordinates = camera.unproject(new Vector3(screenX, screenY, 0));
-                float x = worldCoordinates.x;
-                float y = worldCoordinates.y;
-
-                // Left-Click to place a tower.
-                if (button == Input.Buttons.LEFT) {
-                    if (map.isBlockedArea(x, y)) {
-                    	if (playerCoins >= 100) {
-                    		entityManager.addEntity(new Tower(new Vector2(x, y)));
-                    		updateCoins(playerCoins-100);
-                    	} else {
-                    		Gdx.app.log("Game", "Not enough coins to place Tower!");
-                    	}
-                        
-                    	return true;
-                    }
-                }
-                
-                // Right-Click to remove a tower.
-                if (button == Input.Buttons.RIGHT) {
-                    Tower towerToRemove = null;
-                    
-                    for (AbstractEntity entity : entityManager.getEntities()) {
-                        if (entity instanceof Tower) {
-                            Tower tower = (Tower) entity;
-                            float distance = tower.getPosition().dst(x, y);
-
-                            if (distance <= TOWER_REMOVAL_RADIUS) {
-                                towerToRemove = tower;
-                                break;
-                            }
-                        }
-                    }
-
-                    if (towerToRemove != null) {
-                        boolean removed = entityManager.removeEntity(towerToRemove);
-                        
-                        if (removed) {
-                            updateCoins(playerCoins + 100);
-                            
-                        } else {
-                            Gdx.app.log("Game", "Failed to remove tower within range.");
-                        }
-                        
-                    } else {
-                        Gdx.app.log("Game", "No tower found within range!");
-                    }
-                    return true;
-                }
-                return false;
-            }
-        });
-        
-        // Set the multiplexer as the input processor so that both the stage and custom adapter receive events.
-        Gdx.input.setInputProcessor(multiplexer);
-    }
-
 
     @Override
     public void show() {

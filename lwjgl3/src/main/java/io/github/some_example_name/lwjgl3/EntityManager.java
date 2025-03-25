@@ -115,7 +115,7 @@ public class EntityManager {
         entities.addAll(newProjectiles);
 
         // Use the fixed CollisionManager that returns entities to remove
-        List<AbstractEntity> collisionsToRemove = CollisionManager.handleCollisions(entities);
+        List<AbstractEntity> collisionsToRemove = CollisionManager.handleProjectileCollisions(entities);
         entities.removeAll(collisionsToRemove);
     }
 
@@ -141,11 +141,17 @@ public class EntityManager {
         
         //Rendering Tower Object,
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        
         for (AbstractEntity entity : entities) {
             entity.render(shapeRenderer);
         }
+        shapeRenderer.end();
         
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        for (AbstractEntity entity : entities) {
+            if (entity instanceof Minion) {
+                ((Minion) entity).renderOutline(shapeRenderer);
+            }
+        }
         shapeRenderer.end();
     }
     
