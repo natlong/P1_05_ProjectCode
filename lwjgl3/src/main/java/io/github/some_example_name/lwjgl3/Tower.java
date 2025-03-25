@@ -19,64 +19,58 @@ public class Tower extends AbstractStaticObject{
     	towerTexture = new Texture("tower.png");
     	this.soundManager = SoundManager.getInstance();
     }
-
-    /**
-     * Finds the closest targetable entity within range
-     * @param entities List of all entities
-     * @return The closest targetable entity, or null if none in range
-     */
-    private Targetable findTarget(List<AbstractEntity> entities) {
-        Targetable closest = null;
+    
+  /**
+  * Finds the targetable entity within range
+  * @param entities List of all entities
+  * @return The targetable entity, or null if none in range
+  */
+    private Targetable findUserTargetedMinion(List<AbstractEntity> entities) {
+        Targetable userTarget = null;
         float closestDistance = this.getRange();
-
         for (AbstractEntity entity : entities) {
-            if (entity instanceof Targetable) {
-                Targetable target = (Targetable) entity;
-                
-                // Skip dead targets
-                if (target.isDead()) continue;
-                
-                Vector2 targetPos = target.getPosition();
-                float distance = Vector2.dst(
-                    this.getPosition().x, 
-                    this.getPosition().y, 
-                    targetPos.x, 
-                    targetPos.y
-                );
-                
-                if (distance < closestDistance) {
-                    closest = target;
-                    closestDistance = distance;
+            if (entity instanceof Minion) {
+                Minion minion = (Minion) entity;
+                if (minion.isUserTargeted() && !minion.isDead()) {
+                    float distance = Vector2.dst(this.getPosition().x, this.getPosition().y,
+                                                 minion.getPosition().x, minion.getPosition().y);
+                    if (distance < closestDistance) {
+                        userTarget = minion;
+                        closestDistance = distance;
+                    }
                 }
             }
         }
-        
-        return closest;
+        return userTarget;
     }
 
-    /**
-     * Creates projectiles targeting nearby enemies
-     * @param entities List of all entities
-     * @param delta Time elapsed since last frame
-     * @return List of newly created projectiles
-     */
+  /**
+  * Creates projectiles targeting nearby enemies
+  * @param entities List of all entities
+  * @param delta Time elapsed since last frame
+  * @return List of newly created projectiles
+  */
     public List<Projectile> shoot(List<AbstractEntity> entities, float delta) {
         List<Projectile> projectiles = new ArrayList<>();
-
         updateCooldown(delta);
         
         if (canFire()) {
-            Targetable target = findTarget(entities);
+            // Try to get a user-targeted minion first.
+            Targetable target = findUserTargetedMinion(entities);
+            if (target == null) {
+                // Fallback to your default targeting (findTarget).
+                target = findUserTargetedMinion(entities);
+            }
+            
             if (target != null) {
                 projectiles.add(new Projectile(getPosition(), target, this.getDamage()));
                 
                 if (soundManager != null) {
-                    soundManager.playShootingSoundeffect(0.1f);}
-                
+                    soundManager.playShootingSoundeffect(0.1f);
+                }
                 resetCooldown();
             }
         }
-
         return projectiles;
     }
 

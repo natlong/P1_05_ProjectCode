@@ -30,13 +30,17 @@ public class Projectile extends AbstractMovableObject {
     
     @Override
     public void movement() {
-        // If the target exists and is still alive, update the direction.
-        if (target != null && !target.isDead()) {
-            direction.set(target.getPosition()).sub(getPosition()).nor();
-        }
-        // Otherwise, keep the last computed direction.
-//        Vector2 velocity = new Vector2(direction).scl(getSpeed() * Gdx.graphics.getDeltaTime());
-//        getPosition().add(velocity);
+    	// If there is a target...
+    	if (target != null) {
+    	    if (target.isDead() /* or no longer in the entity list */) {
+    	        // either clear the target or set it to null
+    	        target = null;
+    	    } else {
+    	        // continue homing
+    	        direction.set(target.getPosition()).sub(getPosition()).nor();
+    	    }
+    	}
+        // Otherwise, keep the last computed direction
         Vector2 velocity = new Vector2(direction).scl(getSpeed() * Gdx.graphics.getDeltaTime());
         Vector2 newPos = new Vector2(getPosition()).add(velocity);
         setPosition(newPos);

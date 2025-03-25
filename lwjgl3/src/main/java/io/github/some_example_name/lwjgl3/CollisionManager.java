@@ -3,10 +3,11 @@ package io.github.some_example_name.lwjgl3;
 import com.badlogic.gdx.math.Rectangle;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class CollisionManager {
-    public static List<AbstractEntity> handleCollisions(List<AbstractEntity> entities) {
+    public static List<AbstractEntity> handleProjectileCollisions(List<AbstractEntity> entities) {
         List<AbstractEntity> toRemove = new ArrayList<>();
 
         for (AbstractEntity entity : entities) {
@@ -28,6 +29,19 @@ public class CollisionManager {
         }
 
         return toRemove;
+    }
+    
+    public static Minion handleMinionCreatureCollision(List<AbstractEntity> entities, Rectangle gameoverArea) {
+        for (Iterator<AbstractEntity> iterator = entities.iterator(); iterator.hasNext();) {
+            AbstractEntity entity = iterator.next();
+            if (entity instanceof Minion) {
+                Minion minion = (Minion) entity;
+                if (minion.getBounds().overlaps(gameoverArea)) {
+                    return minion;
+                }
+            }
+        }
+        return null;
     }
 }
 
