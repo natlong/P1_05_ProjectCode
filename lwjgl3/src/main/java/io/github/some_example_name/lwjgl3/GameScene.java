@@ -1,20 +1,13 @@
 package io.github.some_example_name.lwjgl3;
-
-import java.util.ArrayList;
-
 import com.badlogic.gdx.Gdx;
-
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -22,6 +15,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 import com.badlogic.gdx.utils.Align;
+
+import config.GameConfig;
 
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -47,6 +42,7 @@ public class GameScene extends AbstractScene {
     private ShapeRenderer shapeRenderer;
     private EntityManager entityManager;
     private SoundManager soundManager;
+    private GameConfig gameConfig;
     private Map map;
     private OptionsScene optionsScreen;
     private GameOverScene gameOverScene;
@@ -87,7 +83,7 @@ public class GameScene extends AbstractScene {
     	debugRenderer = new DebugRenderer();
     	//put to false to close it
     	debugRenderer.setEnabled(false);
-    }
+	}
     
     protected void init() {
     	Gdx.app.log("GameScene", "init() called");
@@ -121,7 +117,9 @@ public class GameScene extends AbstractScene {
          
          // load tilemap
          map = new Map("level.tmx");
-         entityManager = new EntityManager(camera, map);
+         gameConfig = GameConfig.getInstance();
+         gameConfig.loadConfig(currentLevel);
+         entityManager = new EntityManager(gameConfig, camera, map);
 
      	Rectangle gameoverArea = map.getGameoverPoint();
      	if (gameoverArea != null) { 
@@ -525,7 +523,7 @@ public class GameScene extends AbstractScene {
 	    map = new Map("level.tmx");
 	    //restart entity for game
 	    if (entityManager != null) {
-            entityManager = new EntityManager(camera, map);
+            entityManager = new EntityManager(gameConfig, camera, map);
         }
         
         // Reset game-over overlay.
@@ -552,7 +550,7 @@ public class GameScene extends AbstractScene {
         createButtons();
         
         if (entityManager == null) {
-            entityManager = new EntityManager(camera, map);
+            entityManager = new EntityManager(gameConfig, camera, map);
         }
     }
 

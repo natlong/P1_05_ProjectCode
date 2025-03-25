@@ -1,0 +1,11 @@
+{
+  "spawn": {
+    "minInterval": 0.3,
+    "maxInterval": 2.0
+  },
+  "food": {
+    "foodSpeed": 250,
+    "maxHp": 150,
+	"numOfFood": 30
+  }
+}

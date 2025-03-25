@@ -198,7 +198,7 @@ public class Minion extends AbstractMovableObject implements Targetable{
         }
     }
 
-    public static Minion createMinion(FoodType foodType, Vector2 position, Map map, OrthographicCamera camera, float speed) {
-        return new Minion(foodType.getTexturePath(), position, map, 100, camera, speed, foodType.isBadFood());
+    public static Minion createMinion(FoodType foodType, Vector2 position, Map map, float maxHp, OrthographicCamera camera, float speed) {
+        return new Minion(foodType.getTexturePath(), position, map, maxHp, camera, speed, foodType.isBadFood());
     }
 }

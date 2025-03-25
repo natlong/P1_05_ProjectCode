@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import com.badlogic.gdx.math.Vector2;
 
+import config.GameConfig;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -15,23 +17,25 @@ public class EntityManager {
 	private SoundManager soundManager; 
     private List<AbstractEntity> entities;
     private OrthographicCamera camera;
+    private GameConfig gameConfig;
     private Map map;
     private float spawnTimer = 0f;
     private float spawnInterval; // Now a variable, not a fixed value
-    private float minSpawnInterval = 0.5f; // Minimum spawn interval (e.g., 0.5 seconds)
-    private float maxSpawnInterval = 3f; // Maximum spawn interval (e.g., 3 seconds)
+    //private float minSpawnInterval = 0.5f; // Minimum spawn interval (e.g., 0.5 seconds)
+    //private float maxSpawnInterval = 3f; // Maximum spawn interval (e.g., 3 seconds)
     private Random random = new Random();
 
-    public EntityManager(OrthographicCamera camera, Map map) {
+    public EntityManager(GameConfig gameConfig, OrthographicCamera camera, Map map) {
         this.entities = new ArrayList<>();
         this.camera = camera;
         this.map = map;
         this.soundManager = soundManager.getInstance();
+        this.gameConfig = gameConfig;
         setRandomSpawnInterval(); // Set the initial random spawn interval
     }
 
     private void setRandomSpawnInterval() {
-        spawnInterval = minSpawnInterval + random.nextFloat() * (maxSpawnInterval - minSpawnInterval);
+        spawnInterval = gameConfig.getSpawnMinInterval() + random.nextFloat() * (gameConfig.getSpawnMaxInterval() - gameConfig.getSpawnMinInterval());
     }
 
     public void addEntity(AbstractEntity entity) {
@@ -77,8 +81,8 @@ public class EntityManager {
             Minion.FoodType[] foodTypes = Minion.FoodType.values();
             Minion.FoodType randomFood = foodTypes[random.nextInt(foodTypes.length)];
 
-            // Create a Minion with the selected FoodType
-            addEntity(Minion.createMinion(randomFood, spawnPos, map, camera, 200f));
+            // Create a Food with the selected FoodType
+            addEntity(Minion.createMinion(randomFood, spawnPos, map, gameConfig.getMaxHp(), camera, gameConfig.getFoodSpeed()));
         }
 
         List<AbstractEntity> newProjectiles = new ArrayList<>();
