@@ -72,6 +72,18 @@ public class Minion extends AbstractMovableObject implements Targetable{
         }
         this.setHp(newHp);
         hpBar.updateHealth(this.getHp(), this.getMaxHp());
+        
+        float orginalSpeed = super.getSpeed();
+        super.setSpeed(50f); //To slow food down
+        
+        new Thread(()->{
+        	try {
+        		Thread.sleep(1000);
+        		super.setSpeed(orginalSpeed);
+        	}catch(InterruptedException e) {
+        		e.printStackTrace();
+        	}
+        }).start();
     }
 
     public Rectangle getBounds() {
