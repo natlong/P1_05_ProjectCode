@@ -6,6 +6,6 @@
   "food": {
     "foodSpeed": 200,
     "maxHp": 100,
-	"numOfFood": 20
+	"numOfFood": 5
   }
 }

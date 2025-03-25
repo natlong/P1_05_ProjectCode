@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -51,6 +52,9 @@ public class GameScene extends AbstractScene {
     private TextureRegionDrawable pauseDrawable;
     private TextureRegionDrawable isPauseDrawable;
     private Creature creature;
+    private Texture teethTexture;
+    private Texture coinPileTexture;
+   
     
     //Game Pause Variable,
     private boolean isPaused;
@@ -64,7 +68,9 @@ public class GameScene extends AbstractScene {
     
     private Label levelLabel;
     private Label healthLabel;
+    private Label healthCount;
     private Label coinsLabel;
+    private Label coinsCount;
     
     private int currentLevel = 1;
     private int playerHealth = 5;
@@ -154,54 +160,68 @@ public class GameScene extends AbstractScene {
         pauseButton = new ImageButton(pauseButtonStyle);
         settingsButton = new ImageButton(settingsDrawable);
         
+        //Create a table for buttons
+        Table buttonTable = new Table();
+        buttonTable.setFillParent(true);
+        buttonTable.top().right().pad(20);
         
-        //button position, top down arrangement
-        float topY = GameCore.VIEWPORT_HEIGHT-60;
-        float rightX = GameCore.VIEWPORT_WIDTH - 5;
-        pauseButton.setPosition(rightX - BUTTON_SIZE, topY);
-        settingsButton.setPosition(rightX - BUTTON_SIZE, topY - BUTTON_SIZE);
+        buttonTable.add(pauseButton).size(30).right().row();
+        buttonTable.add(settingsButton).size(30).right().padTop(20);
         
         pauseButtonListener();
         settingsButtonListener();
         
-        stage.addActor(pauseButton);
-        stage.addActor(settingsButton);
-        }
+        stage.addActor(buttonTable);
+    }
     
     //Create Health and Coins Display,
     private void createHealthAndCoinsDisplay() {
-    	Skin skin = new Skin(Gdx.files.internal("skin/lgdxs-ui.json"));
-    	
-    	//Create Labels,
-    	healthLabel = new Label("Health: " + playerHealth, skin);
-    	coinsLabel = new Label("Coins: " + playerCoins, skin);
-    	
-    	//Create Layout Table,
-    	HealthAndCoinTable = new Table();
-    	HealthAndCoinTable.bottom().right();
-    	HealthAndCoinTable.setFillParent(true);
-    	HealthAndCoinTable.pad(10);
-    	
-    	//Adding Items to Table,
-    	HealthAndCoinTable.add(healthLabel).padBottom(5).row();
-    	HealthAndCoinTable.add(coinsLabel);
-    	
-    	stage.addActor(HealthAndCoinTable);
-    }
+        Skin skin = new Skin(Gdx.files.internal("skin/lgdxs-ui.json"));
+        teethTexture = new Texture(Gdx.files.internal("teeth.png"));
+        coinPileTexture = new Texture(Gdx.files.internal("coinpile.png"));
+
+        // Create Labels
+        healthLabel = new Label("Health:", skin);
+        healthLabel.setAlignment(Align.left);
+        
+        healthCount = new Label("" + playerHealth, skin);
+        healthCount.setAlignment(Align.center);
+        
+        coinsLabel = new Label("Coins:", skin);
+        coinsLabel.setAlignment(Align.left);
+        
+        coinsCount = new Label("" + playerCoins, skin);
+        coinsCount.setAlignment(Align.center);
+
+        HealthAndCoinTable = new Table();
+        HealthAndCoinTable.setFillParent(true);
+        HealthAndCoinTable.bottom().right().pad(20);
+        
+        //Create row with 3 columns: label, value, icon
+        HealthAndCoinTable.add(healthLabel).left();
+        HealthAndCoinTable.add(healthCount).center().minWidth(60).padLeft(5).padRight(5);
+        HealthAndCoinTable.add(new Image(teethTexture)).size(30).right();
+        HealthAndCoinTable.row().padTop(7);
+        
+        HealthAndCoinTable.add(coinsLabel).left();
+        HealthAndCoinTable.add(coinsCount).center().minWidth(60).padLeft(5).padRight(5);
+        HealthAndCoinTable.add(new Image(coinPileTexture)).size(30).right();
+        
+        stage.addActor(HealthAndCoinTable);
+        }
     
     //Update Health Display,
     public void updateHealth(int x) {
-    	playerHealth = x;
-    	
-    	healthLabel.setText("Health: " + playerHealth);
-    }
+        playerHealth = x;
+        healthCount.setText("" + playerHealth);
+      }
     
     //Update Coins Display,
     public void updateCoins(int x) {
-    	playerCoins = x;
-    	
-    	coinsLabel.setText("Coins: " + playerCoins);
-    }
+        playerCoins = x;      
+        coinsCount.setText("" + playerCoins);
+
+      }
     
     //Update Level Display,
     public void setLevel(int x) {
