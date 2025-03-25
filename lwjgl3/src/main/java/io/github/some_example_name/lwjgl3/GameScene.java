@@ -1,5 +1,7 @@
 package io.github.some_example_name.lwjgl3;
+
 import com.badlogic.gdx.Gdx;
+
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -63,7 +65,6 @@ public class GameScene extends AbstractScene {
     private static final float LEVEL_Y_OFFSET = 20f;
     private static final float TOP_SPACING = 30f;
     private static final float TOWER_REMOVAL_RADIUS = 30f;
-	//Skin skin = new Skin(Gdx.files.internal("skin/lgdxs-ui.json"));
     private Table HealthAndCoinTable;
     
     private Label levelLabel;
@@ -72,7 +73,7 @@ public class GameScene extends AbstractScene {
     private Label coinsLabel;
     private Label coinsCount;
     
-    private int currentLevel = 1;
+    private int currentLevel;
     private int playerHealth = 5;
     private int playerCoins = 300;
     
@@ -99,7 +100,7 @@ public class GameScene extends AbstractScene {
     	
     	//Level Display,
     	Skin skin = new Skin(Gdx.files.internal("skin/lgdxs-ui.json"));
-    	levelLabel = new Label("Label " + currentLevel, skin);
+    	levelLabel = new Label("PLANNING", skin);
     	levelLabel.setAlignment(Align.center);
     	levelLabel.setFontScale(1.5f);
     	levelLabel.setColor(Color.WHITE);
@@ -109,7 +110,6 @@ public class GameScene extends AbstractScene {
     	
     	//Adding to Stage,
     	stage.addActor(levelLabel);
-    	setLevel(1);
     	updateHealth(5);
     	updateCoins(300);
     	
@@ -124,8 +124,11 @@ public class GameScene extends AbstractScene {
          // load tilemap
          map = new Map("level.tmx");
          gameConfig = GameConfig.getInstance();
-         gameConfig.loadConfig(currentLevel);
+         gameConfig.loadConfig(currentLevel); //To Update
          entityManager = new EntityManager(gameConfig, camera, map);
+         
+         //Get Level and Update Dynamically from EntityManager,
+         setupEntityManager();
 
      	Rectangle gameoverArea = map.getGameoverPoint();
      	if (gameoverArea != null) { 
@@ -223,19 +226,25 @@ public class GameScene extends AbstractScene {
 
       }
     
-    //Update Level Display,
-    public void setLevel(int x) {
-    	currentLevel = x;
-    	
-    	if (levelLabel != null) {
-    		levelLabel.setText("Level " + currentLevel);
-    	}
-    	
-    	//Centering after Update,
-    	levelLabel.setPosition((GameCore.VIEWPORT_WIDTH - levelLabel.getPrefWidth()) / 2, GameCore.VIEWPORT_HEIGHT - LEVEL_Y_OFFSET - TOP_SPACING);
+    //Getting Level from EntityManager,
+    private void setupEntityManager() {
+        //Listener to Sync Levels with EntityManager,
+        entityManager.setLevelChangeListener(new EntityManager.LevelChangeListener() {
+
+			@Override
+			public void onLevelChanged(int newLevel) {
+                currentLevel = newLevel;
+                updateLevelDisplay();  //Update UI when level changes,
+			}
+        });
     }
-  
+
+    //Update UI display for the current level,
+    private void updateLevelDisplay() {
+        levelLabel.setText("Level: " + currentLevel);
+    }
     
+  
     //Configure Dynamic Changes,
     private void pauseButtonListener() {
         pauseButton.addListener(new com.badlogic.gdx.scenes.scene2d.InputListener() {
@@ -500,7 +509,7 @@ public class GameScene extends AbstractScene {
 	    	Minion collidedMinion = CollisionManager.handleMinionCreatureCollision(entityManager.getEntities(), gameoverArea);
 	        if (collidedMinion != null) {
 	        	collidedMinion.setHp(0);
-	        	entityManager.removeEntity(collidedMinion);
+	        	entityManager.MinionsEaten(collidedMinion);
 	        	
 	        	
 	        	//Decrease Health only if Minion = Bad Food,
@@ -531,7 +540,7 @@ public class GameScene extends AbstractScene {
     
     public void resetGame() {
     	//Reset Level,
-    	setLevel(1);
+        levelLabel.setText("PLANNING");
     	updateHealth(5);
     	updateCoins(300);
     	
@@ -544,6 +553,8 @@ public class GameScene extends AbstractScene {
 	    //restart entity for game
 	    if (entityManager != null) {
             entityManager = new EntityManager(gameConfig, camera, map);
+            setupEntityManager();
+            entityManager.setCurrentLevel(0);
         }
         
         // Reset game-over overlay.

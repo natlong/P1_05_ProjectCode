@@ -24,6 +24,15 @@ public class EntityManager {
     //private float minSpawnInterval = 0.5f; // Minimum spawn interval (e.g., 0.5 seconds)
     //private float maxSpawnInterval = 3f; // Maximum spawn interval (e.g., 3 seconds)
     private Random random = new Random();
+    
+    
+    //Level-Minion Configuration,
+    private LevelChangeListener levelChangeListener;
+    public  int currentLevel;
+    private int minionsPerLevel = 3;
+    private int minionsSpawnedCurrLevel = 0;
+    private int minionsKilledCurrLevel = 0;
+    private boolean levelInProgress = false;
 
     public EntityManager(GameConfig gameConfig, OrthographicCamera camera, Map map) {
         this.entities = new ArrayList<>();
@@ -62,6 +71,7 @@ public class EntityManager {
                 }
             } else if (entityIterated.getClass().equals(entity.getClass())) {
                 iterator.remove();
+
                 return true;
             }
         }
@@ -69,22 +79,33 @@ public class EntityManager {
         return false;
     }
 
+    //Updated Function for Each Level,
     public void update(float delta) {
-        spawnTimer += delta;
+    	
+    	if (!levelInProgress) {
+    		startNextLevel();
+    		return;
+    	}
+    	
+    	//Spawn Minions within Range of Level,
+    	if (minionsSpawnedCurrLevel < minionsPerLevel) {
+            spawnTimer += delta;
+            
+            if (spawnTimer >= spawnInterval) {
+                spawnTimer = 0f;
+                setRandomSpawnInterval(); // Set a new random spawn interval
+                Vector2 spawnPos = new Vector2(map.getSpawnPoint().x, map.getSpawnPoint().y);
 
-        if (spawnTimer >= spawnInterval) {
-            spawnTimer = 0f;
-            setRandomSpawnInterval(); // Set a new random spawn interval
-            Vector2 spawnPos = new Vector2(map.getSpawnPoint().x, map.getSpawnPoint().y);
-
-            // Randomly select a FoodType
-            Minion.FoodType[] foodTypes = Minion.FoodType.values();
-            Minion.FoodType randomFood = foodTypes[random.nextInt(foodTypes.length)];
-
-            // Create a Food with the selected FoodType
-            addEntity(Minion.createMinion(randomFood, spawnPos, map, gameConfig.getMaxHp(), camera, gameConfig.getFoodSpeed()));
-        }
-
+                
+                Minion.FoodType randomFood = Minion.FoodType.values()[random.nextInt(Minion.FoodType.values().length)];
+               
+                // Create a Food with the selected FoodType
+                addEntity(Minion.createMinion(randomFood, spawnPos, map, gameConfig.getMaxHp(), camera, gameConfig.getFoodSpeed()));
+                minionsSpawnedCurrLevel++;
+            }
+    	}
+    	
+    	//Track Killed Minions,
         List<AbstractEntity> newProjectiles = new ArrayList<>();
         Iterator<AbstractEntity> iterator = entities.iterator();
 
@@ -98,8 +119,14 @@ public class EntityManager {
                 if (minion.isDead()) {
                     iterator.remove();
                     minion.dispose();
-                    continue;
+                    minionsKilledCurrLevel++;
+                    
+                    if (minionsKilledCurrLevel >= minionsPerLevel) {
+                    	levelInProgress = false;
+                    	
+                    }
                 }
+                
             } else if (entity instanceof Projectile) {
                 Projectile projectile = (Projectile) entity;
                 projectile.movement();
@@ -122,7 +149,47 @@ public class EntityManager {
         List<AbstractEntity> collisionsToRemove = CollisionManager.handleProjectileCollisions(entities);
         entities.removeAll(collisionsToRemove);
     }
-
+    	
+    //Next Level Configurations,
+    public void startNextLevel() {
+    	currentLevel++;
+    	minionsPerLevel += 2;
+        minionsSpawnedCurrLevel = 0;
+        minionsKilledCurrLevel = 0;
+        levelInProgress = true;
+        setRandomSpawnInterval();
+        
+        if (levelChangeListener != null) {
+        	levelChangeListener.onLevelChanged(currentLevel);
+        }
+    }
+    
+    public void setCurrentLevel(int level) {
+        this.currentLevel = level;
+    }
+    
+    //Listener for Level Change,
+    public interface LevelChangeListener {
+    	void onLevelChanged(int newLevel);
+    }
+    
+    public void setLevelChangeListener(LevelChangeListener x) {
+    	this.levelChangeListener = x;
+    }
+    
+    //Allowing Creature Eats as Minions Killed,
+    public void MinionsEaten(Minion x) {
+    	if (x != null) {
+    		minionsKilledCurrLevel++;
+    		entities.remove(x);
+    		x.dispose();
+    		
+    		if (minionsKilledCurrLevel >= minionsPerLevel) {
+    			levelInProgress = false;
+    		}
+    	}
+    }
+    
     public void render(ShapeRenderer shapeRenderer) {
     	//Enabling Blending for Tower Indicator,
         com.badlogic.gdx.Gdx.gl.glEnable(com.badlogic.gdx.graphics.GL20.GL_BLEND);
