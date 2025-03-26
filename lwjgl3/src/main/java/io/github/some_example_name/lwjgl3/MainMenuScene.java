@@ -11,6 +11,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+
+import config.GameConfig;
+
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -18,9 +21,9 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class MainMenuScene extends AbstractScene {
-	private static final int BUTTON_WIDTH = 200;
-	private static final int BUTTON_HEIGHT = 50;
-	private static final int BUTTON_PAD = 10;
+	private static final int BUTTON_WIDTH = GameConfig.getInstance().getButtonWidth();
+	private static final int BUTTON_HEIGHT = GameConfig.getInstance().getButtonHeight();
+	private static final int BUTTON_PAD = GameConfig.getInstance().getButtonPad();
 	
     private Texture backgroundTexture;
     private Skin skin;

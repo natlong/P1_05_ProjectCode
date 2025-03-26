@@ -1,11 +1,56 @@
 {
   "spawn": {
-    "minInterval": 0.5,
-    "maxInterval": 3.0
-  },
+	    "minInterval": 0.5,
+	    "maxInterval": 3.0
+	},
   "food": {
-    "foodSpeed": 200,
-    "maxHp": 50,
-	"numOfFood": 5
-  }
+	    "foodSpeed": 200,
+	    "maxHp": 50,
+		"numOfFood": 3
+	},
+  "player":{
+		"playerHp": 5,
+		"playerCoins":300
+		
+	},
+	"spawn": {
+	    "minInterval": 0.5,
+	    "maxInterval": 3.0
+  	},
+	"food": {
+	    "foodSpeed": 200,
+	    "maxHp": 50,
+		"numOfFood": 5
+	},
+	"tower":{
+		"fireRate": 1.0,
+		"range": 250.0,
+		"damage": 10.0,
+		"cooldown": 0.0,
+		"removal_radius": 30.0
+	},
+	"projectile":{
+		"hp": 1.0,
+		"maxHp": 1.0,
+		"speed": 225.0
+	},
+	"creature":{
+		"idle_frame_duration": 0.25,
+		"eating_frame_duration": 0.35,
+		"eating_duration": 0.5,
+		"frame_width": 100,
+		"frame_height": 100
+	},
+	"optionsScene":{
+		"button_size": 60
+	},
+	"mainMenuScene":{
+		"button_width": 200,
+		"button_height": 50,
+		"button_pad": 10
+	},
+	"viewport":{
+		"viewport_width": 1280,
+		"viewport_height": 960
+	}
 }

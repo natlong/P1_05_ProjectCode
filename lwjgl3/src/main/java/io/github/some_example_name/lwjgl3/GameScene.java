@@ -36,8 +36,7 @@ enum GamePhase {
 }
 
 public class GameScene extends AbstractScene {
-	private static final int BUTTON_SIZE = 60;
-	private static final int GAME_OVER_THRESHOLD = 5;
+	private static final int BUTTON_SIZE = GameConfig.getInstance().getButtonSize();
 	private DebugRenderer debugRenderer;
     private ImageButton pauseButton;
     private ImageButton settingsButton;
@@ -64,7 +63,7 @@ public class GameScene extends AbstractScene {
     //UI Level Variable,
     private static final float LEVEL_Y_OFFSET = 20f;
     private static final float TOP_SPACING = 30f;
-    private static final float TOWER_REMOVAL_RADIUS = 30f;
+    private static final float TOWER_REMOVAL_RADIUS = GameConfig.getInstance().getTowerRemovalRadius();
     private Table HealthAndCoinTable;
     
     private Label levelLabel;
@@ -75,8 +74,8 @@ public class GameScene extends AbstractScene {
     private Label goodFoodCounter;
     
     private int currentLevel;
-    public static int playerHealth = 5;
-    private int playerCoins = 300;
+    private static int playerHealth = GameConfig.getInstance().getPlayerHp();
+    private int playerCoins = GameConfig.getInstance().getPlayerCoins();
     private int goodFoodReached = 0;
     
     // NEW: Field to track the current phase. Start in PLANNING.
@@ -112,8 +111,8 @@ public class GameScene extends AbstractScene {
     	
     	//Adding to Stage,
     	stage.addActor(levelLabel);
-    	updateHealth(5);
-    	updateCoins(300);
+    	updateHealth(GameConfig.getInstance().getPlayerHp());
+    	updateCoins(GameConfig.getInstance().getPlayerCoins());
     	
         camera.position.set(GameCore.VIEWPORT_WIDTH / 2, GameCore.VIEWPORT_HEIGHT / 2, 0);
         camera.update();
@@ -127,7 +126,7 @@ public class GameScene extends AbstractScene {
          map = new Map("level.tmx");
          gameConfig = GameConfig.getInstance();
          gameConfig.loadConfig(); //To Update
-         entityManager = new EntityManager(gameConfig, camera, map);
+         entityManager = new EntityManager(camera, map);
          
          //Get Level and Update Dynamically from EntityManager,
          setupEntityManager();
@@ -228,9 +227,12 @@ public class GameScene extends AbstractScene {
     
     //Update Health Display,
     public static void updateHealth(int x) {
-        playerHealth = x;
+    	playerHealth = x;
         healthCount.setText("" + playerHealth);
       }
+    public static int getHealth() {
+    	return playerHealth;
+    }
     
     //Update Coins Display,
     public void updateCoins(int x) {
@@ -522,8 +524,8 @@ public class GameScene extends AbstractScene {
     public void resetGame() {
     	//Reset Level,
         levelLabel.setText("PLANNING");
-    	updateHealth(5);
-    	updateCoins(300);
+        updateHealth(GameConfig.getInstance().getPlayerHp());
+    	updateCoins(GameConfig.getInstance().getPlayerCoins());
     	goodFoodReached = 0;
     	
 	    //reset map
@@ -534,7 +536,7 @@ public class GameScene extends AbstractScene {
 	    map = new Map("level.tmx");
 	    //restart entity for game
 	    if (entityManager != null) {
-            entityManager = new EntityManager(gameConfig, camera, map);
+            entityManager = new EntityManager(camera, map);
             setupEntityManager();
             entityManager.setCurrentLevel(0);
         }
@@ -563,7 +565,7 @@ public class GameScene extends AbstractScene {
         createButtons();
         
         if (entityManager == null) {
-            entityManager = new EntityManager(gameConfig, camera, map);
+            entityManager = new EntityManager(camera, map);
         }
     }
 

@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 import com.badlogic.gdx.math.Vector2;
 
+import config.GameConfig;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +17,7 @@ public class Tower extends AbstractStaticObject{
 	private SoundManager soundManager;
     
     public Tower(Vector2 position) {
-    	super(new Vector2(position), "tower", 1.0f, 250f, 10f, 0f);
+    	super(new Vector2(position), "tower", GameConfig.getInstance().getTowerFireRate(), GameConfig.getInstance().getTowerRange(), GameConfig.getInstance().getTowerDamage(), GameConfig.getInstance().getTowerCooldown());
     	towerTexture = new Texture("tower.png");
     	this.soundManager = SoundManager.getInstance();
     }

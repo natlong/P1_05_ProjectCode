@@ -19,7 +19,6 @@ public class GameConfig {
 		if(instance == null) {
 			instance = new GameConfig();
 		}
-		Gdx.app.log("GameConfig","return instance");
 		return instance;
 	}
 	
@@ -70,4 +69,150 @@ public class GameConfig {
     	}
     	return 20;
     }
+    public float getTowerFireRate() {
+		if(config.has("tower")&&config.getAsJsonObject("tower").has("fireRate")) {
+    		return config.getAsJsonObject("tower").get("fireRate").getAsFloat();
+    	}
+		return 0f;
+	}
+
+	public float getTowerRange() {
+		if(config.has("tower")&&config.getAsJsonObject("tower").has("range")) {
+    		return config.getAsJsonObject("tower").get("range").getAsFloat();
+    	}
+		return 0f;
+	}
+
+	public float getTowerDamage() {
+		if(config.has("tower")&&config.getAsJsonObject("tower").has("damage")) {
+    		return config.getAsJsonObject("tower").get("damage").getAsFloat();
+    	}
+		return 0f;
+	}
+
+	public float getTowerCooldown() {
+		if(config.has("tower")&&config.getAsJsonObject("tower").has("cooldown")) {
+    		return config.getAsJsonObject("tower").get("cooldown").getAsFloat();
+    	}
+		return 0f;
+	}
+
+	public float getProjectileSpeed() {
+		if(config.has("projectile")&&config.getAsJsonObject("projectile").has("speed")) {
+    		return config.getAsJsonObject("projectile").get("speed").getAsFloat();
+    	}
+		return 0f;
+	}
+
+	public float getProjectileMaxHp() {
+		if(config.has("projectile")&&config.getAsJsonObject("projectile").has("maxHp")) {
+    		return config.getAsJsonObject("projectile").get("maxHp").getAsFloat();
+    	}
+		return 0f;
+	}
+
+	public float getProjectileHp() {
+		if(config.has("projectile")&&config.getAsJsonObject("projectile").has("hp")) {
+    		return config.getAsJsonObject("projectile").get("hp").getAsFloat();
+    	}
+		return 0f;
+	}
+
+	public int getButtonSize() {
+		if(config.has("optionsScene")&&config.getAsJsonObject("optionsScene").has("button_size")) {
+    		return config.getAsJsonObject("optionsScene").get("button_size").getAsInt();
+    	}
+		return 0;
+	}
+
+	public int getButtonWidth() {
+		if(config.has("mainMenuScene")&&config.getAsJsonObject("mainMenuScene").has("button_width")) {
+    		return config.getAsJsonObject("mainMenuScene").get("button_width").getAsInt();
+    	}
+		return 0;
+	}
+
+	public int getButtonHeight() {
+		if(config.has("mainMenuScene")&&config.getAsJsonObject("mainMenuScene").has("button_height")) {
+    		return config.getAsJsonObject("mainMenuScene").get("button_height").getAsInt();
+    	}
+		return 0;
+	}
+
+	public int getButtonPad() {
+		if(config.has("mainMenuScene")&&config.getAsJsonObject("mainMenuScene").has("button_pad")) {
+    		return config.getAsJsonObject("mainMenuScene").get("button_pad").getAsInt();
+    	}
+		return 0;
+	}
+
+	public int getPlayerHp() {
+		if(config.has("player")&&config.getAsJsonObject("player").has("playerHp")) {
+			return config.getAsJsonObject("player").get("playerHp").getAsInt();
+		}
+		return 0;
+	}
+
+	public int getPlayerCoins() {
+		if(config.has("player")&&config.getAsJsonObject("player").has("playerCoins")) {
+			return config.getAsJsonObject("player").get("playerCoins").getAsInt();
+		}
+		return 0;
+	}
+
+	public float getTowerRemovalRadius() {
+		if(config.has("tower")&&config.getAsJsonObject("tower").has("removal_radius")) {
+    		return config.getAsJsonObject("tower").get("removal_radius").getAsFloat();
+    	}
+		return 0f;
+	}
+
+	public float getIdleFrameDuration() {
+		if(config.has("creature")&&config.getAsJsonObject("creature").has("idle_frame_duration")) {
+    		return config.getAsJsonObject("creature").get("idle_frame_duration").getAsFloat();
+    	}
+		return 0f;
+	}
+
+	public float getEatingFrameDuration() {
+		if(config.has("creature")&&config.getAsJsonObject("creature").has("eating_frame_duration")) {
+    		return config.getAsJsonObject("creature").get("eating_frame_duration").getAsFloat();
+    	}
+		return 0f;
+	}
+
+	public int getFrameWidth() {
+		if(config.has("creature")&&config.getAsJsonObject("creature").has("frame_width")) {
+    		return config.getAsJsonObject("creature").get("frame_width").getAsInt();
+    	}
+		return 0;
+	}
+
+	public int getFrameHeight() {
+		if(config.has("creature")&&config.getAsJsonObject("creature").has("frame_height")) {
+    		return config.getAsJsonObject("creature").get("frame_height").getAsInt();
+    	}
+		return 0;
+	}
+
+	public float getEatingDuration() {
+		if(config.has("creature")&&config.getAsJsonObject("creature").has("eating_duration")) {
+    		return config.getAsJsonObject("creature").get("eating_duration").getAsFloat();
+    	}
+		return 0f;
+	}
+
+	public int getViewportWidth() {
+		if(config.has("viewport")&&config.getAsJsonObject("viewport").has("viewport_width")) {
+			return config.getAsJsonObject("viewport").get("viewport_width").getAsInt();
+		}
+		return 0;
+	}
+
+	public int getViewportHeight() {
+		if(config.has("viewport")&&config.getAsJsonObject("viewport").has("viewport_height")) {
+			return config.getAsJsonObject("viewport").get("viewport_height").getAsInt();
+		}
+		return 0;
+	}
 }

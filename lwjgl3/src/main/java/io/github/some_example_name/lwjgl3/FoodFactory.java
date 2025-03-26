@@ -61,7 +61,7 @@ public class FoodFactory {
 				boolean isBadFood = foodObject.get("isBadFood").getAsBoolean();
 				
 	            Vector2 spawnPos = new Vector2(map.getSpawnPoint().x, map.getSpawnPoint().y);
-	            food = new Food(texturePath, name, spawnPos, map, gameConfig.getMaxHp(), camera, gameConfig.getFoodSpeed(), isBadFood);
+	            food = new Food(texturePath, name, spawnPos, map, GameConfig.getInstance().getMaxHp(), camera, GameConfig.getInstance().getFoodSpeed(), isBadFood);
 	            break;
 			}
 		}

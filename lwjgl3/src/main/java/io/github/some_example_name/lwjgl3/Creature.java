@@ -10,6 +10,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
+import config.GameConfig;
+
 
 public class Creature {
 	private SoundManager soundManager;
@@ -18,12 +20,12 @@ public class Creature {
         EATING
     }
     
-    private static final float IDLE_FRAME_DURATION = 0.25f;
-    private static final float EATING_FRAME_DURATION = 0.35f;
+    private static final float IDLE_FRAME_DURATION = GameConfig.getInstance().getIdleFrameDuration();
+    private static final float EATING_FRAME_DURATION = GameConfig.getInstance().getEatingFrameDuration();
     
     //size of the creature
-    private static final int FRAME_WIDTH = 100;
-    private static final int FRAME_HEIGHT = 100;
+    private static final int FRAME_WIDTH = GameConfig.getInstance().getFrameWidth();
+    private static final int FRAME_HEIGHT = GameConfig.getInstance().getFrameHeight();
     
     
     private Vector2 position;

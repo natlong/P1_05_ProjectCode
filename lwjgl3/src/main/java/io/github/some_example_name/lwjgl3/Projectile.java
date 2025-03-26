@@ -4,6 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 
+import config.GameConfig;
+
 public class Projectile extends AbstractMovableObject {
 	private Targetable target;
     private float damage;
@@ -12,7 +14,7 @@ public class Projectile extends AbstractMovableObject {
     public Projectile(Vector2 position, Targetable target, float damage) {
         // For projectiles, HP values are not relevant so we use dummy values (1, 1)
         // Speed is set to 200f.
-        super(position, "Projectile", 1, 1, 225f);
+        super(position, "Projectile", GameConfig.getInstance().getProjectileHp(), GameConfig.getInstance().getProjectileMaxHp(), GameConfig.getInstance().getProjectileSpeed());
         this.position = new Vector2(position);
         this.target = target;
         this.damage = damage;

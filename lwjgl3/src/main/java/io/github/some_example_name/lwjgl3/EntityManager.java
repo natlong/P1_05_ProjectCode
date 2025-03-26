@@ -30,17 +30,16 @@ public class EntityManager {
     //Level-Food Configuration,
     private LevelChangeListener levelChangeListener;
     public  int currentLevel;
-    private int foodsPerLevel = 3;
+    private int foodsPerLevel = GameConfig.getInstance().getNumOfFood();
     private int foodsSpawnedCurrLevel = 0;
     private int foodEatenCurrLevel = 0;
     private boolean levelInProgress = false;
 
-    public EntityManager(GameConfig gameConfig, OrthographicCamera camera, Map map) {
+    public EntityManager(OrthographicCamera camera, Map map) {
         this.entities = new ArrayList<>();
         this.camera = camera;
         this.map = map;
         this.soundManager = soundManager.getInstance();
-        this.gameConfig = gameConfig;
         this.foodNameList = new ArrayList<>();
         
         loadFoodEntities();
@@ -50,7 +49,7 @@ public class EntityManager {
     }
 
     private void setRandomSpawnInterval() {
-        spawnInterval = gameConfig.getSpawnMinInterval() + random.nextFloat() * (gameConfig.getSpawnMaxInterval() - gameConfig.getSpawnMinInterval());
+        spawnInterval = GameConfig.getInstance().getSpawnMinInterval() + random.nextFloat() * (GameConfig.getInstance().getSpawnMaxInterval() - GameConfig.getInstance().getSpawnMinInterval());
     }
     
     private void loadFoodEntities() {
@@ -167,7 +166,7 @@ public class EntityManager {
     //Check if Player Killed a "GOOD" Food,
     private void checkFoodType(Food x) {
     	if (!x.isBadFood()) {
-    		GameScene.updateHealth(GameScene.playerHealth-1);
+    		GameScene.updateHealth(GameScene.getHealth()-1);
     		Gdx.app.log("GameScene", "Player penalized for killing good food.");
     	}
     }

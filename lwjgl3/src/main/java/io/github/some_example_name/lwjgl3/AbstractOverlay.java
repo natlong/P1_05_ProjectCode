@@ -6,10 +6,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 
+import config.GameConfig;
+
 public abstract class AbstractOverlay extends Window {
     //button size used in Gameover and Options
-    protected static final int BUTTON_WIDTH = 200;
-    protected static final int BUTTON_HEIGHT = 50;
+	protected static final int BUTTON_WIDTH = GameConfig.getInstance().getButtonWidth();
+    protected static final int BUTTON_HEIGHT = GameConfig.getInstance().getButtonHeight();
     
     public AbstractOverlay(String title, Skin skin, Stage stage) {
         super(title, skin);

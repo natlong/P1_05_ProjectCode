@@ -11,8 +11,10 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 import com.badlogic.gdx.utils.Align;
 
+import config.GameConfig;
+
 public class OptionsScene extends AbstractOverlay {
-	private static int BUTTON_SIZE = 60;
+	private static int BUTTON_SIZE = GameConfig.getInstance().getButtonSize();
 
     private Texture volumeOnTexture;
     private Texture volumeOffTexture;
