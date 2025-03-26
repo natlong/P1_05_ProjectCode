@@ -13,8 +13,8 @@ import java.util.ArrayList;
 
 public class Food extends AbstractMovableObject implements Targetable{
 
-    private static final int DEFAULT_WIDTH = 50;  //the minion width
-    private static final int DEFAULT_HEIGHT = 50; //the minion height
+    private static final int DEFAULT_WIDTH = 50;  //the food width
+    private static final int DEFAULT_HEIGHT = 50; //the food height
     private static final int MAP_WIDTH = 40; //the tiled map i set 40x30
     private static final int MAP_HEIGHT = 30;
 
@@ -28,6 +28,11 @@ public class Food extends AbstractMovableObject implements Targetable{
     private Texture texture;
     private boolean isBadFood;
     private boolean isUserTargeted = false;
+    
+    private float slowDuration = 1f;
+    private float slowTimer = 0f;
+    private boolean isSlowed = false;
+    private float originalSpeed;
 
 
     public Food(String texturePath, String foodName, Vector2 position, Map map, float maxHp, OrthographicCamera camera, float speed, boolean isBadFood) {
@@ -40,6 +45,7 @@ public class Food extends AbstractMovableObject implements Targetable{
         this.waypoints = map.getPathWaypoints();
         this.texture = new Texture(Gdx.files.internal(texturePath));
         this.isBadFood = isBadFood;
+        this.originalSpeed = speed;
     }
     
     public boolean isUserTargeted() {
@@ -53,6 +59,13 @@ public class Food extends AbstractMovableObject implements Targetable{
     public void update(float delta) {
         hpBar.setPosition(this.getPosition().x, position.y + DEFAULT_HEIGHT + 5);
         super.update(delta); // Call the superclass update to handle movement
+        
+        if(isSlowed) {
+        	slowTimer += delta;
+        	if(slowTimer >= slowDuration) {
+        		resetSpeed();
+        	}
+        }
     }
 
     private void ScreenBounds() {
@@ -84,6 +97,13 @@ public class Food extends AbstractMovableObject implements Targetable{
         }
     }
 
+    private void resetSpeed() {
+    	if(isSlowed) {
+    		super.setSpeed(originalSpeed);
+    		isSlowed = false;
+    		slowTimer = 0f;
+    	}
+    }
     public void takeDamage(float damage) {
         float newHp = this.getHp() - damage;
         if (newHp < 0) {
@@ -92,17 +112,11 @@ public class Food extends AbstractMovableObject implements Targetable{
         this.setHp(newHp);
         hpBar.updateHealth(this.getHp(), this.getMaxHp());
         
-        float orginalSpeed = super.getSpeed();
-        super.setSpeed(50f); //To slow food down
-        
-        new Thread(()->{
-        	try {
-        		Thread.sleep(1000);
-        		super.setSpeed(orginalSpeed);
-        	}catch(InterruptedException e) {
-        		e.printStackTrace();
-        	}
-        }).start();
+        if(!isSlowed) {
+        	super.setSpeed(50f);
+        	isSlowed = true;
+        	slowTimer = 0f;
+        }
     }
 
     public Rectangle getBounds() {
