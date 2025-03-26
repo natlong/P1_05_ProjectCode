@@ -76,6 +76,7 @@ public class GameScene extends AbstractScene {
     private int currentLevel;
     private int playerHealth = 5;
     private int playerCoins = 300;
+    private int goodFoodReached = 0;
     
     // NEW: Field to track the current phase. Start in PLANNING.
     private GamePhase currentPhase = GamePhase.PLANNING;
@@ -315,11 +316,28 @@ public class GameScene extends AbstractScene {
             @Override
             public void onClose() {
                 Gdx.app.log("GameScene", "Planning overlay closed. Adding START button.");
+                nextStage();
                 createStartButton();
             }
         });
         Gdx.app.log("GameScene", "Adding PlanningOverlay to stage");
         stage.addActor(planningOverlay);
+    }
+    
+    public void nextStage() {
+        // Advance the level in the entity manager.
+        entityManager.startNextLevel();
+        
+        // Award bonus coins every alternate stage.
+        if (currentLevel % 2 != 0 && currentLevel != 1) {
+            playerCoins += 100;  // Give bonus coins equal to a tower cost, for example.
+            updateCoins(playerCoins);
+            Gdx.app.log("GameScene", "Bonus coins awarded. Coins now: " + playerCoins);
+        }
+        
+        // Update level display on the UI.
+        updateLevelDisplay();  
+        
     }
 
     // NEW: Create a START button in the game scene (outside the overlay).
@@ -342,69 +360,6 @@ public class GameScene extends AbstractScene {
         stage.addActor(startButton);
     }
     
-//    //Player Input for Tower,
-//    private void handleInput() {
-//        InputMultiplexer multiplexer = new InputMultiplexer();
-//        multiplexer.addProcessor(stage);
-//        multiplexer.addProcessor(new InputAdapter() {
-//            @Override
-//            public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-//                Vector3 worldCoordinates = camera.unproject(new Vector3(screenX, screenY, 0));
-//                float x = worldCoordinates.x;
-//                float y = worldCoordinates.y;
-//
-//                // Left-Click to place a tower.
-//                if (button == Input.Buttons.LEFT) {
-//                    if (map.isBlockedArea(x, y)) {
-//                    	if (playerCoins >= 100) {
-//                    		entityManager.addEntity(new Tower(new Vector2(x, y)));
-//                    		updateCoins(playerCoins-100);
-//                    	} else {
-//                    		Gdx.app.log("Game", "Not enough coins to place Tower!");
-//                    	}
-//                        
-//                    	return true;
-//                    }
-//                }
-//                
-//                // Right-Click to remove a tower.
-//                if (button == Input.Buttons.RIGHT) {
-//                    Tower towerToRemove = null;
-//                    
-//                    for (AbstractEntity entity : entityManager.getEntities()) {
-//                        if (entity instanceof Tower) {
-//                            Tower tower = (Tower) entity;
-//                            float distance = tower.getPosition().dst(x, y);
-//
-//                            if (distance <= TOWER_REMOVAL_RADIUS) {
-//                                towerToRemove = tower;
-//                                break;
-//                            }
-//                        }
-//                    }
-//
-//                    if (towerToRemove != null) {
-//                        boolean removed = entityManager.removeEntity(towerToRemove);
-//                        
-//                        if (removed) {
-//                            updateCoins(playerCoins + 100);
-//                            
-//                        } else {
-//                            Gdx.app.log("Game", "Failed to remove tower within range.");
-//                        }
-//                        
-//                    } else {
-//                        Gdx.app.log("Game", "No tower found within range!");
-//                    }
-//                    return true;
-//                }
-//                return false;
-//            }
-//        });
-//        
-//        // Set the multiplexer as the input processor so that both the stage and custom adapter receive events.
-//        Gdx.input.setInputProcessor(multiplexer);
-//    }
     // Adjusted input handling to support two phases.
     private void handleInput() {
         InputMultiplexer multiplexer = new InputMultiplexer();
@@ -500,6 +455,13 @@ public class GameScene extends AbstractScene {
                 if (creature != null) {
                     creature.update(delta);
                 }
+                // Check if the simulation stage is complete.
+                if (entityManager.isLevelComplete()) {
+                    // Transition to the planning phase.
+                    currentPhase = GamePhase.PLANNING;
+                    // Optionally, award bonus resources here.
+                    createPlanningOverlay();
+                }
             }
         }
 	    
@@ -511,7 +473,6 @@ public class GameScene extends AbstractScene {
 	        	collidedFood.setHp(0);
 	        	entityManager.foodEaten(collidedFood);
 	        	
-	        	
 	        	//Decrease Health only if Food = Bad Food,
 	        	if (collidedFood.isBadFood()) {
 	        		updateHealth(playerHealth - 1);
@@ -520,7 +481,10 @@ public class GameScene extends AbstractScene {
 	        			showGameOver();
 	        			return;
 	        		}
-	        	}
+	        	} else {
+	                // This is good food.
+	                goodFoodReached++;
+	            }
 	        	
 	            if (creature != null) {
 	                creature.startEating();
@@ -528,6 +492,10 @@ public class GameScene extends AbstractScene {
 	        }
 	    }
 	}
+    
+    public int getGoodFoodReached() {
+        return goodFoodReached;
+    }
     
     private void showGameOver() {
     	if (gameOverScene == null){
@@ -543,6 +511,7 @@ public class GameScene extends AbstractScene {
         levelLabel.setText("PLANNING");
     	updateHealth(5);
     	updateCoins(300);
+    	goodFoodReached = 0;
     	
 	    //reset map
 	    if (map != null) {

@@ -93,10 +93,10 @@ public class EntityManager {
     //Updated Function for Each Level,
     public void update(float delta) {
     	
-    	if (!levelInProgress) {
-    		startNextLevel();
-    		return;
-    	}
+//    	if (!levelInProgress) {
+//    		startNextLevel();
+//    		return;
+//    	}
     	
     	//Spawn Food within Range of Level,
     	if (foodsSpawnedCurrLevel < foodsPerLevel) {
@@ -186,6 +186,10 @@ public class EntityManager {
     
     public void setLevelChangeListener(LevelChangeListener x) {
     	this.levelChangeListener = x;
+    }
+    
+    public boolean isLevelComplete() {
+        return !levelInProgress;
     }
     
     //Allowing Creature Eats as Food Killed,

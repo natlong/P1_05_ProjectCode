@@ -30,11 +30,16 @@ public class GameOverScene extends AbstractOverlay {
     		titleLabel.setColor(Color.RED);
             titleLabel.setAlignment(Align.center);
             
+            // NEW: Display the count of good food reached.
+            Label goodFoodLabel = new Label("Good Food Reached: " + gameScene.getGoodFoodReached(), skin);
+            goodFoodLabel.setAlignment(Align.center);
+            
             //gameover buttons
             retryButton = createStandardButton("RETRY", skin);
             exitButton = createStandardButton("EXIT", skin);
             
             mainTable.add(titleLabel).padTop(20).expandX().center().row();
+            mainTable.add(goodFoodLabel).padTop(10).expandX().center().row();
             mainTable.add(retryButton).width(BUTTON_WIDTH).height(BUTTON_HEIGHT).padTop(40).row();
             mainTable.add(exitButton).width(BUTTON_WIDTH).height(BUTTON_HEIGHT).padTop(20);
             
