@@ -450,21 +450,21 @@ public class GameScene extends AbstractScene {
                         return true;
                     }
                 } else if (currentPhase == GamePhase.SIMULATION) {
-                    // SIMULATION phase: left-click toggles the target flag on a minion.
+                    // SIMULATION phase: left-click toggles the target flag on a food.
                     if (button == Input.Buttons.LEFT) {
                         for (AbstractEntity entity : entityManager.getEntities()) {
                             if (entity instanceof Food) {
-                                Food minion = (Food) entity;
-                                if (minion.getBounds().contains(x, y)) {
-                                    boolean newState = !minion.isUserTargeted();
-                                    minion.setUserTargeted(newState);
-                                    Gdx.app.log("GameScene", "Minion " + minion.getName() + " user-targeted: " + newState);
+                                Food food = (Food) entity;
+                                if (food.getBounds().contains(x, y)) {
+                                    boolean newState = !food.isUserTargeted();
+                                    food.setUserTargeted(newState);
+                                    Gdx.app.log("GameScene", "Food " + food.getName() + " user-targeted: " + newState);
                                     break; // Toggle only one per click.
                                 }
                             }
                         }
                     }
-                    // Optionally, you could have right-click untarget the minion:
+                    // Optionally, you could have right-click untarget the food:
                     else if (button == Input.Buttons.RIGHT) {
                         for (AbstractEntity entity : entityManager.getEntities()) {
                             if (entity instanceof Food) {
@@ -503,17 +503,17 @@ public class GameScene extends AbstractScene {
             }
         }
 	    
-	 // Count minions that have reached the gameover area.
+	 // Count food that have reached the gameover area.
 	    Rectangle gameoverArea = map.getGameoverPoint();
 	    if (gameoverArea != null) {
-	    	Food collidedMinion = CollisionManager.handleMinionCreatureCollision(entityManager.getEntities(), gameoverArea);
-	        if (collidedMinion != null) {
-	        	collidedMinion.setHp(0);
-	        	entityManager.foodEaten(collidedMinion);
+	    	Food collidedFood = CollisionManager.handleFoodCreatureCollision(entityManager.getEntities(), gameoverArea);
+	        if (collidedFood != null) {
+	        	collidedFood.setHp(0);
+	        	entityManager.foodEaten(collidedFood);
 	        	
 	        	
-	        	//Decrease Health only if Minion = Bad Food,
-	        	if (collidedMinion.isBadFood()) {
+	        	//Decrease Health only if Food = Bad Food,
+	        	if (collidedFood.isBadFood()) {
 	        		updateHealth(playerHealth - 1);
 	        		
 	        		if (playerHealth <= 0) {
@@ -596,7 +596,7 @@ public class GameScene extends AbstractScene {
             debugRenderer.renderMapDebug(camera, map);
             
             if (!entityManager.getEntities().isEmpty()) {
-                debugRenderer.renderMinions(camera, entityManager.getEntities());
+                debugRenderer.renderFoods(camera, entityManager.getEntities());
             }
         }
 

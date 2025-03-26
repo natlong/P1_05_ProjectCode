@@ -230,7 +230,7 @@ public class Map {
             waypoints.add(entry);
             waypoints.add(exit);
         }
-        // Remove the very last waypoint so that the minion does not target an extra point.
+        // Remove the very last waypoint so that the food does not target an extra point.
         if (!waypoints.isEmpty()) {
             waypoints.remove(waypoints.size() - 1);
         }
