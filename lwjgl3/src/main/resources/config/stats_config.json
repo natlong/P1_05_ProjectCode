@@ -5,7 +5,7 @@
   },
   "food": {
     "foodSpeed": 200,
-    "maxHp": 100,
+    "maxHp": 50,
 	"numOfFood": 5
   }
 }

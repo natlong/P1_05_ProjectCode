@@ -8,7 +8,7 @@ import java.io.Reader;
 public class GameConfig {
 	private static GameConfig instance;
 	private JsonObject config;
-	private static final String CONFIG_FILE_PATH = "config/level%d_config.json";
+	private static final String CONFIG_FILE_PATH = "config/stats_config.json";
 	private final Gson gson;
 	
 	private GameConfig() {
@@ -19,18 +19,17 @@ public class GameConfig {
 		if(instance == null) {
 			instance = new GameConfig();
 		}
-		Gdx.app.log("GameCOnfig","return instance");
+		Gdx.app.log("GameConfig","return instance");
 		return instance;
 	}
 	
-	// Method to load configuration based on the level
-    public void loadConfig(int level) {
-        String configFilePath = String.format(CONFIG_FILE_PATH, level);  // Build file path for the current level
+    public void loadConfig() {
+        String configFilePath = String.format(CONFIG_FILE_PATH);  // Build file path for the current level
         try (Reader reader = new InputStreamReader(getClass().getClassLoader().getResourceAsStream(configFilePath))) {
             config = gson.fromJson(reader, JsonObject.class);  // Parse JSON into JsonObject
-            System.out.println("Configuration for level " + level + " loaded successfully");
+            System.out.println("Stats loaded successfully");
         } catch (Exception e) {
-            System.err.println("Error loading configuration for level " + level + ": " + e.getMessage());
+            System.err.println("Error loading configuration for stats" + e.getMessage());
             config = new JsonObject();  // Use an empty config as fallback
         }
     }

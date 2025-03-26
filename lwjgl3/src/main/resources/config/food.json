@@ -1,0 +1,24 @@
+{
+  "foods": [
+    {
+      "name": "APPLE",
+      "texturePath": "food_pics/apple.png",
+      "isBadFood": false
+    },
+    {
+      "name": "STRAWBERRY",
+      "texturePath": "food_pics/strawberry.png",
+      "isBadFood": false
+    },
+    {
+      "name": "DONUT",
+      "texturePath": "food_pics/donut.png",
+      "isBadFood": true
+    },
+    {
+      "name": "ICE_CREAM",
+      "texturePath": "food_pics/ice-cream.png",
+      "isBadFood": true
+    }
+  ]
+}

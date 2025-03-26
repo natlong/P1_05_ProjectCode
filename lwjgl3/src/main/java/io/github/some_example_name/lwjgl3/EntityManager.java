@@ -24,8 +24,7 @@ public class EntityManager {
     private float spawnInterval; // Now a variable, not a fixed value
     private Random random = new Random();
     
-    
-    //Level-Minion Configuration,
+    //Level-Food Configuration,
     private LevelChangeListener levelChangeListener;
     public  int currentLevel = 1;
     private int foodsPerLevel = 3;
@@ -96,7 +95,7 @@ public class EntityManager {
     		return;
     	}
     	
-    	//Spawn Minions within Range of Level,
+    	//Spawn Food within Range of Level,
     	if (foodsSpawnedCurrLevel < foodsPerLevel) {
             spawnTimer += delta;
             
@@ -114,7 +113,7 @@ public class EntityManager {
             }
     	}
     	
-    	//Track Killed Minions,
+    	//Track Killed Food,
         List<AbstractEntity> newProjectiles = new ArrayList<>();
         Iterator<AbstractEntity> iterator = entities.iterator();
 
@@ -186,7 +185,7 @@ public class EntityManager {
     	this.levelChangeListener = x;
     }
     
-    //Allowing Creature Eats as Minions Killed,
+    //Allowing Creature Eats as Food Killed,
     public void foodEaten(Food x) {
     	if (x != null) {
     		foodEatenCurrLevel++;

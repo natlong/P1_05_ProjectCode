@@ -471,7 +471,7 @@ public class GameScene extends AbstractScene {
                                 Food food = (Food) entity;
                                 if (food.getBounds().contains(x, y)) {
                                     food.setUserTargeted(false);
-                                    Gdx.app.log("GameScene", "Minion " + food.getName() + " untargeted.");
+                                    Gdx.app.log("GameScene", "Food " + food.getName() + " untargeted.");
                                     break;
                                 }
                             }

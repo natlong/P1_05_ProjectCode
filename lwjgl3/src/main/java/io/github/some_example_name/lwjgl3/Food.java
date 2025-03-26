@@ -30,8 +30,8 @@ public class Food extends AbstractMovableObject implements Targetable{
     private boolean isUserTargeted = false;
 
 
-    public Food(String texturePath, Vector2 position, Map map, float maxHp, OrthographicCamera camera, float speed, boolean isBadFood) {
-        super(position, "Food", maxHp, maxHp, speed);
+    public Food(String texturePath, String foodName, Vector2 position, Map map, float maxHp, OrthographicCamera camera, float speed, boolean isBadFood) {
+        super(position, foodName, maxHp, maxHp, speed);
         this.map = map;
         this.bounds = new Rectangle(position.x, position.y, DEFAULT_WIDTH, DEFAULT_HEIGHT);
         this.shapeRenderer = new ShapeRenderer();
