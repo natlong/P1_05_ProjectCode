@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
 import config.GameConfig;
+import io.github.some_example_name.lwjgl3.Food.FoodType;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -21,17 +22,15 @@ public class EntityManager {
     private Map map;
     private float spawnTimer = 0f;
     private float spawnInterval; // Now a variable, not a fixed value
-    //private float minSpawnInterval = 0.5f; // Minimum spawn interval (e.g., 0.5 seconds)
-    //private float maxSpawnInterval = 3f; // Maximum spawn interval (e.g., 3 seconds)
     private Random random = new Random();
     
     
     //Level-Minion Configuration,
     private LevelChangeListener levelChangeListener;
-    public  int currentLevel;
-    private int minionsPerLevel = 3;
-    private int minionsSpawnedCurrLevel = 0;
-    private int minionsKilledCurrLevel = 0;
+    public  int currentLevel = 1;
+    private int foodsPerLevel = 3;
+    private int foodsSpawnedCurrLevel = 0;
+    private int foodEatenCurrLevel = 0;
     private boolean levelInProgress = false;
 
     public EntityManager(GameConfig gameConfig, OrthographicCamera camera, Map map) {
@@ -41,12 +40,22 @@ public class EntityManager {
         this.soundManager = soundManager.getInstance();
         this.gameConfig = gameConfig;
         setRandomSpawnInterval(); // Set the initial random spawn interval
+        
+        loadFoodEntities();
     }
 
     private void setRandomSpawnInterval() {
         spawnInterval = gameConfig.getSpawnMinInterval() + random.nextFloat() * (gameConfig.getSpawnMaxInterval() - gameConfig.getSpawnMinInterval());
     }
 
+    private void loadFoodEntities() {
+    	for (FoodType foodType:FoodType.values()) {
+            Vector2 spawnPos = new Vector2(map.getSpawnPoint().x, map.getSpawnPoint().y);
+            
+            Food food = FoodFactory.createFood(foodType, spawnPos, map, gameConfig.getMaxHp(),camera, gameConfig.getFoodSpeed());
+            entities.add(food);
+    	}
+    }
     public void addEntity(AbstractEntity entity) {
         if (entity instanceof Tower && soundManager != null) {
             Tower tower = new Tower(entity.getPosition());
@@ -88,7 +97,7 @@ public class EntityManager {
     	}
     	
     	//Spawn Minions within Range of Level,
-    	if (minionsSpawnedCurrLevel < minionsPerLevel) {
+    	if (foodsSpawnedCurrLevel < foodsPerLevel) {
             spawnTimer += delta;
             
             if (spawnTimer >= spawnInterval) {
@@ -97,11 +106,11 @@ public class EntityManager {
                 Vector2 spawnPos = new Vector2(map.getSpawnPoint().x, map.getSpawnPoint().y);
 
                 
-                Minion.FoodType randomFood = Minion.FoodType.values()[random.nextInt(Minion.FoodType.values().length)];
+                Food.FoodType randomFood = Food.FoodType.values()[random.nextInt(Food.FoodType.values().length)];
                
                 // Create a Food with the selected FoodType
-                addEntity(Minion.createMinion(randomFood, spawnPos, map, gameConfig.getMaxHp(), camera, gameConfig.getFoodSpeed()));
-                minionsSpawnedCurrLevel++;
+                addEntity(Food.createFood(randomFood, spawnPos, map, gameConfig.getMaxHp(), camera, gameConfig.getFoodSpeed()));
+                foodsSpawnedCurrLevel++;
             }
     	}
     	
@@ -112,16 +121,16 @@ public class EntityManager {
         while (iterator.hasNext()) {
             AbstractEntity entity = iterator.next();
 
-            if (entity instanceof Minion) {
-                Minion minion = (Minion) entity;
-                minion.update(delta);
+            if (entity instanceof Food) {
+                Food food = (Food) entity;
+                food.update(delta);
 
-                if (minion.isDead()) {
+                if (food.isDead()) {
                     iterator.remove();
-                    minion.dispose();
-                    minionsKilledCurrLevel++;
+                    food.dispose();
+                    foodEatenCurrLevel++;
                     
-                    if (minionsKilledCurrLevel >= minionsPerLevel) {
+                    if (foodEatenCurrLevel >= foodsPerLevel) {
                     	levelInProgress = false;
                     	
                     }
@@ -153,9 +162,9 @@ public class EntityManager {
     //Next Level Configurations,
     public void startNextLevel() {
     	currentLevel++;
-    	minionsPerLevel += 2;
-        minionsSpawnedCurrLevel = 0;
-        minionsKilledCurrLevel = 0;
+    	foodsPerLevel += 2;
+        foodsSpawnedCurrLevel = 0;
+        foodEatenCurrLevel = 0;
         levelInProgress = true;
         setRandomSpawnInterval();
         
@@ -178,13 +187,13 @@ public class EntityManager {
     }
     
     //Allowing Creature Eats as Minions Killed,
-    public void MinionsEaten(Minion x) {
+    public void foodEaten(Food x) {
     	if (x != null) {
-    		minionsKilledCurrLevel++;
+    		foodEatenCurrLevel++;
     		entities.remove(x);
     		x.dispose();
     		
-    		if (minionsKilledCurrLevel >= minionsPerLevel) {
+    		if (foodEatenCurrLevel >= foodsPerLevel) {
     			levelInProgress = false;
     		}
     	}
@@ -219,8 +228,8 @@ public class EntityManager {
         
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         for (AbstractEntity entity : entities) {
-            if (entity instanceof Minion) {
-                ((Minion) entity).renderOutline(shapeRenderer);
+            if (entity instanceof Food) {
+                ((Food) entity).renderOutline(shapeRenderer);
             }
         }
         shapeRenderer.end();
@@ -231,7 +240,7 @@ public class EntityManager {
         for (AbstractEntity entity : entities) {
             if (entity instanceof Tower) {
                 ((Tower) entity).render(batch);
-            } else if (entity instanceof Minion || entity instanceof Projectile) {
+            } else if (entity instanceof Food || entity instanceof Projectile) {
                 entity.render(batch);
             }
         }

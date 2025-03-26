@@ -73,7 +73,7 @@ public class GameScene extends AbstractScene {
     private Label coinsLabel;
     private Label coinsCount;
     
-    private int currentLevel;
+    private int currentLevel = 1;
     private int playerHealth = 5;
     private int playerCoins = 300;
     
@@ -453,8 +453,8 @@ public class GameScene extends AbstractScene {
                     // SIMULATION phase: left-click toggles the target flag on a minion.
                     if (button == Input.Buttons.LEFT) {
                         for (AbstractEntity entity : entityManager.getEntities()) {
-                            if (entity instanceof Minion) {
-                                Minion minion = (Minion) entity;
+                            if (entity instanceof Food) {
+                                Food minion = (Food) entity;
                                 if (minion.getBounds().contains(x, y)) {
                                     boolean newState = !minion.isUserTargeted();
                                     minion.setUserTargeted(newState);
@@ -467,11 +467,11 @@ public class GameScene extends AbstractScene {
                     // Optionally, you could have right-click untarget the minion:
                     else if (button == Input.Buttons.RIGHT) {
                         for (AbstractEntity entity : entityManager.getEntities()) {
-                            if (entity instanceof Minion) {
-                                Minion minion = (Minion) entity;
-                                if (minion.getBounds().contains(x, y)) {
-                                    minion.setUserTargeted(false);
-                                    Gdx.app.log("GameScene", "Minion " + minion.getName() + " untargeted.");
+                            if (entity instanceof Food) {
+                                Food food = (Food) entity;
+                                if (food.getBounds().contains(x, y)) {
+                                    food.setUserTargeted(false);
+                                    Gdx.app.log("GameScene", "Minion " + food.getName() + " untargeted.");
                                     break;
                                 }
                             }
@@ -506,10 +506,10 @@ public class GameScene extends AbstractScene {
 	 // Count minions that have reached the gameover area.
 	    Rectangle gameoverArea = map.getGameoverPoint();
 	    if (gameoverArea != null) {
-	    	Minion collidedMinion = CollisionManager.handleMinionCreatureCollision(entityManager.getEntities(), gameoverArea);
+	    	Food collidedMinion = CollisionManager.handleMinionCreatureCollision(entityManager.getEntities(), gameoverArea);
 	        if (collidedMinion != null) {
 	        	collidedMinion.setHp(0);
-	        	entityManager.MinionsEaten(collidedMinion);
+	        	entityManager.foodEaten(collidedMinion);
 	        	
 	        	
 	        	//Decrease Health only if Minion = Bad Food,

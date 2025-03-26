@@ -11,7 +11,7 @@ import com.badlogic.gdx.math.Vector2;
 
 import java.util.ArrayList;
 
-public class Minion extends AbstractMovableObject implements Targetable{
+public class Food extends AbstractMovableObject implements Targetable{
 
     private static final int DEFAULT_WIDTH = 32;  //the minion width
     private static final int DEFAULT_HEIGHT = 32; //the minion height
@@ -30,8 +30,8 @@ public class Minion extends AbstractMovableObject implements Targetable{
     private boolean isUserTargeted = false;
 
 
-    public Minion(String texturePath, Vector2 position, Map map, float maxHp, OrthographicCamera camera, float speed, boolean isBadFood) {
-        super(position, "Minion", maxHp, maxHp, speed);
+    public Food(String texturePath, Vector2 position, Map map, float maxHp, OrthographicCamera camera, float speed, boolean isBadFood) {
+        super(position, "Food", maxHp, maxHp, speed);
         this.map = map;
         this.bounds = new Rectangle(position.x, position.y, DEFAULT_WIDTH, DEFAULT_HEIGHT);
         this.shapeRenderer = new ShapeRenderer();
@@ -196,9 +196,5 @@ public class Minion extends AbstractMovableObject implements Targetable{
         public boolean isBadFood() {
             return isBadFood;
         }
-    }
-
-    public static Minion createMinion(FoodType foodType, Vector2 position, Map map, float maxHp, OrthographicCamera camera, float speed) {
-        return new Minion(foodType.getTexturePath(), position, map, maxHp, camera, speed, foodType.isBadFood());
     }
 }

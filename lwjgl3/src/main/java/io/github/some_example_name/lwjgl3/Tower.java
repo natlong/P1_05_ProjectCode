@@ -25,17 +25,17 @@ public class Tower extends AbstractStaticObject{
   * @param entities List of all entities
   * @return The targetable entity, or null if none in range
   */
-    private Targetable findUserTargetedMinion(List<AbstractEntity> entities) {
+    private Targetable findUserTargetedFood(List<AbstractEntity> entities) {
         Targetable userTarget = null;
         float closestDistance = this.getRange();
         for (AbstractEntity entity : entities) {
-            if (entity instanceof Minion) {
-                Minion minion = (Minion) entity;
-                if (minion.isUserTargeted() && !minion.isDead()) {
+            if (entity instanceof Food) {
+                Food food = (Food) entity;
+                if (food.isUserTargeted() && !food.isDead()) {
                     float distance = Vector2.dst(this.getPosition().x, this.getPosition().y,
-                                                 minion.getPosition().x, minion.getPosition().y);
+                                                 food.getPosition().x, food.getPosition().y);
                     if (distance < closestDistance) {
-                        userTarget = minion;
+                        userTarget = food;
                         closestDistance = distance;
                     }
                 }
@@ -56,10 +56,10 @@ public class Tower extends AbstractStaticObject{
         
         if (canFire()) {
             // Try to get a user-targeted minion first.
-            Targetable target = findUserTargetedMinion(entities);
+            Targetable target = findUserTargetedFood(entities);
             if (target == null) {
                 // Fallback to your default targeting (findTarget).
-                target = findUserTargetedMinion(entities);
+                target = findUserTargetedFood(entities);
             }
             
             if (target != null) {

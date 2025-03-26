@@ -61,8 +61,8 @@ public class DebugRenderer {
        
         shapeRenderer.setColor(Color.GREEN);
         for (AbstractEntity entity : entities) {
-            if (entity instanceof Minion) {
-                Minion minion = (Minion) entity;
+            if (entity instanceof Food) {
+                Food minion = (Food) entity;
                 Rectangle bounds = minion.getBounds();
                 shapeRenderer.rect(bounds.x, bounds.y, bounds.width, bounds.height);
             }
@@ -111,7 +111,7 @@ public class DebugRenderer {
 
     }
     
-    public void renderDebug(OrthographicCamera camera, Map map, Minion minion) {
+    public void renderDebug(OrthographicCamera camera, Map map, Food minion) {
         if (!isEnabled) return;
 
         // Create minion bounds inside the method
