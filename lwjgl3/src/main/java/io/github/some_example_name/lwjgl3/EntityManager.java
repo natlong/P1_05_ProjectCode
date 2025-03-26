@@ -1,5 +1,6 @@
 package io.github.some_example_name.lwjgl3;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -132,6 +133,8 @@ public class EntityManager {
                     food.dispose();
                     foodEatenCurrLevel++;
                     
+                    checkFoodType(food);
+                    
                     if (foodEatenCurrLevel >= foodsPerLevel) {
                     	levelInProgress = false;
                     	
@@ -159,6 +162,14 @@ public class EntityManager {
         // Use the fixed CollisionManager that returns entities to remove
         List<AbstractEntity> collisionsToRemove = CollisionManager.handleProjectileCollisions(entities);
         entities.removeAll(collisionsToRemove);
+    }
+    
+    //Check if Player Killed a "GOOD" Food,
+    private void checkFoodType(Food x) {
+    	if (!x.isBadFood()) {
+    		GameScene.updateHealth(GameScene.playerHealth-1);
+    		Gdx.app.log("GameScene", "Player penalized for killing good food.");
+    	}
     }
     	
     //Next Level Configurations,

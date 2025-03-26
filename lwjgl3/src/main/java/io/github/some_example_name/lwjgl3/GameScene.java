@@ -69,12 +69,12 @@ public class GameScene extends AbstractScene {
     
     private Label levelLabel;
     private Label healthLabel;
-    private Label healthCount;
+    private static Label healthCount;
     private Label coinsLabel;
     private Label coinsCount;
     
     private int currentLevel;
-    private int playerHealth = 5;
+    public static int playerHealth = 5;
     private int playerCoins = 300;
     private int goodFoodReached = 0;
     
@@ -215,7 +215,7 @@ public class GameScene extends AbstractScene {
         }
     
     //Update Health Display,
-    public void updateHealth(int x) {
+    public static void updateHealth(int x) {
         playerHealth = x;
         healthCount.setText("" + playerHealth);
       }
@@ -329,8 +329,8 @@ public class GameScene extends AbstractScene {
         entityManager.startNextLevel();
         
         // Award bonus coins every alternate stage.
-        if (currentLevel % 2 != 0 && currentLevel != 1) {
-            playerCoins += 100;  // Give bonus coins equal to a tower cost, for example.
+        if (currentLevel != 1) {
+            playerCoins += 50;  // Give bonus coins equal to a tower cost, for example.
             updateCoins(playerCoins);
             Gdx.app.log("GameScene", "Bonus coins awarded. Coins now: " + playerCoins);
         }
