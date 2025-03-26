@@ -72,6 +72,7 @@ public class GameScene extends AbstractScene {
     private static Label healthCount;
     private Label coinsLabel;
     private Label coinsCount;
+    private Label goodFoodCounter;
     
     private int currentLevel;
     public static int playerHealth = 5;
@@ -185,6 +186,9 @@ public class GameScene extends AbstractScene {
         coinPileTexture = new Texture(Gdx.files.internal("coinpile.png"));
 
         // Create Labels
+        goodFoodCounter = new Label("Food Eaten: " + goodFoodReached, skin);
+        goodFoodCounter.setAlignment(Align.left);
+        
         healthLabel = new Label("Health:", skin);
         healthLabel.setAlignment(Align.left);
         
@@ -202,6 +206,9 @@ public class GameScene extends AbstractScene {
         HealthAndCoinTable.bottom().right().pad(20);
         
         //Create row with 3 columns: label, value, icon
+        HealthAndCoinTable.add(goodFoodCounter).left().colspan(3).padBottom(5);
+        HealthAndCoinTable.row().padTop(7);
+        
         HealthAndCoinTable.add(healthLabel).left();
         HealthAndCoinTable.add(healthCount).center().minWidth(60).padLeft(5).padRight(5);
         HealthAndCoinTable.add(new Image(teethTexture)).size(30).right();
@@ -213,6 +220,11 @@ public class GameScene extends AbstractScene {
         
         stage.addActor(HealthAndCoinTable);
         }
+    
+    //Update Food Display,
+    public void updateFood() {
+    	goodFoodCounter.setText("Food Eaten: " + goodFoodReached);
+      }
     
     //Update Health Display,
     public static void updateHealth(int x) {
@@ -484,6 +496,7 @@ public class GameScene extends AbstractScene {
 	        	} else {
 	                // This is good food.
 	                goodFoodReached++;
+	                updateFood();
 	            }
 	        	
 	            if (creature != null) {
