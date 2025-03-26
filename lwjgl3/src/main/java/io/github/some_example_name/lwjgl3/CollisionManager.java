@@ -31,7 +31,7 @@ public class CollisionManager {
         return toRemove;
     }
     
-    public static Food handleMinionCreatureCollision(List<AbstractEntity> entities, Rectangle gameoverArea) {
+    public static Food handleFoodCreatureCollision(List<AbstractEntity> entities, Rectangle gameoverArea) {
         for (Iterator<AbstractEntity> iterator = entities.iterator(); iterator.hasNext();) {
             AbstractEntity entity = iterator.next();
             if (entity instanceof Food) {

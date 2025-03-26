@@ -94,9 +94,9 @@ public class Map {
     }
     
     //detect collision
-    public boolean isColliding(Rectangle minionBounds) {
+    public boolean isColliding(Rectangle foodBounds) {
         for (Rectangle blockedArea : blockedAreas) {
-            if (blockedArea.overlaps(minionBounds)) {
+            if (blockedArea.overlaps(foodBounds)) {
             	//when collison to wall detected
             	// help to add the behavior where it moves downstairs. when u reset logn enough soemtimes it will hit until the red parts.. 
             	// either u can adjust the behavior here or u play cheat and edit the tilemap so it doesnt hit haha. 

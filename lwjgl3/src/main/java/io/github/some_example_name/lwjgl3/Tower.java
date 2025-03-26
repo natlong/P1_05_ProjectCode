@@ -55,7 +55,7 @@ public class Tower extends AbstractStaticObject{
         updateCooldown(delta);
         
         if (canFire()) {
-            // Try to get a user-targeted minion first.
+            // Try to get a user-targeted food first.
             Targetable target = findUserTargetedFood(entities);
             if (target == null) {
                 // Fallback to your default targeting (findTarget).

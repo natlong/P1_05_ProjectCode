@@ -73,7 +73,7 @@ public class GameScene extends AbstractScene {
     private Label coinsLabel;
     private Label coinsCount;
     
-    private int currentLevel = 1;
+    private int currentLevel;
     private int playerHealth = 5;
     private int playerCoins = 300;
     
@@ -124,7 +124,7 @@ public class GameScene extends AbstractScene {
          // load tilemap
          map = new Map("level.tmx");
          gameConfig = GameConfig.getInstance();
-         gameConfig.loadConfig(currentLevel); //To Update
+         gameConfig.loadConfig(); //To Update
          entityManager = new EntityManager(gameConfig, camera, map);
          
          //Get Level and Update Dynamically from EntityManager,

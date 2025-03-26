@@ -52,8 +52,8 @@ public class DebugRenderer {
         shapeRenderer.end();
     }
     
-    //Render Minion only
-    public void renderMinions(OrthographicCamera camera, List<AbstractEntity> entities) {
+    //Render Food only
+    public void renderFoods(OrthographicCamera camera, List<AbstractEntity> entities) {
         if (!isEnabled || entities.isEmpty()) return;
         
         shapeRenderer.setProjectionMatrix(camera.combined);
@@ -62,8 +62,8 @@ public class DebugRenderer {
         shapeRenderer.setColor(Color.GREEN);
         for (AbstractEntity entity : entities) {
             if (entity instanceof Food) {
-                Food minion = (Food) entity;
-                Rectangle bounds = minion.getBounds();
+                Food food = (Food) entity;
+                Rectangle bounds = food.getBounds();
                 shapeRenderer.rect(bounds.x, bounds.y, bounds.width, bounds.height);
             }
         }
@@ -74,7 +74,7 @@ public class DebugRenderer {
     
     
     public void renderCollisionAreas(OrthographicCamera camera, List<Rectangle> blockedAreas, 
-            Rectangle minionBounds, Rectangle spawnArea, 
+            Rectangle foodBounds, Rectangle spawnArea, 
             List<Rectangle> walkingPath, Rectangle gameoverArea)  {
         shapeRenderer.setProjectionMatrix(camera.combined);
         shapeRenderer.begin(ShapeType.Line);
@@ -85,9 +85,9 @@ public class DebugRenderer {
             shapeRenderer.rect(blockedArea.x, blockedArea.y, blockedArea.width, blockedArea.height);
         }
         
-        // Draw minion bounds in green
+        // Draw food bounds in green
         shapeRenderer.setColor(Color.GREEN);
-        shapeRenderer.rect(minionBounds.x, minionBounds.y, minionBounds.width, minionBounds.height);
+        shapeRenderer.rect(foodBounds.x, foodBounds.y, foodBounds.width, foodBounds.height);
         
         // Draw spawn area in black
         shapeRenderer.setColor(Color.BLACK);
@@ -111,19 +111,19 @@ public class DebugRenderer {
 
     }
     
-    public void renderDebug(OrthographicCamera camera, Map map, Food minion) {
+    public void renderDebug(OrthographicCamera camera, Map map, Food food) {
         if (!isEnabled) return;
 
-        // Create minion bounds inside the method
-        Rectangle minionBounds = new Rectangle(
-            minion.getPosition().x, 
-            minion.getPosition().y, 
-            minion.getWidth(), 
-            minion.getHeight()
+        // Create food bounds inside the method
+        Rectangle foodBounds = new Rectangle(
+            food.getPosition().x, 
+            food.getPosition().y, 
+            food.getWidth(), 
+            food.getHeight()
         );
         renderCollisionAreas(camera, 
                 map.getBlockedAreas(), 
-                minionBounds,
+                foodBounds,
                 map.getSpawnPoint(),
                 map.getWalkingPath(),
                 map.getGameoverPoint()

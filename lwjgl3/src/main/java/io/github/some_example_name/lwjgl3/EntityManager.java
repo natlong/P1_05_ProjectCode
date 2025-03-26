@@ -23,10 +23,13 @@ public class EntityManager {
     private float spawnTimer = 0f;
     private float spawnInterval; // Now a variable, not a fixed value
     private Random random = new Random();
+    private List<String> foodNameList;
+	private static final String CONFIG_FILE_PATH = "config/food.json";
+
     
     //Level-Food Configuration,
     private LevelChangeListener levelChangeListener;
-    public  int currentLevel = 1;
+    public  int currentLevel;
     private int foodsPerLevel = 3;
     private int foodsSpawnedCurrLevel = 0;
     private int foodEatenCurrLevel = 0;
@@ -38,23 +41,24 @@ public class EntityManager {
         this.map = map;
         this.soundManager = soundManager.getInstance();
         this.gameConfig = gameConfig;
-        setRandomSpawnInterval(); // Set the initial random spawn interval
+        this.foodNameList = new ArrayList<>();
         
         loadFoodEntities();
+        
+        setRandomSpawnInterval(); // Set the initial random spawn interval
+
     }
 
     private void setRandomSpawnInterval() {
         spawnInterval = gameConfig.getSpawnMinInterval() + random.nextFloat() * (gameConfig.getSpawnMaxInterval() - gameConfig.getSpawnMinInterval());
     }
-
+    
     private void loadFoodEntities() {
-    	for (FoodType foodType:FoodType.values()) {
-            Vector2 spawnPos = new Vector2(map.getSpawnPoint().x, map.getSpawnPoint().y);
-            
-            Food food = FoodFactory.createFood(foodType, spawnPos, map, gameConfig.getMaxHp(),camera, gameConfig.getFoodSpeed());
-            entities.add(food);
-    	}
+        System.out.println("Loading Food Entities");
+
+    	this.foodNameList = FoodFactory.getFoodNames(CONFIG_FILE_PATH);
     }
+
     public void addEntity(AbstractEntity entity) {
         if (entity instanceof Tower && soundManager != null) {
             Tower tower = new Tower(entity.getPosition());
@@ -102,13 +106,13 @@ public class EntityManager {
             if (spawnTimer >= spawnInterval) {
                 spawnTimer = 0f;
                 setRandomSpawnInterval(); // Set a new random spawn interval
-                Vector2 spawnPos = new Vector2(map.getSpawnPoint().x, map.getSpawnPoint().y);
-
+            	String nameOfRandomFood = foodNameList.get(random.nextInt(foodNameList.size()));
+            	Food food = FoodFactory.createFood(CONFIG_FILE_PATH, nameOfRandomFood, gameConfig, map, camera);
                 
-                Food.FoodType randomFood = Food.FoodType.values()[random.nextInt(Food.FoodType.values().length)];
+                //Food.FoodType randomFood = Food.FoodType.values()[random.nextInt(Food.FoodType.values().length)];
                
                 // Create a Food with the selected FoodType
-                addEntity(Food.createFood(randomFood, spawnPos, map, gameConfig.getMaxHp(), camera, gameConfig.getFoodSpeed()));
+                addEntity(food);
                 foodsSpawnedCurrLevel++;
             }
     	}
