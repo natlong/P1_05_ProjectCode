@@ -13,8 +13,8 @@ import java.util.ArrayList;
 
 public class Food extends AbstractMovableObject implements Targetable{
 
-    private static final int DEFAULT_WIDTH = 32;  //the minion width
-    private static final int DEFAULT_HEIGHT = 32; //the minion height
+    private static final int DEFAULT_WIDTH = 50;  //the minion width
+    private static final int DEFAULT_HEIGHT = 50; //the minion height
     private static final int MAP_WIDTH = 40; //the tiled map i set 40x30
     private static final int MAP_HEIGHT = 30;
 
@@ -169,32 +169,4 @@ public class Food extends AbstractMovableObject implements Targetable{
         return !isBadFood;
     }
 
-    public enum FoodType {
-        APPLE("food_pics/apple.png", false),
-        STRAWBERRY("food_pics/strawberry.png", false),
-        BANANAS("food_pics/bananas.png", false),
-        CARROT("food_pics/carrot.png", false),
-        BROCCOLI("food_pics/broccoli.png", false),
-        DONUT("food_pics/donut.png", true),
-        ICE_CREAM("food_pics/ice-cream.png", true),
-        PIZZA("food_pics/pizza.png", true),
-        FRIED_CHICKEN("food_pics/fried-chicken.png", true),
-        HAMBURGER("food_pics/hamburger.png", true);
-
-        private final String texturePath;
-        private final boolean isBadFood;
-
-        FoodType(String texturePath, boolean isBadFood) {
-            this.texturePath = texturePath;
-            this.isBadFood = isBadFood;
-        }
-
-        public String getTexturePath() {
-            return texturePath;
-        }
-
-        public boolean isBadFood() {
-            return isBadFood;
-        }
-    }
 }

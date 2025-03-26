@@ -19,6 +19,36 @@
       "name": "ICE_CREAM",
       "texturePath": "food_pics/ice-cream.png",
       "isBadFood": true
-    }
+    },
+	{
+		"name": "BANANAS",
+		"texturePath": "food_pics/bananas.png",
+		"isBadFood": false 
+	},
+	{
+		"name": "CARROT",
+		"texturePath": "food_pics/carrot.png",
+		"isBadFood": false
+	},
+	{
+		"name": "BROCCOLI",
+		"texturePath": "food_pics/broccoli.png",
+		"isBadFood": false
+	},
+	{
+		"name": "PIZZA",
+		"texturePath": "food_pics/pizza.png",
+		"isBadFood": true
+	},
+	{
+		"name": "FRIED_CHICKEN",
+		"texturePath": "food_pics/fried-chicken.png",
+		"isBadFood": true
+	},
+	{
+		"name": "HAMBURGER",
+		"texturePath": "food_pics/hamburger.png",
+		"isBadFood": true
+	}
   ]
 }

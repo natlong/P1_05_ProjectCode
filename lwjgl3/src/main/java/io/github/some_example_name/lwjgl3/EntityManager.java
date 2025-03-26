@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
 import config.GameConfig;
-import io.github.some_example_name.lwjgl3.Food.FoodType;
 
 import java.util.ArrayList;
 import java.util.Iterator;
