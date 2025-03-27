@@ -461,6 +461,12 @@ public class GameScene extends AbstractScene {
     
     @Override
 	public void update(float delta) {
+    	
+		if (playerHealth <= 0) {
+			showGameOver();
+			return;
+		}
+		
 		//Only Update Game if NOT Paused,
     	if (!isPaused) {
             // In SIMULATION phase, update simulation game logic.
