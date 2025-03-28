@@ -508,7 +508,7 @@ public class GameScene extends AbstractScene {
 	        		if (playerHealth <= 0) {
 	        			showGameOver();
 	                    if (soundManager != null && !gameOverMusicPlayed) {
-	                        soundManager.playGameOverMusic(1f);
+	                        soundManager.playGameOverMusic(0.1f);
 	                        gameOverMusicPlayed = true;
 	                    }
 	        			return;

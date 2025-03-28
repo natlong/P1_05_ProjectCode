@@ -92,12 +92,6 @@ public class EntityManager {
 
     //Updated Function for Each Level,
     public void update(float delta) {
-    	
-//    	if (!levelInProgress) {
-//    		startNextLevel();
-//    		return;
-//    	}
-    	
     	//Spawn Food within Range of Level,
     	if (foodsSpawnedCurrLevel < foodsPerLevel) {
             spawnTimer += delta;

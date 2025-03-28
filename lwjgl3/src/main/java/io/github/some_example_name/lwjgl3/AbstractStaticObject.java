@@ -4,18 +4,11 @@ package io.github.some_example_name.lwjgl3;
 import com.badlogic.gdx.math.Vector2;
 
 public abstract class AbstractStaticObject extends AbstractEntity{
-
 	private float range;
 	private float damage;
 	private float fireRate;
 	private float cooldown = 0;
 	
-	//public AbstractStaticObject(Vector2 position, Texture tex, String name, float fireRate, float range, float damage) {
-	//	super(position, tex, name);
-	//	this.range = range;
-	//	this.damage = damage;
-	//	this.fireRate = fireRate;
-	//}
 	public AbstractStaticObject(Vector2 position, String name, float fireRate, float range, float damage, float cooldown) {
 		super(new Vector2 (position), name);
 		this.range = range;
@@ -57,27 +50,27 @@ public abstract class AbstractStaticObject extends AbstractEntity{
 	 }
 	 
 	 /**
-	     * Updates the cooldown by subtracting the specified delta time
-	     * @param delta The time elapsed since the last update
-	     */
-	    protected void updateCooldown(float delta) {
-	        if (cooldown > 0) {
-	            cooldown = Math.max(0, cooldown - delta);
-	        }
-	    }
-	    
-	    /**
-	     * Checks if the object is ready to fire
-	     * @return true if cooldown is 0, false otherwise
-	     */
-	    protected boolean canFire() {
-	        return cooldown <= 0;
-	    }
-	    
-	    /**
-	     * Resets the cooldown to the fire rate after firing
-	     */
-	    protected void resetCooldown() {
-	        cooldown = fireRate;
-	    }
+     * Updates the cooldown by subtracting the specified delta time
+     * @param delta The time elapsed since the last update
+     */
+    protected void updateCooldown(float delta) {
+        if (cooldown > 0) {
+            cooldown = Math.max(0, cooldown - delta);
+        }
+    }
+    
+    /**
+     * Checks if the object is ready to fire
+     * @return true if cooldown is 0, false otherwise
+     */
+    protected boolean canFire() {
+        return cooldown <= 0;
+    }
+    
+    /**
+     * Resets the cooldown to the fire rate after firing
+     */
+    protected void resetCooldown() {
+        cooldown = fireRate;
+    }
 }

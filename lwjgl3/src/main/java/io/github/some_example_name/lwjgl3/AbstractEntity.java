@@ -11,13 +11,6 @@ public abstract class AbstractEntity{
 	//private Texture tex;
 	private String name;
 	
-	
-	//public AbstractEntity(Vector2 position, Texture tex, String name) {
-	//	this.position = position;
-	//	this.tex = tex;
-	//	this.name = name;
-	//}
-	
 	public AbstractEntity(Vector2 position, String name) {
 		this.position = new Vector2(position);
 		this.name = name;
@@ -31,23 +24,15 @@ public abstract class AbstractEntity{
 		this.position = position;
 	}
 	 
-	 //public Texture getTex() {
-	//	 return this.tex;
-	 //}
+	public String getName() {
+		return this.name;
+	}
 	 
-	 //public void setTex(Texture tex) {
-	//	 this.tex = tex;
-	 //}x`
+	public void setName(String name) {
+		this.name = name;
+	}
+	public abstract void render(ShapeRenderer shapeRenderer);
 	 
-	 public String getName() {
-		 return this.name;
-	 }
-	 
-	 public void setName(String name) {
-		 this.name = name;
-	 }
-	 public abstract void render(ShapeRenderer shapeRenderer);
-	 
-	 public void render(SpriteBatch batch) {
-	 }
+	public void render(SpriteBatch batch) {
+	}
 }

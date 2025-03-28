@@ -33,7 +33,6 @@ public class HPBar {
 
     public void render(ShapeRenderer shapeRenderer) {
         shapeRenderer.setProjectionMatrix(camera.combined);
-        //shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
         // Background (grey)
         shapeRenderer.setColor(Color.LIGHT_GRAY);
@@ -44,8 +43,6 @@ public class HPBar {
         float healthBarWidth = bounds.width * healthPercentage;
         shapeRenderer.setColor(Color.GREEN);
         shapeRenderer.rect(bounds.x, bounds.y, healthBarWidth, bounds.height);
-
-        //shapeRenderer.end();
     }
 
     public void dispose() {

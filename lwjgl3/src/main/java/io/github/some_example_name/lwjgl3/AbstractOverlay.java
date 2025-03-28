@@ -36,7 +36,6 @@ public abstract class AbstractOverlay extends Window {
     }
     protected abstract Table createContentTable(Skin skin);
     
-    
     //standard button creation template, this is using default dimension
     protected TextButton createStandardButton(String text, Skin skin) {
         return createStandardButton(text, skin, BUTTON_WIDTH, BUTTON_HEIGHT);
@@ -47,8 +46,6 @@ public abstract class AbstractOverlay extends Window {
         TextButton button = new TextButton(text, skin);
         return button;
     }
-    
-
     
     public void dispose() {
         clear();

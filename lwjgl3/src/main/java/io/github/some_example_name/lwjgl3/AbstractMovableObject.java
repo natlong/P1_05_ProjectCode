@@ -8,13 +8,6 @@ public abstract class AbstractMovableObject extends AbstractEntity implements Mo
 	private float hp;
 	private float maxHp;
 	
-	//public AbstractMovableObject(Vector2 position, Texture tex, String name, float hp, float maxHp, float speed) {
-	//	super(position, tex, name);
-	//	this.speed = speed;
-	//	this.hp = hp;
-	//	this.maxHp = maxHp;
-	//}
-	
 	public AbstractMovableObject(Vector2 position, String name, float hp, float maxHp, float speed) {
 		super(position, name);
 		this.speed = speed;

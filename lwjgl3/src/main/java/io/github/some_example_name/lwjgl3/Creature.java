@@ -38,10 +38,8 @@ public class Creature {
     private float stateTime = 0;
     private State currentState = State.IDLE;
     
-    
     private float eatingTimer = 0;
     private static final float EATING_DURATION = 0.5f;
-    
 
     public Creature(float x, float y) {
         this.position = new Vector2(x, y);
