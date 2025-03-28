@@ -6,11 +6,12 @@ import com.badlogic.gdx.audio.Sound;
 
 
 public class SoundManager {
-	//make it a singleton
 	private static SoundManager instance;
 	
 	private Music gameMusic;
 	private Music menuMusic;
+	private Music gameOverMusic;
+	private Music gameClearMusic;
 	private Sound shootingSoundeffect;
 	private Sound eatingSoundeffect;
 	private Music currentMusic;
@@ -35,6 +36,8 @@ public class SoundManager {
 		menuMusic.setLooping(true);
 		 gameMusic = Gdx.audio.newMusic(Gdx.files.internal("gameMusic/guinea_gavin.mp3"));
 		 gameMusic.setLooping(true);
+		 gameOverMusic = Gdx.audio.newMusic(Gdx.files.internal("gameMusic/over.mp3"));
+		 gameClearMusic = Gdx.audio.newMusic(Gdx.files.internal("gameMusic/level_complete.wav"));
 		 
 	}
 	
@@ -50,7 +53,7 @@ public class SoundManager {
 	}
 	
 	
-	public void playGameMusic() {
+	public void playGameMusic(float volume) {
 		stopCurrentMusic();
 	    currentMusic = gameMusic;
 	    startCurrentMusic();
@@ -65,7 +68,7 @@ public class SoundManager {
 	    }
 	}
 	
-	private void stopCurrentMusic() {
+	public void stopCurrentMusic() {
 	    if (currentMusic != null) {
 	        currentMusic.stop();
 	    }
@@ -80,6 +83,21 @@ public class SoundManager {
 	        }
 	    }
 	}
+	
+	public void playGameClearMusic(float volume){
+		 if (!isMuted && gameClearMusic != null) {
+			 gameClearMusic.play();
+		        }
+	}
+	
+	public void playGameOverMusic(float volume){
+		stopCurrentMusic();
+		 if (!isMuted && gameOverMusic != null) {
+			 gameOverMusic.play();
+		        }
+	}
+	
+	
 	
 	public void playShootingSoundeffect(float volume){
 		 if (!isMuted && shootingSoundeffect != null) {
@@ -125,7 +143,7 @@ public class SoundManager {
 	
 	public void dispose() {
 	    if (isDisposed) {
-	        return; // Already disposed, do nothing
+	        return;
 	    }
 	    
 	    if (gameMusic != null) {
@@ -135,6 +153,14 @@ public class SoundManager {
 	    if (menuMusic != null) {
 	        menuMusic.dispose();
 	        menuMusic = null;
+
+	    if (gameOverMusic != null) {
+	        gameOverMusic.dispose();
+	        gameOverMusic = null;
+	    }
+	    if (gameClearMusic != null) {
+	        gameClearMusic.dispose();
+	        gameClearMusic = null;
 	    }
 	    if (shootingSoundeffect != null) {
 	        shootingSoundeffect.dispose();
@@ -149,7 +175,8 @@ public class SoundManager {
 	    currentMusic = null;
 	    
 	    instance = null;
-	}
+	    }
+	    }
 	
 	public static void shutdown() {
 	    if (instance != null) {

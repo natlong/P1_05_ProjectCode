@@ -14,7 +14,8 @@ import com.badlogic.gdx.utils.Align;
 public class GameOverScene extends AbstractOverlay {
     private TextButton retryButton;
     private TextButton exitButton;
-    private GameScene gameScene; 
+    private GameScene gameScene;
+    
 
     public GameOverScene(Skin skin, Stage stage, GameScene gameScene) {
     	//call skin from parent "GameScreen" 

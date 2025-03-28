@@ -29,7 +29,6 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 
-//New enum to define game phases (could also be in its own file)
 enum GamePhase {
 	PLANNING,
 	SIMULATION
@@ -55,6 +54,7 @@ public class GameScene extends AbstractScene {
     private Creature creature;
     private Texture teethTexture;
     private Texture coinPileTexture;
+    private boolean gameOverMusicPlayed = false;
    
     
     //Game Pause Variable,
@@ -120,7 +120,7 @@ public class GameScene extends AbstractScene {
         batch = new SpriteBatch();
         shapeRenderer = new ShapeRenderer();
         soundManager = SoundManager.getInstance();
-        soundManager.playGameMusic();
+        soundManager.playGameMusic(0.5f);
          
          // load tilemap
          map = new Map("level.tmx");
@@ -468,7 +468,7 @@ public class GameScene extends AbstractScene {
 	public void update(float delta) {
     	
 		if (playerHealth <= 0) {
-			showGameOver();
+			showGameOver(); 
 			return;
 		}
 		
@@ -482,6 +482,9 @@ public class GameScene extends AbstractScene {
                 }
                 // Check if the simulation stage is complete.
                 if (entityManager.isLevelComplete()) {
+                    if (soundManager != null) {
+                        soundManager.playGameClearMusic(1f);
+                    }
                     // Transition to the planning phase.
                     currentPhase = GamePhase.PLANNING;
                     // Optionally, award bonus resources here.
@@ -504,6 +507,10 @@ public class GameScene extends AbstractScene {
 	        		
 	        		if (playerHealth <= 0) {
 	        			showGameOver();
+	                    if (soundManager != null && !gameOverMusicPlayed) {
+	                        soundManager.playGameOverMusic(1f);
+	                        gameOverMusicPlayed = true;
+	                    }
 	        			return;
 	        		}
 	        	} else {
@@ -526,6 +533,13 @@ public class GameScene extends AbstractScene {
     private void showGameOver() {
     	if (gameOverScene == null){
     		isPaused = true;
+    		if (soundManager != null) {
+    			soundManager.stopCurrentMusic();
+	    		if (!gameOverMusicPlayed) {
+	    			soundManager.playGameOverMusic(1f);
+	    			gameOverMusicPlayed = true;
+	    		}
+    		}
     		Skin skin = new Skin(Gdx.files.internal("skin/lgdxs-ui.json"));
 	        gameOverScene = new GameOverScene(skin, stage, this);
 	        stage.addActor(gameOverScene);
@@ -539,6 +553,7 @@ public class GameScene extends AbstractScene {
     	updateCoins(GameConfig.getInstance().getPlayerCoins());
     	goodFoodReached = 0;
     	updateFood();
+    	gameOverMusicPlayed = false;
     	
 	    //reset map
 	    if (map != null) {
@@ -659,27 +674,26 @@ public class GameScene extends AbstractScene {
 
     @Override
     public void dispose() {
-    	super.dispose();
+        super.dispose();
         batch.dispose();
         map.dispose();
-        debugRenderer.dispose ();
+        debugRenderer.dispose();
         shapeRenderer.dispose();
         
-        //Dispose of Pause Buttons,
+        // Dispose of Pause Buttons
         if (pauseTexture != null) pauseTexture.dispose();
         if (isPauseTexture != null) isPauseTexture.dispose();
+        
+        // Add these missing disposals
+        if (teethTexture != null) teethTexture.dispose();
+        if (coinPileTexture != null) coinPileTexture.dispose();
         
         if (creature != null) {
             creature.dispose();
         }
         
-//        if (skin != null) {
-//        	skin.dispose();
-//        	skin = null;
-//      }
-        
         if (HealthAndCoinTable != null) {
-        	HealthAndCoinTable.remove();
+            HealthAndCoinTable.remove();
         }
-}
+    }
 }
