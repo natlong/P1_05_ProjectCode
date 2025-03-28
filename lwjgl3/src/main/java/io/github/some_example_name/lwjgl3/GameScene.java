@@ -381,7 +381,12 @@ public class GameScene extends AbstractScene {
         multiplexer.addProcessor(new InputAdapter() {
             @Override
             public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-                Vector3 worldCoordinates = camera.unproject(new Vector3(screenX, screenY, 0));
+            	// Prevent processing input when the game is paused.
+                if (isPaused) {
+                    return false;
+                }
+            	
+            	Vector3 worldCoordinates = camera.unproject(new Vector3(screenX, screenY, 0));
                 float x = worldCoordinates.x;
                 float y = worldCoordinates.y;
                 
@@ -533,6 +538,7 @@ public class GameScene extends AbstractScene {
         updateHealth(GameConfig.getInstance().getPlayerHp());
     	updateCoins(GameConfig.getInstance().getPlayerCoins());
     	goodFoodReached = 0;
+    	updateFood();
     	
 	    //reset map
 	    if (map != null) {
